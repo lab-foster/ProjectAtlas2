@@ -1,0 +1,695 @@
+/*
+ * Project Atlas - Home Project Management
+ * Author: Andrew Foster
+ * Last Updated: September 2025
+ * 
+ * Note: This stylesheet handles both the landing pages and the app interface.
+ * I've organized it by section to make maintenance easier when I inevitably
+ * need to add more features or fix responsive issues at 2am.
+ */
+
+/* Basic reset - I prefer this to normalize.css for simplicity */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 
+ * Color Variables
+ * These are based on the blueprint aesthetic I mentioned in my proposal.
+ * The light blue palette should work well for outdoor phone usage too.
+ */
+:root {
+    /* Landing page gradient - matches the current design */
+    --landing-primary: #1e3a8a;
+    --landing-secondary: #3730a3;
+    --atlas-accent: #60a5fa;
+    --landing-text: #ffffff;
+    --landing-muted: #cbd5e1;
+    
+    /* App interface - clean and minimal */
+    --app-primary: #1976d2;
+    --app-accent: #1565c0;
+    --app-light-blue: #e3f2fd;
+    --app-bg-light: #f3f9ff;
+    
+    /* Text colors for readability */
+    --text-dark: #212121;
+    --text-medium: #757575;
+    --text-light: #9e9e9e;
+    
+    /* UI colors */
+    --bg-primary: #fafafa;
+    --surface: #ffffff;
+    --border: #e0e0e0;
+    --border-subtle: #f0f0f0;
+    
+    /* Status colors - these match common project management conventions */
+    --success: #4caf50;
+    --warning: #ff9800;
+    --error: #f44336;
+    
+    /* Shadows - keeping them subtle */
+    --shadow-sm: rgba(0, 0, 0, 0.05);
+    --shadow-md: rgba(0, 0, 0, 0.1);
+}
+
+/* Base typography */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    /* System font stack - faster loading and feels more native */
+}
+
+/* Headings - I like these proportions better than the defaults */
+h1 { font-size: 1.8rem; font-weight: 600; margin-bottom: 0.5rem; }
+h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; }
+h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; }
+h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+
+.atlas-blue { 
+    color: var(--atlas-accent); 
+}
+
+/* ===========================================
+   LANDING PAGE STYLES
+   These handle the marketing/static pages
+   =========================================== */
+
+.landing-page {
+    background: linear-gradient(135deg, var(--landing-primary) 0%, var(--landing-secondary) 100%);
+    color: var(--landing-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navigation for landing pages */
+.landing-header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 2rem;
+    z-index: 100;
+}
+
+.landing-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.landing-nav a {
+    color: var(--landing-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.landing-nav a:hover,
+.landing-nav a.active {
+    color: var(--landing-text);
+}
+
+/* Hero section */
+.landing-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+.hero-section {
+    text-align: center;
+    max-width: 900px;
+    width: 100%;
+}
+
+.hero-section h1 {
+    font-size: 4rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: var(--landing-text);
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    color: var(--landing-muted);
+    margin-bottom: 3rem;
+}
+
+/* Feature cards on landing page */
+.feature-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+    max-width: 900px;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.feature-card h3 {
+    color: var(--atlas-accent);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.feature-card p {
+    color: var(--landing-muted);
+    line-height: 1.5;
+}
+
+/* CTA button */
+.cta-section {
+    margin-top: 3rem;
+}
+
+.btn-get-started {
+    display: inline-block;
+    background: #3b82f6; /* I like this blue better than the CSS variable */
+    color: white;
+    padding: 1rem 3rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-get-started:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Static page layouts (About, Contact) */
+.static-page {
+    background: linear-gradient(135deg, var(--landing-primary) 0%, var(--landing-secondary) 100%);
+    color: var(--landing-text);
+    min-height: 100vh;
+}
+
+.static-header {
+    padding: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.static-nav {
+    display: flex;
+    justify-content: center;
+}
+
+.static-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 3rem;
+}
+
+.static-nav a {
+    color: var(--landing-muted);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+
+.static-nav a:hover,
+.static-nav a.active {
+    color: var(--landing-text);
+}
+
+.static-main {
+    padding: 4rem 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.static-main h2 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Content blocks for static pages */
+.static-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 3rem;
+    margin-bottom: 2rem;
+}
+
+.static-content h3 {
+    color: var(--atlas-accent);
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+}
+
+.static-content p {
+    color: var(--landing-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.static-content ul {
+    list-style: none;
+    margin: 1.5rem 0;
+}
+
+.static-content li {
+    color: var(--landing-muted);
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 1rem;
+}
+
+.static-content li:last-child {
+    border-bottom: none;
+}
+
+.static-content strong {
+    color: var(--landing-text);
+}
+
+/* Contact form styling */
+.contact-form {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 3rem;
+    margin: 2rem 0;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    color: var(--landing-muted);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--landing-text);
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--atlas-accent);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+
+/* ===========================================
+   APPLICATION INTERFACE STYLES
+   These handle the actual project management UI
+   =========================================== */
+
+.app-page {
+    background-color: var(--bg-primary);
+    color: var(--text-dark);
+    min-height: 100vh;
+}
+
+/* App header with navigation */
+.app-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-container {
+    max-width: 1400px; /* Wide enough for project management interfaces */
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--text-dark);
+}
+
+.tagline {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    display: block;
+    margin-top: -0.2rem;
+}
+
+/* Main navigation in app */
+.main-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    margin: 0;
+}
+
+.main-nav a {
+    color: var(--text-medium);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+    color: var(--app-primary);
+    background-color: var(--app-light-blue);
+}
+
+/* User menu area */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--atlas-accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Button styles */
+.btn-primary, .btn-secondary, .btn-link {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: var(--app-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--app-accent);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--app-primary);
+    border: 1px solid var(--app-primary);
+}
+
+.btn-secondary:hover {
+    background: var(--app-light-blue);
+}
+
+.btn-link {
+    background: none;
+    color: var(--app-primary);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.btn-link:hover {
+    background: var(--app-light-blue);
+}
+
+/* Dashboard layout */
+.dashboard-main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+.dashboard-header h2 {
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-header p {
+    color: var(--text-medium);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Main content takes more space */
+    gap: 2rem;
+}
+
+/* Project overview section */
+.project-overview h3 {
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+}
+
+.project-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.project-header h4 {
+    margin: 0;
+    color: var(--text-dark);
+}
+
+/* Status badges */
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.in-progress {
+    background: rgba(33, 150, 243, 0.1);
+    color: var(--app-primary);
+}
+
+.status-badge.planning {
+    background: rgba(255, 152, 0, 0.1);
+    color: var(--warning);
+}
+
+.status-badge.blocked {
+    background: rgba(244, 67, 54, 0.1);
+    color: var(--error);
+}
+
+/* Project statistics */
+.project-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-medium);
+    width: 60px; /* Fixed width for alignment */
+}
+
+.stat-value {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-left: auto;
+}
+
+/* Progress bars */
+.progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--border-subtle);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--app-primary);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.project-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-subtle);
+}
+
+/* Sidebar widgets */
+.sidebar-widgets {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.widget {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.widget h3 {
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+    font-size: 1rem;
+}
+
+/* ===========================================
+   RESPONSIVE DESIGN
+   Mobile-first approach for better performance
+   =========================================== */
+
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* Stack on tablets */
+    }
+    
+    .header-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .main-nav ul {
+        gap: 1rem;
+    }
+    
+    .hero-section h1 {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-main,
+    .static-main {
+        padding: 1rem;
+    }
+    
+    .main-nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .feature-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+    
+    .landing-header {
+        position: static; /* Remove fixed positioning on mobile */
+        text-align: center;
+        padding: 1rem;
+    }
+    
+    .landing-nav ul {
+        justify-content: center;
+    }
+}
+
+/* Edge case: really small screens */
+@media (max-width: 480px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .static-content,
+    .contact-form {
+        padding: 1.5rem; /* Reduce padding on tiny screens */
+    }
+}
+
+/*
+ * TODO for future versions:
+ * - Add dark mode support (system preference detection)
+ * - Implement better focus management for accessibility  
+ * - Consider adding CSS Grid fallbacks for older browsers
+ * - Test with actual renovation photos to ensure image handling works
+ */
