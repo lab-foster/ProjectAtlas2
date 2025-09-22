@@ -18,7 +18,7 @@ Project Atlas is a purpose-built platform for managing home renovation projects.
 
 ## Live Site
 
-Visit the project at: https://lab-foster.github.io/projectAtlas/
+Visit the project at: https://lab-foster.github.io/ProjectAtlas/
 
 ## Tech Stack
 
