@@ -27,5 +27,8 @@ Visit the project at: https://lab-foster.github.io/ProjectAtlas/
 - JavaScript
 
 ---
+License
+This project is currently in development and not yet open source. Planning to open source portions once the core architecture is stable.
+---
+Built with frustration and determination by Andrew Foster
 
-Built by Andrew Foster
