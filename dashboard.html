@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Atlas - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="app-page">
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo">
+                <h1>Project <span class="atlas-blue">ATLAS</span></h1>
+                <span class="tagline">Home Project Management</span>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="kanban.html">Kanban Board</a></li>
+                    <li><a href="budget.html">Budget Tracker</a></li>
+                    <li><a href="calendar.html">Calendar</a></li>
+                    <li><a href="documents.html">Documents</a></li>
+                </ul>
+            </nav>
+            <div class="user-menu">
+                <button class="btn-secondary" onclick="showNewProjectModal()">+ New Project</button>
+                <div class="user-avatar" onclick="showUserMenu()" style="cursor: pointer;" title="User Menu">AF</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="dashboard-container">
+            <section class="dashboard-header">
+                <h2>Welcome back, Andrew</h2>
+                <p>You have 3 active projects and 2 items that need your attention</p>
+            </section>
+
+            <div class="dashboard-grid">
+                <section class="project-overview">
+                    <h3>Active Projects</h3>
+                    <div class="project-cards">
+                        <div class="project-card status-in-progress">
+                            <div class="project-header">
+                                <h4>Kitchen Renovation Epic</h4>
+                                <span class="status-badge in-progress">In Progress</span>
+                            </div>
+                            <div class="project-stats">
+                                <div class="stat">
+                                    <span class="stat-label">Progress</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 65%"></div>
+                                    </div>
+                                    <span class="stat-value">65%</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Budget</span>
+                                    <span class="stat-value">$23,400 / $28,000</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Timeline</span>
+                                    <span class="stat-value">Week 6 of 10</span>
+                                </div>
+                            </div>
+                            <div class="project-actions">
+                                <button class="btn-link" onclick="showUnderConstruction()">View Epic Board</button>
+                                <button class="btn-link" onclick="showUnderConstruction()">Update Status</button>
+                            </div>
+                        </div>
+
+                        <div class="project-card status-planning">
+                            <div class="project-header">
+                                <h4>Basement Finishing Epic</h4>
+                                <span class="status-badge planning">Planning</span>
+                            </div>
+                            <div class="project-stats">
+                                <div class="stat">
+                                    <span class="stat-label">Progress</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 15%"></div>
+                                    </div>
+                                    <span class="stat-value">15%</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Budget</span>
+                                    <span class="stat-value">$5,200 / $35,000</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Next</span>
+                                    <span class="stat-value">Permit application</span>
+                                </div>
+                            </div>
+                            <div class="project-actions">
+                                <button class="btn-link" onclick="showUnderConstruction()">View Epic Board</button>
+                                <button class="btn-link" onclick="showUnderConstruction()">Add Tasks</button>
+                            </div>
+                        </div>
+
+                        <div class="project-card status-blocked">
+                            <div class="project-header">
+                                <h4>Bathroom Update Epic</h4>
+                                <span class="status-badge blocked">Blocked</span>
+                            </div>
+                            <div class="project-stats">
+                                <div class="stat">
+                                    <span class="stat-label">Progress</span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 40%"></div>
+                                    </div>
+                                    <span class="stat-value">40%</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Budget</span>
+                                    <span class="stat-value">$8,100 / $12,000</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Blocked by</span>
+                                    <span class="stat-value">Inspection pending</span>
+                                </div>
+                            </div>
+                            <div class="project-actions">
+                                <button class="btn-link" onclick="showUnderConstruction()">View Epic Board</button>
+                                <button class="btn-link" onclick="showUnderConstruction()">Contact Inspector</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="sidebar-widgets">
+                    <section class="widget recent-activity">
+                        <h3>Recent Activity</h3>
+                        <ul class="activity-list">
+                            <li class="activity-item" onclick="showUnderConstruction()" style="cursor: pointer;">
+                                <div class="activity-icon task-completed">✓</div>
+                                <div class="activity-content">
+                                    <span class="activity-text">Completed "Install cabinet doors" in Kitchen Epic</span>
+                                    <span class="activity-time">2 hours ago</span>
+                                </div>
+                            </li>
+                            <li class="activity-item" onclick="showUnderConstruction()" style="cursor: pointer;">
+                                <div class="activity-icon expense-added">💰</div>
+                                <div class="activity-content">
+                                    <span class="activity-text">Added expense: Tile grout - $127.43</span>
+                                    <span class="activity-time">5 hours ago</span>
+                                </div>
+                            </li>
+                            <li class="activity-item" onclick="showUnderConstruction()" style="cursor: pointer;">
+                                <div class="activity-icon photo-uploaded">📷</div>
+                                <div class="activity-content">
+                                    <span class="activity-text">Uploaded 3 progress photos to Bathroom Epic</span>
+                                    <span class="activity-time">Yesterday</span>
+                                </div>
+                            </li>
+                            <li class="activity-item" onclick="showUnderConstruction()" style="cursor: pointer;">
+                                <div class="activity-icon task-created">+</div>
+                                <div class="activity-content">
+                                    <span class="activity-text">Created task "Research basement waterproofing"</span>
+                                    <span class="activity-time">2 days ago</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section class="widget upcoming-tasks">
+                        <h3>Upcoming Tasks</h3>
+                        <ul class="task-list">
+                            <li class="task-item priority-high" onclick="showUnderConstruction()" style="cursor: pointer;">
+                                <span class="task-priority high">!</span>
+                                <span class="task-text">Schedule electrical inspection</span>
+                                <span class="task-due">Due tomorrow</span>
+                            </li>
+                            <li class="task-item priority-medium" onclick="showUnderConstruction()" style="cursor: pointer;">
+                                <span class="task-priority medium">•</span>
+                                <span class="task-text">Order bathroom vanity</span>
+                                <span class="task-due">Due Friday</span>
+                            </li>
+                            <li class="task-item priority-low" onclick="showUnderConstruction()" style="cursor: pointer;">
+                                <span class="task-priority low">-</span>
+                                <span class="task-text">Research countertop options</span>
+                                <span class="task-due">Due next week</span>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section class="widget budget-summary">
+                        <h3>Budget Overview</h3>
+                        <div class="budget-stats">
+                            <div class="budget-item">
+                                <span class="budget-label">Total Allocated</span>
+                                <span class="budget-amount">$75,000</span>
+                            </div>
+                            <div class="budget-item">
+                                <span class="budget-label">Total Spent</span>
+                                <span class="budget-amount spent">$36,700</span>
+                            </div>
+                            <div class="budget-item">
+                                <span class="budget-label">Remaining</span>
+                                <span class="budget-amount remaining">$38,300</span>
+                            </div>
+                        </div>
+                        <div class="budget-chart">
+                            <div class="chart-bar">
+                                <div class="chart-fill" style="width: 49%"></div>
+                            </div>
+                            <span class="chart-label">49% budget utilized</span>
+                        </div>
+                    </section>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function showNewProjectModal() {
+            alert('🚧 New Project Feature\n\nThis would open a modal to create a new project epic with:\n• Project name and description\n• Budget allocation\n• Timeline estimation\n• Initial task breakdown\n\nComing soon!');
+        }
+        
+        function showUserMenu() {
+            alert('👤 User Menu\n\nThis would show:\n• Profile settings\n• Notification preferences\n• Account management\n• Sign out\n\nComing soon!');
+        }
+        
+        function showTaskDetails(taskName) {
+            alert('📋 Task Details\n\nThis would show detailed information about:\n"' + taskName + '"\n\nIncluding progress, notes, attachments, and comments.\n\nComing soon!');
+        }
+    </script>
+        /* Additional dashboard-specific styles */
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.task-completed {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+        }
+
+        .activity-icon.expense-added {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .activity-icon.photo-uploaded {
+            background: rgba(33, 150, 243, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .activity-icon.task-created {
+            background: rgba(156, 39, 176, 0.1);
+            color: #9c27b0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-priority {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .task-priority.high {
+            background: var(--error);
+            color: white;
+        }
+
+        .task-priority.medium {
+            background: var(--warning);
+            color: white;
+        }
+
+        .task-priority.low {
+            background: var(--text-light);
+            color: white;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .task-due {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .budget-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .budget-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .budget-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .budget-amount {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .budget-amount.spent {
+            color: var(--warning);
+        }
+
+        .budget-amount.remaining {
+            color: var(--success);
+        }
+
+        .budget-chart {
+            margin-top: 1rem;
+        }
+
+        .chart-bar {
+            height: 6px;
+            background: var(--border-light);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: var(--primary-blue);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .chart-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+    </style>
+</body>
+</html>
