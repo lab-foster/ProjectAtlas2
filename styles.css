@@ -1,11 +1,7 @@
 /*
- * Project Atlas - Home Project Management
+ * Project Atlas - Home Project Management with Gradient Banner
  * Author: Andrew Foster
  * Last Updated: September 2025
- * 
- * Note: This stylesheet handles both the landing pages and the app interface.
- * I've organized it by section to make maintenance easier when I inevitably
- * need to add more features or fix responsive issues at 2am.
  */
 
 /* Basic reset - I prefer this to normalize.css for simplicity */
@@ -74,15 +70,15 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
 }
 
 /* ===========================================
-   LANDING PAGE STYLES
+   LANDING PAGE STYLES - Full gradient banner overlay
    These handle the marketing/static pages
    =========================================== */
 
 .landing-page {
     background: 
-        linear-gradient(135deg, rgba(30, 58, 138, 0.9) 0%, rgba(55, 48, 163, 0.9) 100%),
+        linear-gradient(135deg, rgba(30, 58, 138, 0.85) 0%, rgba(55, 48, 163, 0.8) 100%),
         url('subtle-banner.svg');
-    background-size: cover, contain;
+    background-size: cover, cover;
     background-repeat: no-repeat, no-repeat;
     background-position: center, center;
     color: var(--landing-text);
@@ -157,9 +153,9 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
 }
 
 .feature-card {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 12px;
     padding: 2rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -211,12 +207,12 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
     box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
-/* Static page layouts (About, Contact) with banner */
+/* Static page layouts (About, Contact) with gradient banner */
 .static-page {
     background: 
-        linear-gradient(135deg, rgba(30, 58, 138, 0.92) 0%, rgba(55, 48, 163, 0.92) 100%),
+        linear-gradient(135deg, rgba(30, 58, 138, 0.88) 0%, rgba(55, 48, 163, 0.85) 100%),
         url('subtle-banner.svg');
-    background-size: cover, contain;
+    background-size: cover, cover;
     background-repeat: no-repeat, no-repeat;
     background-position: center, center;
     color: var(--landing-text);
@@ -266,9 +262,9 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
 
 /* Content blocks for static pages */
 .static-content {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 12px;
     padding: 3rem;
     margin-bottom: 2rem;
@@ -309,9 +305,9 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
 
 /* Contact form styling */
 .contact-form {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 12px;
     padding: 3rem;
     margin: 2rem 0;
@@ -349,27 +345,26 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
     box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
 }
 
-/* App page background with subtle banner pattern */
+/* ===========================================
+   APPLICATION INTERFACE STYLES - Subtle gradient integration
+   These handle the actual project management UI
+   =========================================== */
+
 .app-page {
-    background: var(--bg-primary) url('subtle-banner.svg');
-    background-size: auto, contain;
+    background: 
+        var(--bg-primary) url('subtle-banner.svg');
+    background-size: auto, 100% 300px;
     background-repeat: no-repeat, no-repeat;
-    background-position: top center, center;
-    background-blend-mode: multiply;
+    background-position: top center, top center;
     color: var(--text-dark);
     min-height: 100vh;
 }
 
-/* ===========================================
-   APPLICATION INTERFACE STYLES
-   These handle the actual project management UI
-   =========================================== */
-
-/* App header with navigation */
+/* App header with navigation - Clean over gradient */
 .app-header {
     background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(224, 224, 224, 0.5);
     padding: 1rem 0;
     position: sticky;
     top: 0;
@@ -483,11 +478,12 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
     background: var(--app-light-blue);
 }
 
-/* Dashboard layout */
+/* Dashboard layout with spacing from gradient */
 .dashboard-main {
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
+    margin-top: 1rem; /* Space from gradient header */
 }
 
 .dashboard-header {
@@ -522,8 +518,7 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
 }
 
 .project-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 1.5rem;
@@ -624,8 +619,7 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
 }
 
 .widget {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 1.5rem;
@@ -841,6 +835,10 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
 }
 
 @media (max-width: 768px) {
+    .app-page {
+        background-size: auto, 100% 200px; /* Smaller gradient on mobile */
+    }
+    
     .dashboard-main,
     .static-main {
         padding: 1rem;
