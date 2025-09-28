@@ -24,24 +24,543 @@
                 </ul>
             </nav>
             <div class="user-menu">
+                <button class="btn-secondary" onclick="showNewTaskModal()">+ New Task</button>
                 <div class="user-avatar">AF</div>
             </div>
         </div>
     </header>
 
-    <main class="dashboard-main">
-        <div style="text-align: center; padding: 4rem 2rem; max-width: 600px; margin: 0 auto;">
-            <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.3;">📋</div>
-            <h2 style="color: var(--text-dark); margin-bottom: 1rem;">Kanban Board Coming Soon</h2>
-            <p style="color: var(--text-medium); font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">
-                The visual workflow board is in development. This will include the six-stage 
-                workflow from Someday/Maybe through Done Done, with drag-and-drop task management 
-                and project filtering.
-            </p>
-            <a href="dashboard.html" class="btn-primary" style="padding: 0.75rem 2rem; text-decoration: none; border-radius: 6px;">
-                Return to Dashboard
-            </a>
+    <main class="kanban-container">
+        <div class="board-header">
+            <h2>Project Kanban Board</h2>
+            <div class="board-filters">
+                <select class="filter-select">
+                    <option>All Projects</option>
+                    <option>Kitchen Renovation</option>
+                    <option>Basement Finishing</option>
+                    <option>Bathroom Update</option>
+                </select>
+                <select class="filter-select">
+                    <option>All Priorities</option>
+                    <option>High Priority</option>
+                    <option>Medium Priority</option>
+                    <option>Low Priority</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="kanban-board">
+            <!-- Someday/Maybe Column -->
+            <div class="kanban-column someday">
+                <div class="kanban-header">
+                    <h3 class="kanban-title">Someday / Maybe</h3>
+                    <span class="task-count">4</span>
+                </div>
+                <div class="task-cards">
+                    <div class="task-card low-priority" onclick="showTaskDetail('Install smart home automation')">
+                        <div class="task-title">Install smart home automation system</div>
+                        <div class="task-meta">
+                            <span class="task-project">Future Upgrades</span>
+                            <span class="task-due">No due date</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">electrical</span>
+                            <span class="task-label">smart-home</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card low-priority" onclick="showTaskDetail('Build deck extension')">
+                        <div class="task-title">Build deck extension</div>
+                        <div class="task-meta">
+                            <span class="task-project">Outdoor Projects</span>
+                            <span class="task-due">Summer 2025</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">outdoor</span>
+                            <span class="task-label">carpentry</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card low-priority" onclick="showTaskDetail('Research solar panels')">
+                        <div class="task-title">Research solar panel installation</div>
+                        <div class="task-meta">
+                            <span class="task-project">Energy Efficiency</span>
+                            <span class="task-due">No due date</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">research</span>
+                            <span class="task-label">energy</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card low-priority" onclick="showTaskDetail('Landscape backyard')">
+                        <div class="task-title">Landscape backyard</div>
+                        <div class="task-meta">
+                            <span class="task-project">Outdoor Projects</span>
+                            <span class="task-due">Spring 2025</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">landscaping</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-task-btn" onclick="showNewTaskModal()">+ Add task</button>
+            </div>
+
+            <!-- Planning Column -->
+            <div class="kanban-column planning">
+                <div class="kanban-header">
+                    <h3 class="kanban-title">Research & Planning</h3>
+                    <span class="task-count">5</span>
+                </div>
+                <div class="task-cards">
+                    <div class="task-card medium-priority" onclick="showTaskDetail('Research waterproofing')">
+                        <div class="task-title">Research basement waterproofing options</div>
+                        <div class="task-meta">
+                            <span class="task-project">Basement Finishing</span>
+                            <span class="task-due">Due in 3 days</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">research</span>
+                            <span class="task-label">waterproofing</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card medium-priority" onclick="showTaskDetail('Get electrical quotes')">
+                        <div class="task-title">Get quotes for electrical rough-in</div>
+                        <div class="task-meta">
+                            <span class="task-project">Basement Finishing</span>
+                            <span class="task-due">Due Friday</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">quotes</span>
+                            <span class="task-label">electrical</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card low-priority" onclick="showTaskDetail('Plan lighting layout')">
+                        <div class="task-title">Plan basement lighting layout</div>
+                        <div class="task-meta">
+                            <span class="task-project">Basement Finishing</span>
+                            <span class="task-due">Due next week</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">design</span>
+                            <span class="task-label">lighting</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card medium-priority" onclick="showTaskDetail('Research countertops')">
+                        <div class="task-title">Research countertop materials</div>
+                        <div class="task-meta">
+                            <span class="task-project">Kitchen Renovation</span>
+                            <span class="task-due">Due Monday</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">research</span>
+                            <span class="task-label">materials</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card high-priority" onclick="showTaskDetail('Schedule inspection')">
+                        <div class="task-title">Schedule plumbing inspection</div>
+                        <div class="task-meta">
+                            <span class="task-project">Bathroom Update</span>
+                            <span class="task-due overdue">Overdue by 2 days</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">inspection</span>
+                            <span class="task-label">urgent</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-task-btn" onclick="showNewTaskModal()">+ Add task</button>
+            </div>
+
+            <!-- Ready Column -->
+            <div class="kanban-column ready">
+                <div class="kanban-header">
+                    <h3 class="kanban-title">Permitted & Ready</h3>
+                    <span class="task-count">3</span>
+                </div>
+                <div class="task-cards">
+                    <div class="task-card high-priority" onclick="showTaskDetail('Install cabinet doors')">
+                        <div class="task-title">Install kitchen cabinet doors</div>
+                        <div class="task-meta">
+                            <span class="task-project">Kitchen Renovation</span>
+                            <span class="task-due">Ready to start</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">carpentry</span>
+                            <span class="task-label">kitchen</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card medium-priority" onclick="showTaskDetail('Order vanity')">
+                        <div class="task-title">Order bathroom vanity</div>
+                        <div class="task-meta">
+                            <span class="task-project">Bathroom Update</span>
+                            <span class="task-due">Materials ready</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">ordering</span>
+                            <span class="task-label">bathroom</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card medium-priority" onclick="showTaskDetail('Install insulation')">
+                        <div class="task-title">Install basement insulation</div>
+                        <div class="task-meta">
+                            <span class="task-project">Basement Finishing</span>
+                            <span class="task-due">Permit approved</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">insulation</span>
+                            <span class="task-label">diy</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-task-btn" onclick="showNewTaskModal()">+ Add task</button>
+            </div>
+
+            <!-- In Progress Column -->
+            <div class="kanban-column in-progress">
+                <div class="kanban-header">
+                    <h3 class="kanban-title">Active Work</h3>
+                    <span class="task-count">3</span>
+                </div>
+                <div class="task-cards">
+                    <div class="task-card high-priority" onclick="showTaskDetail('Install backsplash')">
+                        <div class="task-title">Install kitchen backsplash tile</div>
+                        <div class="task-meta">
+                            <span class="task-project">Kitchen Renovation</span>
+                            <span class="task-due">In progress - Day 2</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">tiling</span>
+                            <span class="task-label">diy</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card medium-priority" onclick="showTaskDetail('Paint walls')">
+                        <div class="task-title">Prime and paint kitchen walls</div>
+                        <div class="task-meta">
+                            <span class="task-project">Kitchen Renovation</span>
+                            <span class="task-due">50% complete</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">painting</span>
+                            <span class="task-label">diy</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card medium-priority" onclick="showTaskDetail('Install exhaust fan')">
+                        <div class="task-title">Install bathroom exhaust fan</div>
+                        <div class="task-meta">
+                            <span class="task-project">Bathroom Update</span>
+                            <span class="task-due">Electrician scheduled</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">electrical</span>
+                            <span class="task-label">contractor</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-task-btn" onclick="showNewTaskModal()">+ Add task</button>
+            </div>
+
+            <!-- Blocked Column -->
+            <div class="kanban-column blocked">
+                <div class="kanban-header">
+                    <h3 class="kanban-title">Waiting on External</h3>
+                    <span class="task-count">2</span>
+                </div>
+                <div class="task-cards">
+                    <div class="task-card high-priority" onclick="showTaskDetail('Wait for inspection')">
+                        <div class="task-title">Wait for electrical inspection</div>
+                        <div class="task-meta">
+                            <span class="task-project">Bathroom Update</span>
+                            <span class="task-due overdue">Delayed by inspector</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">inspection</span>
+                            <span class="task-label">blocked</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card medium-priority" onclick="showTaskDetail('Wait for cabinets')">
+                        <div class="task-title">Wait for custom cabinet delivery</div>
+                        <div class="task-meta">
+                            <span class="task-project">Kitchen Renovation</span>
+                            <span class="task-due">Expected next Tuesday</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">delivery</span>
+                            <span class="task-label">supplier</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-task-btn" onclick="showNewTaskModal()">+ Add task</button>
+            </div>
+
+            <!-- Done Column -->
+            <div class="kanban-column done">
+                <div class="kanban-header">
+                    <h3 class="kanban-title">Done Done</h3>
+                    <span class="task-count">8</span>
+                </div>
+                <div class="task-cards">
+                    <div class="task-card completed" onclick="showTaskDetail('Install countertops')">
+                        <div class="task-title">Install kitchen countertops</div>
+                        <div class="task-meta">
+                            <span class="task-project">Kitchen Renovation</span>
+                            <span class="task-due">Completed yesterday</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">countertops</span>
+                            <span class="task-label">completed</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card completed" onclick="showTaskDetail('Remove fixtures')">
+                        <div class="task-title">Remove old bathroom fixtures</div>
+                        <div class="task-meta">
+                            <span class="task-project">Bathroom Update</span>
+                            <span class="task-due">Completed last week</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">demolition</span>
+                            <span class="task-label">completed</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card completed" onclick="showTaskDetail('Paint ceiling')">
+                        <div class="task-title">Paint basement ceiling</div>
+                        <div class="task-meta">
+                            <span class="task-project">Basement Finishing</span>
+                            <span class="task-due">Completed 2 weeks ago</span>
+                        </div>
+                        <div class="task-labels">
+                            <span class="task-label">painting</span>
+                            <span class="task-label">completed</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-task-btn" onclick="showNewTaskModal()">+ Add task</button>
+            </div>
         </div>
     </main>
+
+    <style>
+        .kanban-container {
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .board-filters {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--surface);
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+        
+        .kanban-board {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+            min-height: 70vh;
+        }
+        
+        .kanban-column {
+            min-width: 300px;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .kanban-column.someday { background: #f8f9fa; }
+        .kanban-column.planning { background: #fff3e0; }
+        .kanban-column.ready { background: #e8f5e8; }
+        .kanban-column.in-progress { background: var(--app-bg-light); }
+        .kanban-column.blocked { background: #ffebee; }
+        .kanban-column.done { background: #f1f8e9; }
+        
+        .kanban-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+        }
+        
+        .kanban-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .task-count {
+            background: rgba(25, 118, 210, 0.1);
+            color: var(--app-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .task-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex: 1;
+        }
+        
+        .task-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .task-card:hover {
+            box-shadow: 0 4px 8px var(--shadow-md);
+            transform: translateY(-1px);
+        }
+        
+        .task-card.high-priority {
+            border-left: 4px solid var(--error);
+        }
+        
+        .task-card.medium-priority {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .task-card.low-priority {
+            border-left: 4px solid var(--text-light);
+        }
+        
+        .task-card.completed {
+            opacity: 0.7;
+            border-left: 4px solid var(--success);
+        }
+        
+        .task-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+        
+        .task-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-medium);
+        }
+        
+        .task-project {
+            color: var(--app-primary);
+            font-weight: 500;
+        }
+        
+        .task-due {
+            color: var(--text-light);
+        }
+        
+        .task-due.overdue {
+            color: var(--error);
+            font-weight: 500;
+        }
+        
+        .task-labels {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+        
+        .task-label {
+            background: rgba(0,0,0,0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            color: var(--text-medium);
+        }
+        
+        .add-task-btn {
+            background: transparent;
+            border: 2px dashed var(--border);
+            color: var(--text-light);
+            padding: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+        
+        .add-task-btn:hover {
+            border-color: var(--app-primary);
+            color: var(--app-primary);
+            background: rgba(25, 118, 210, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .board-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .board-filters {
+                justify-content: center;
+            }
+
+            .kanban-board {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .kanban-column {
+                min-width: auto;
+            }
+        }
+    </style>
+
+    <script>
+        function showTaskDetail(taskName) {
+            alert('📋 Task Details: "' + taskName + '"\n\nThis would show:\n• Task description and notes\n• Progress tracking\n• Due dates and priorities\n• File attachments\n• Comments and updates\n• Time tracking\n\nComing soon!');
+        }
+        
+        function showNewTaskModal() {
+            alert('➕ Create New Task\n\nThis would open a form to create a new task with:\n• Task name and description\n• Project assignment\n• Priority level\n• Due date\n• Labels and tags\n• Assignee\n\nComing soon!');
+        }
+    </script>
 </body>
 </html>
