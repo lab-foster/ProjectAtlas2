@@ -24,24 +24,613 @@
                 </ul>
             </nav>
             <div class="user-menu">
+                <button class="btn-secondary" onclick="showUploadModal()">+ Upload File</button>
                 <div class="user-avatar">AF</div>
             </div>
         </div>
     </header>
 
-    <main class="dashboard-main">
-        <div style="text-align: center; padding: 4rem 2rem; max-width: 600px; margin: 0 auto;">
-            <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.3;">📁</div>
-            <h2 style="color: var(--text-dark); margin-bottom: 1rem;">Document Management Coming Soon</h2>
-            <p style="color: var(--text-medium); font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">
-                File organization, photo galleries, receipt tracking, and permit storage are 
-                being developed. Because losing track of that one crucial document always happens 
-                at the worst possible moment.
-            </p>
-            <a href="dashboard.html" class="btn-primary" style="padding: 0.75rem 2rem; text-decoration: none; border-radius: 6px;">
-                Return to Dashboard
-            </a>
+    <main class="documents-main">
+        <div class="documents-header">
+            <h2>Document Management</h2>
+            <div class="documents-controls">
+                <select class="filter-select">
+                    <option>All Projects</option>
+                    <option>Kitchen Renovation</option>
+                    <option>Basement Finishing</option>
+                    <option>Bathroom Update</option>
+                </select>
+                <select class="filter-select">
+                    <option>All Types</option>
+                    <option>Contracts</option>
+                    <option>Permits</option>
+                    <option>Photos</option>
+                    <option>Receipts</option>
+                    <option>Plans</option>
+                </select>
+                <div class="view-toggle">
+                    <button class="view-btn active">Grid</button>
+                    <button class="view-btn" onclick="toggleListView()">List</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="documents-stats">
+            <div class="stat-card">
+                <div class="stat-icon">📁</div>
+                <div class="stat-info">
+                    <span class="stat-number">247</span>
+                    <span class="stat-label">Total Files</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📷</div>
+                <div class="stat-info">
+                    <span class="stat-number">189</span>
+                    <span class="stat-label">Photos</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-info">
+                    <span class="stat-number">34</span>
+                    <span class="stat-label">Documents</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💾</div>
+                <div class="stat-info">
+                    <span class="stat-number">2.1 GB</span>
+                    <span class="stat-label">Storage Used</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="documents-content">
+            <div class="documents-sidebar">
+                <div class="folder-tree">
+                    <h3>Project Folders</h3>
+                    <div class="folder-list">
+                        <div class="folder-item active" onclick="selectFolder('all')">
+                            <span class="folder-icon">📁</span>
+                            <span class="folder-name">All Documents</span>
+                            <span class="file-count">247</span>
+                        </div>
+                        <div class="folder-item" onclick="selectFolder('kitchen')">
+                            <span class="folder-icon">🏠</span>
+                            <span class="folder-name">Kitchen Renovation</span>
+                            <span class="file-count">142</span>
+                        </div>
+                        <div class="folder-item" onclick="selectFolder('basement')">
+                            <span class="folder-icon">🏗️</span>
+                            <span class="folder-name">Basement Finishing</span>
+                            <span class="file-count">67</span>
+                        </div>
+                        <div class="folder-item" onclick="selectFolder('bathroom')">
+                            <span class="folder-icon">🚿</span>
+                            <span class="folder-name">Bathroom Update</span>
+                            <span class="file-count">38</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-uploads">
+                    <h3>Recent Uploads</h3>
+                    <div class="recent-list">
+                        <div class="recent-item" onclick="showFileDetails('Electrical permit')">
+                            <div class="file-icon pdf">📄</div>
+                            <div class="recent-info">
+                                <div class="recent-name">Electrical permit approval</div>
+                                <div class="recent-date">2 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="recent-item" onclick="showFileDetails('Progress photos')">
+                            <div class="file-icon photos">📷</div>
+                            <div class="recent-info">
+                                <div class="recent-name">Kitchen progress (5 photos)</div>
+                                <div class="recent-date">Yesterday</div>
+                            </div>
+                        </div>
+                        <div class="recent-item" onclick="showFileDetails('Receipt scan')">
+                            <div class="file-icon image">🖼️</div>
+                            <div class="recent-info">
+                                <div class="recent-name">Home Depot receipt</div>
+                                <div class="recent-date">3 days ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="documents-grid">
+                <div class="document-card contract" onclick="showFileDetails('Kitchen contract')">
+                    <div class="doc-header">
+                        <div class="file-icon large">📋</div>
+                        <div class="file-actions">
+                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Kitchen renovation contract</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Kitchen Renovation</span>
+                            <span class="doc-date">Oct 15, 2024</span>
+                            <span class="doc-size">2.4 MB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="document-card photos" onclick="showFileDetails('Before photos')">
+                    <div class="doc-header">
+                        <div class="file-icon large">📷</div>
+                        <div class="file-actions">
+                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Kitchen before photos</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Kitchen Renovation</span>
+                            <span class="doc-date">Oct 12, 2024</span>
+                            <span class="doc-size">12 photos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="document-card permit" onclick="showFileDetails('Building permit')">
+                    <div class="doc-header">
+                        <div class="file-icon large">📜</div>
+                        <div class="file-actions">
+                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Basement building permits</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Basement Finishing</span>
+                            <span class="doc-date">Nov 1, 2024</span>
+                            <span class="doc-size">1.1 MB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="document-card receipt" onclick="showFileDetails('Material receipts')">
+                    <div class="doc-header">
+                        <div class="file-icon large">🧾</div>
+                        <div class="file-actions">
+                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Material purchase receipts</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Kitchen Renovation</span>
+                            <span class="doc-date">Nov 5, 2024</span>
+                            <span class="doc-size">8 files</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="document-card plans" onclick="showFileDetails('Floor plans')">
+                    <div class="doc-header">
+                        <div class="file-icon large">📐</div>
+                        <div class="file-actions">
+                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Basement floor plans</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Basement Finishing</span>
+                            <span class="doc-date">Oct 20, 2024</span>
+                            <span class="doc-size">3.7 MB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="document-card photos" onclick="showFileDetails('Progress update')">
+                    <div class="doc-header">
+                        <div class="file-icon large">📷</div>
+                        <div class="file-actions">
+                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Kitchen progress update</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Kitchen Renovation</span>
+                            <span class="doc-date">Nov 10, 2024</span>
+                            <span class="doc-size">18 photos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="document-card inspection" onclick="showFileDetails('Inspection report')">
+                    <div class="doc-header">
+                        <div class="file-icon large">✅</div>
+                        <div class="file-actions">
+                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Plumbing inspection report</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Bathroom Update</span>
+                            <span class="doc-date">Nov 8, 2024</span>
+                            <span class="doc-size">756 KB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="document-card warranty" onclick="showFileDetails('Warranty info')">
+                    <div class="doc-header">
+                        <div class="file-icon large">🛡️</div>
+                        <div class="file-actions">
+                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Appliance warranties</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Kitchen Renovation</span>
+                            <span class="doc-date">Oct 30, 2024</span>
+                            <span class="doc-size">4 documents</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
+    <style>
+        .documents-main {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .documents-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .documents-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .view-toggle {
+            display: flex;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: var(--surface);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .view-btn.active {
+            background: var(--app-primary);
+            color: white;
+        }
+
+        .documents-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--app-primary);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-medium);
+            font-size: 0.9rem;
+        }
+
+        .documents-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+        }
+
+        .documents-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .folder-tree, .recent-uploads {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .folder-tree h3, .recent-uploads h3 {
+            margin: 0 0 1rem 0;
+            color: var(--text-dark);
+            font-size: 1rem;
+        }
+
+        .folder-list, .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .folder-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .folder-item:hover {
+            background: var(--app-bg-light);
+        }
+
+        .folder-item.active {
+            background: var(--app-light-blue);
+            color: var(--app-primary);
+        }
+
+        .folder-icon {
+            font-size: 1.1rem;
+        }
+
+        .folder-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .file-count {
+            background: rgba(0,0,0,0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            color: var(--text-medium);
+        }
+
+        .recent-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .recent-item:hover {
+            background: var(--app-bg-light);
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-icon.large {
+            font-size: 3rem;
+        }
+
+        .recent-info {
+            flex: 1;
+        }
+
+        .recent-name {
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .recent-date {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .document-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .document-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .file-actions {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .document-card:hover .file-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            padding: 0.25rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--surface);
+            color: var(--app-primary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--app-light-blue);
+        }
+
+        .doc-info {
+            text-align: left;
+        }
+
+        .doc-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            line-height: 1.3;
+        }
+
+        .doc-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .doc-project {
+            color: var(--app-primary);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .doc-date, .doc-size {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        /* Document type styling */
+        .document-card.contract { border-left: 4px solid #2196f3; }
+        .document-card.photos { border-left: 4px solid #ff9800; }
+        .document-card.permit { border-left: 4px solid #4caf50; }
+        .document-card.receipt { border-left: 4px solid #9c27b0; }
+        .document-card.plans { border-left: 4px solid #f44336; }
+        .document-card.inspection { border-left: 4px solid #00bcd4; }
+        .document-card.warranty { border-left: 4px solid #795548; }
+
+        @media (max-width: 1024px) {
+            .documents-content {
+                grid-template-columns: 1fr;
+            }
+
+            .documents-sidebar {
+                order: -1;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                display: grid;
+            }
+
+            .documents-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .documents-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .documents-controls {
+                justify-content: center;
+            }
+
+            .documents-sidebar {
+                grid-template-columns: 1fr;
+            }
+
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .doc-meta {
+                flex-direction: row;
+                gap: 1rem;
+            }
+        }
+    </style>
+
+    <script>
+        function showUploadModal() {
+            alert('📤 Upload Files\n\nThis would open a file upload interface with:\n• Drag & drop support\n• Project assignment\n• File categorization\n• Bulk upload options\n• Progress tracking\n• Automatic organization\n\nComing soon!');
+        }
+
+        function showFileDetails(fileName) {
+            alert('📄 File Details: "' + fileName + '"\n\nThis would show:\n• File preview/thumbnail\n• Download options\n• Version history\n• Sharing permissions\n• Comments and notes\n• Related tasks/projects\n• Edit/delete options\n\nComing soon!');
+        }
+
+        function selectFolder(folderId) {
+            // Remove active class from all folders
+            document.querySelectorAll('.folder-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked folder
+            event.target.closest('.folder-item').classList.add('active');
+            
+            alert('📁 Folder Selected\n\nThis would filter the documents view to show only files from the selected project folder.\n\nComing soon!');
+        }
+
+        function toggleListView() {
+            alert('📋 List View\n\nThis would switch to a detailed list view showing:\n• File names in a table format\n• Sort options (name, date, size, type)\n• Bulk selection actions\n• More detailed metadata\n\nComing soon!');
+        }
+
+        function showShareModal() {
+            alert('🔗 Share File\n\nThis would open sharing options:\n• Generate shareable links\n• Set permissions (view/edit)\n• Email sharing\n• Contractor access\n• Expiration dates\n\nComing soon!');
+        }
+    </script>
 </body>
 </html>
