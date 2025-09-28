@@ -2,6 +2,10 @@
  * Project Atlas - Home Project Management with Gradient Banner
  * Author: Andrew Foster
  * Last Updated: September 2025
+ * 
+ * Note: This stylesheet handles both the landing pages and the app interface.
+ * I've organized it by section to make maintenance easier when I inevitably
+ * need to add more features or fix responsive issues at 2am.
  */
 
 /* Basic reset - I prefer this to normalize.css for simplicity */
