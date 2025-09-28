@@ -79,7 +79,12 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
    =========================================== */
 
 .landing-page {
-    background: linear-gradient(135deg, var(--landing-primary) 0%, var(--landing-secondary) 100%);
+    background: 
+        linear-gradient(135deg, rgba(30, 58, 138, 0.9) 0%, rgba(55, 48, 163, 0.9) 100%),
+        url('subtle-banner.svg');
+    background-size: cover, contain;
+    background-repeat: no-repeat, no-repeat;
+    background-position: center, center;
     color: var(--landing-text);
     min-height: 100vh;
     display: flex;
@@ -206,9 +211,14 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
     box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
-/* Static page layouts (About, Contact) */
+/* Static page layouts (About, Contact) with banner */
 .static-page {
-    background: linear-gradient(135deg, var(--landing-primary) 0%, var(--landing-secondary) 100%);
+    background: 
+        linear-gradient(135deg, rgba(30, 58, 138, 0.92) 0%, rgba(55, 48, 163, 0.92) 100%),
+        url('subtle-banner.svg');
+    background-size: cover, contain;
+    background-repeat: no-repeat, no-repeat;
+    background-position: center, center;
     color: var(--landing-text);
     min-height: 100vh;
 }
@@ -339,20 +349,26 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
     box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
 }
 
+/* App page background with subtle banner pattern */
+.app-page {
+    background: var(--bg-primary) url('subtle-banner.svg');
+    background-size: auto, contain;
+    background-repeat: no-repeat, no-repeat;
+    background-position: top center, center;
+    background-blend-mode: multiply;
+    color: var(--text-dark);
+    min-height: 100vh;
+}
+
 /* ===========================================
    APPLICATION INTERFACE STYLES
    These handle the actual project management UI
    =========================================== */
 
-.app-page {
-    background-color: var(--bg-primary);
-    color: var(--text-dark);
-    min-height: 100vh;
-}
-
 /* App header with navigation */
 .app-header {
-    background: var(--surface);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
     padding: 1rem 0;
     position: sticky;
@@ -506,7 +522,8 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
 }
 
 .project-card {
-    background: var(--surface);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 1.5rem;
@@ -607,7 +624,8 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
 }
 
 .widget {
-    background: var(--surface);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 1.5rem;
