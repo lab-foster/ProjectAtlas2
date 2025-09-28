@@ -24,23 +24,607 @@
                 </ul>
             </nav>
             <div class="user-menu">
+                <button class="btn-secondary" onclick="showAddExpenseModal()">+ Add Expense</button>
                 <div class="user-avatar">AF</div>
             </div>
         </div>
     </header>
 
-    <main class="dashboard-main">
-        <div style="text-align: center; padding: 4rem 2rem; max-width: 600px; margin: 0 auto;">
-            <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.3;">💰</div>
-            <h2 style="color: var(--text-dark); margin-bottom: 1rem;">Budget Tracker In Development</h2>
-            <p style="color: var(--text-medium); font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">
-                Comprehensive expense tracking, budget variance analysis, and cost projections 
-                are being built out. For now, basic budget overviews are available on the dashboard.
-            </p>
-            <a href="dashboard.html" class="btn-primary" style="padding: 0.75rem 2rem; text-decoration: none; border-radius: 6px;">
-                Return to Dashboard
-            </a>
+    <main class="budget-main">
+        <div class="budget-header">
+            <h2>Budget Tracker</h2>
+            <div class="budget-controls">
+                <select class="filter-select">
+                    <option>All Projects</option>
+                    <option>Kitchen Renovation</option>
+                    <option>Basement Finishing</option>
+                    <option>Bathroom Update</option>
+                </select>
+                <select class="filter-select">
+                    <option>This Month</option>
+                    <option>Last 3 Months</option>
+                    <option>This Year</option>
+                    <option>All Time</option>
+                </select>
+                <button class="btn-primary" onclick="showBudgetReportModal()">Generate Report</button>
+            </div>
+        </div>
+
+        <div class="budget-overview">
+            <div class="budget-card total">
+                <h3>Total Budget</h3>
+                <div class="budget-amount">$75,000</div>
+                <div class="budget-detail">Across all projects</div>
+            </div>
+            <div class="budget-card spent">
+                <h3>Total Spent</h3>
+                <div class="budget-amount">$36,700</div>
+                <div class="budget-detail">49% of budget used</div>
+            </div>
+            <div class="budget-card remaining">
+                <h3>Remaining</h3>
+                <div class="budget-amount">$38,300</div>
+                <div class="budget-detail">51% available</div>
+            </div>
+            <div class="budget-card projected">
+                <h3>Projected Total</h3>
+                <div class="budget-amount">$71,200</div>
+                <div class="budget-detail">Based on current rate</div>
+            </div>
+        </div>
+
+        <div class="budget-content">
+            <div class="budget-projects">
+                <h3>Project Budgets</h3>
+                
+                <div class="project-budget-card">
+                    <div class="project-budget-header">
+                        <h4>Kitchen Renovation Epic</h4>
+                        <span class="budget-status over">$600 over</span>
+                    </div>
+                    <div class="project-budget-info">
+                        <div class="budget-bar">
+                            <div class="budget-used" style="width: 84%"></div>
+                            <div class="budget-projected" style="width: 4%"></div>
+                        </div>
+                        <div class="budget-numbers">
+                            <span class="spent">$23,400 spent</span>
+                            <span class="total">/ $28,000 budget</span>
+                        </div>
+                    </div>
+                    <div class="project-expenses">
+                        <div class="expense-item">
+                            <span class="expense-category">Materials</span>
+                            <span class="expense-amount">$18,200</span>
+                        </div>
+                        <div class="expense-item">
+                            <span class="expense-category">Labor</span>
+                            <span class="expense-amount">$4,800</span>
+                        </div>
+                        <div class="expense-item">
+                            <span class="expense-category">Permits</span>
+                            <span class="expense-amount">$400</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-budget-card">
+                    <div class="project-budget-header">
+                        <h4>Basement Finishing Epic</h4>
+                        <span class="budget-status on-track">On track</span>
+                    </div>
+                    <div class="project-budget-info">
+                        <div class="budget-bar">
+                            <div class="budget-used" style="width: 15%"></div>
+                            <div class="budget-projected" style="width: 75%"></div>
+                        </div>
+                        <div class="budget-numbers">
+                            <span class="spent">$5,200 spent</span>
+                            <span class="total">/ $35,000 budget</span>
+                        </div>
+                    </div>
+                    <div class="project-expenses">
+                        <div class="expense-item">
+                            <span class="expense-category">Planning & Permits</span>
+                            <span class="expense-amount">$1,200</span>
+                        </div>
+                        <div class="expense-item">
+                            <span class="expense-category">Materials (partial)</span>
+                            <span class="expense-amount">$4,000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-budget-card">
+                    <div class="project-budget-header">
+                        <h4>Bathroom Update Epic</h4>
+                        <span class="budget-status on-track">On track</span>
+                    </div>
+                    <div class="project-budget-info">
+                        <div class="budget-bar">
+                            <div class="budget-used" style="width: 68%"></div>
+                            <div class="budget-projected" style="width: 22%"></div>
+                        </div>
+                        <div class="budget-numbers">
+                            <span class="spent">$8,100 spent</span>
+                            <span class="total">/ $12,000 budget</span>
+                        </div>
+                    </div>
+                    <div class="project-expenses">
+                        <div class="expense-item">
+                            <span class="expense-category">Fixtures</span>
+                            <span class="expense-amount">$3,200</span>
+                        </div>
+                        <div class="expense-item">
+                            <span class="expense-category">Plumbing</span>
+                            <span class="expense-amount">$2,800</span>
+                        </div>
+                        <div class="expense-item">
+                            <span class="expense-category">Materials</span>
+                            <span class="expense-amount">$2,100</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-expenses">
+                <h3>Recent Expenses</h3>
+                <div class="expenses-list">
+                    <div class="expense-entry" onclick="showExpenseDetail('Tile grout')">
+                        <div class="expense-icon materials">🧱</div>
+                        <div class="expense-details">
+                            <div class="expense-name">Tile grout and spacers</div>
+                            <div class="expense-info">
+                                <span class="expense-project">Kitchen Renovation</span>
+                                <span class="expense-date">2 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="expense-cost">$127.43</div>
+                    </div>
+
+                    <div class="expense-entry" onclick="showExpenseDetail('Cabinet hardware')">
+                        <div class="expense-icon materials">🔧</div>
+                        <div class="expense-details">
+                            <div class="expense-name">Cabinet hardware and hinges</div>
+                            <div class="expense-info">
+                                <span class="expense-project">Kitchen Renovation</span>
+                                <span class="expense-date">Yesterday</span>
+                            </div>
+                        </div>
+                        <div class="expense-cost">$324.67</div>
+                    </div>
+
+                    <div class="expense-entry" onclick="showExpenseDetail('Electrician payment')">
+                        <div class="expense-icon labor">👷</div>
+                        <div class="expense-details">
+                            <div class="expense-name">Electrician - rough-in work</div>
+                            <div class="expense-info">
+                                <span class="expense-project">Basement Finishing</span>
+                                <span class="expense-date">3 days ago</span>
+                            </div>
+                        </div>
+                        <div class="expense-cost">$1,200.00</div>
+                    </div>
+
+                    <div class="expense-entry" onclick="showExpenseDetail('Countertop install')">
+                        <div class="expense-icon labor">🏗️</div>
+                        <div class="expense-details">
+                            <div class="expense-name">Countertop installation</div>
+                            <div class="expense-info">
+                                <span class="expense-project">Kitchen Renovation</span>
+                                <span class="expense-date">1 week ago</span>
+                            </div>
+                        </div>
+                        <div class="expense-cost">$2,800.00</div>
+                    </div>
+
+                    <div class="expense-entry" onclick="showExpenseDetail('Bathroom vanity')">
+                        <div class="expense-icon materials">🚿</div>
+                        <div class="expense-details">
+                            <div class="expense-name">Bathroom vanity and mirror</div>
+                            <div class="expense-info">
+                                <span class="expense-project">Bathroom Update</span>
+                                <span class="expense-date">1 week ago</span>
+                            </div>
+                        </div>
+                        <div class="expense-cost">$1,450.00</div>
+                    </div>
+
+                    <div class="expense-entry" onclick="showExpenseDetail('Permit fees')">
+                        <div class="expense-icon permits">📋</div>
+                        <div class="expense-details">
+                            <div class="expense-name">Building permits and fees</div>
+                            <div class="expense-info">
+                                <span class="expense-project">Basement Finishing</span>
+                                <span class="expense-date">2 weeks ago</span>
+                            </div>
+                        </div>
+                        <div class="expense-cost">$650.00</div>
+                    </div>
+                </div>
+                
+                <div class="load-more">
+                    <button class="btn-link" onclick="showLoadMore()">Load more expenses...</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="budget-insights">
+            <h3>Budget Insights</h3>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon">⚠️</div>
+                    <div class="insight-content">
+                        <h4>Over Budget Alert</h4>
+                        <p>Kitchen project is $600 over budget. Consider adjusting remaining tasks or increasing allocation.</p>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">📈</div>
+                    <div class="insight-content">
+                        <h4>Spending Trend</h4>
+                        <p>Material costs are 15% higher than estimated. Factor this into future project planning.</p>
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">💡</div>
+                    <div class="insight-content">
+                        <h4>Cost Optimization</h4>
+                        <p>Consider bulk purchasing for basement project to save approximately $400 on materials.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
+    <style>
+        .budget-main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .budget-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--surface);
+            font-size: 0.9rem;
+        }
+
+        .budget-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .budget-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .budget-card h3 {
+            margin: 0 0 1rem 0;
+            color: var(--text-medium);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .budget-amount {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .budget-card.total .budget-amount { color: var(--app-primary); }
+        .budget-card.spent .budget-amount { color: var(--warning); }
+        .budget-card.remaining .budget-amount { color: var(--success); }
+        .budget-card.projected .budget-amount { color: var(--text-medium); }
+
+        .budget-detail {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .budget-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .budget-projects h3,
+        .recent-expenses h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .project-budget-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .project-budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .project-budget-header h4 {
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        .budget-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .budget-status.on-track {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+        }
+
+        .budget-status.over {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--error);
+        }
+
+        .project-budget-info {
+            margin-bottom: 1rem;
+        }
+
+        .budget-bar {
+            height: 8px;
+            background: var(--border-subtle);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .budget-used {
+            height: 100%;
+            background: var(--app-primary);
+            float: left;
+        }
+
+        .budget-projected {
+            height: 100%;
+            background: rgba(33, 150, 243, 0.3);
+            float: left;
+        }
+
+        .budget-numbers {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .spent {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .total {
+            color: var(--text-light);
+        }
+
+        .project-expenses {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .expense-category {
+            color: var(--text-medium);
+        }
+
+        .expense-amount {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .expenses-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .expense-entry {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .expense-entry:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .expense-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .expense-icon.materials {
+            background: rgba(33, 150, 243, 0.1);
+        }
+
+        .expense-icon.labor {
+            background: rgba(255, 152, 0, 0.1);
+        }
+
+        .expense-icon.permits {
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .expense-details {
+            flex: 1;
+        }
+
+        .expense-name {
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .expense-info {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .expense-project {
+            color: var(--app-primary);
+            font-weight: 500;
+        }
+
+        .expense-cost {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .load-more {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .budget-insights {
+            margin-top: 2rem;
+        }
+
+        .budget-insights h3 {
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .insight-card {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .insight-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .insight-content h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-dark);
+            font-size: 1rem;
+        }
+
+        .insight-content p {
+            margin: 0;
+            color: var(--text-medium);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 1024px) {
+            .budget-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .budget-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .budget-controls {
+                justify-content: center;
+            }
+
+            .budget-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        function showAddExpenseModal() {
+            alert('💰 Add New Expense\n\nThis would open a form to add a new expense with:\n• Expense description\n• Amount and date\n• Project assignment\n• Category (materials, labor, permits, etc.)\n• Receipt upload\n• Notes\n\nComing soon!');
+        }
+
+        function showBudgetReportModal() {
+            alert('📊 Generate Budget Report\n\nThis would create a detailed report with:\n• Expense breakdown by project\n• Cost comparisons and variances\n• Spending trends over time\n• Budget forecasting\n• Export to PDF/Excel\n\nComing soon!');
+        }
+
+        function showExpenseDetail(expenseName) {
+            alert('📋 Expense Details: "' + expenseName + '"\n\nThis would show:\n• Full expense information\n• Receipt/invoice images\n• Project assignment\n• Edit/delete options\n• Related expenses\n• Tax categories\n\nComing soon!');
+        }
+
+        function showLoadMore() {
+            alert('📄 Load More Expenses\n\nThis would load additional expense entries with pagination or infinite scroll.\n\nComing soon!');
+        }
+    </script>
 </body>
 </html>
