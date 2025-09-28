@@ -24,24 +24,379 @@
                 </ul>
             </nav>
             <div class="user-menu">
+                <button class="btn-secondary" onclick="showNewProjectModal()">+ New Project</button>
                 <div class="user-avatar">AF</div>
             </div>
         </div>
     </header>
 
     <main class="dashboard-main">
-        <div style="text-align: center; padding: 4rem 2rem; max-width: 600px; margin: 0 auto;">
-            <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.3;">🚧</div>
-            <h2 style="color: var(--text-dark); margin-bottom: 1rem;">Projects View Under Construction</h2>
-            <p style="color: var(--text-medium); font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">
-                We're building out the full project management interface with epic tracking, 
-                task hierarchies, and dependency management. For now, check out the dashboard 
-                for project overviews.
-            </p>
-            <a href="dashboard.html" class="btn-primary" style="padding: 0.75rem 2rem; text-decoration: none; border-radius: 6px;">
-                Return to Dashboard
-            </a>
+        <div class="projects-header">
+            <h2>Project Management</h2>
+            <div class="project-filters">
+                <select class="filter-select">
+                    <option>All Status</option>
+                    <option>Active</option>
+                    <option>Planning</option>
+                    <option>On Hold</option>
+                    <option>Completed</option>
+                </select>
+                <select class="filter-select">
+                    <option>All Priorities</option>
+                    <option>High Priority</option>
+                    <option>Medium Priority</option>
+                    <option>Low Priority</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="projects-stats">
+            <div class="stat-card">
+                <span class="stat-number">3</span>
+                <span class="stat-label">Active Projects</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">47</span>
+                <span class="stat-label">Total Tasks</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">62%</span>
+                <span class="stat-label">Average Progress</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">$75K</span>
+                <span class="stat-label">Total Budget</span>
+            </div>
+        </div>
+
+        <div class="projects-list">
+            <div class="project-epic">
+                <div class="epic-header">
+                    <h3>Kitchen Renovation Epic</h3>
+                    <span class="status-badge in-progress">In Progress</span>
+                </div>
+                <div class="epic-meta">
+                    <div class="epic-progress">
+                        <div class="progress-info">
+                            <span>Progress: 65%</span>
+                            <span>Budget: $23,400 / $28,000</span>
+                            <span>Timeline: Week 6 of 10</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="epic-tasks">
+                    <div class="task-item completed">
+                        <span class="task-checkbox">✓</span>
+                        <span class="task-name">Demo existing kitchen</span>
+                        <span class="task-status">Completed</span>
+                    </div>
+                    <div class="task-item completed">
+                        <span class="task-checkbox">✓</span>
+                        <span class="task-name">Install new electrical</span>
+                        <span class="task-status">Completed</span>
+                    </div>
+                    <div class="task-item completed">
+                        <span class="task-checkbox">✓</span>
+                        <span class="task-name">Install cabinets</span>
+                        <span class="task-status">Completed</span>
+                    </div>
+                    <div class="task-item active">
+                        <span class="task-checkbox">⧗</span>
+                        <span class="task-name">Install countertops</span>
+                        <span class="task-status">In Progress</span>
+                    </div>
+                    <div class="task-item pending">
+                        <span class="task-checkbox">○</span>
+                        <span class="task-name">Install backsplash</span>
+                        <span class="task-status">Pending</span>
+                    </div>
+                    <div class="task-item pending">
+                        <span class="task-checkbox">○</span>
+                        <span class="task-name">Final cleanup</span>
+                        <span class="task-status">Pending</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-epic">
+                <div class="epic-header">
+                    <h3>Basement Finishing Epic</h3>
+                    <span class="status-badge planning">Planning</span>
+                </div>
+                <div class="epic-meta">
+                    <div class="epic-progress">
+                        <div class="progress-info">
+                            <span>Progress: 15%</span>
+                            <span>Budget: $5,200 / $35,000</span>
+                            <span>Timeline: Planning Phase</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 15%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="epic-tasks">
+                    <div class="task-item completed">
+                        <span class="task-checkbox">✓</span>
+                        <span class="task-name">Measure basement dimensions</span>
+                        <span class="task-status">Completed</span>
+                    </div>
+                    <div class="task-item active">
+                        <span class="task-checkbox">⧗</span>
+                        <span class="task-name">Research waterproofing options</span>
+                        <span class="task-status">In Progress</span>
+                    </div>
+                    <div class="task-item pending">
+                        <span class="task-checkbox">○</span>
+                        <span class="task-name">Get contractor quotes</span>
+                        <span class="task-status">Pending</span>
+                    </div>
+                    <div class="task-item pending">
+                        <span class="task-checkbox">○</span>
+                        <span class="task-name">Apply for permits</span>
+                        <span class="task-status">Pending</span>
+                    </div>
+                    <div class="task-item pending">
+                        <span class="task-checkbox">○</span>
+                        <span class="task-name">Order materials</span>
+                        <span class="task-status">Pending</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-epic">
+                <div class="epic-header">
+                    <h3>Bathroom Update Epic</h3>
+                    <span class="status-badge blocked">Blocked</span>
+                </div>
+                <div class="epic-meta">
+                    <div class="epic-progress">
+                        <div class="progress-info">
+                            <span>Progress: 40%</span>
+                            <span>Budget: $8,100 / $12,000</span>
+                            <span>Blocked: Inspection pending</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 40%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="epic-tasks">
+                    <div class="task-item completed">
+                        <span class="task-checkbox">✓</span>
+                        <span class="task-name">Remove old fixtures</span>
+                        <span class="task-status">Completed</span>
+                    </div>
+                    <div class="task-item completed">
+                        <span class="task-checkbox">✓</span>
+                        <span class="task-name">Install new plumbing</span>
+                        <span class="task-status">Completed</span>
+                    </div>
+                    <div class="task-item blocked">
+                        <span class="task-checkbox">⚠</span>
+                        <span class="task-name">Plumbing inspection</span>
+                        <span class="task-status">Blocked</span>
+                    </div>
+                    <div class="task-item pending">
+                        <span class="task-checkbox">○</span>
+                        <span class="task-name">Install new vanity</span>
+                        <span class="task-status">Waiting</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
+
+    <style>
+        .projects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .project-filters {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--surface);
+            font-size: 0.9rem;
+        }
+
+        .projects-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--app-primary);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-medium);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .projects-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .project-epic {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .epic-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .epic-header h3 {
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        .epic-meta {
+            margin-bottom: 1.5rem;
+        }
+
+        .epic-progress {
+            background: var(--app-bg-light);
+            padding: 1rem;
+            border-radius: 6px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--text-medium);
+        }
+
+        .epic-tasks {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .task-item:hover {
+            background: var(--app-bg-light);
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .task-item.completed .task-checkbox {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+        }
+
+        .task-item.active .task-checkbox {
+            background: rgba(33, 150, 243, 0.1);
+            color: var(--app-primary);
+        }
+
+        .task-item.blocked .task-checkbox {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--error);
+        }
+
+        .task-item.pending .task-checkbox {
+            background: var(--border-subtle);
+            color: var(--text-light);
+        }
+
+        .task-name {
+            flex: 1;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .task-status {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .task-item.completed .task-name {
+            text-decoration: line-through;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .projects-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .project-filters {
+                justify-content: center;
+            }
+
+            .progress-info {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+
+    <script>
+        function showNewProjectModal() {
+            alert('🚧 New Project Feature\n\nThis would open a modal to create a new project epic with:\n• Project name and description\n• Budget allocation\n• Timeline estimation\n• Initial task breakdown\n\nComing soon!');
+        }
+    </script>
 </body>
 </html>
