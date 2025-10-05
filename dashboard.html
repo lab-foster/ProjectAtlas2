@@ -65,8 +65,8 @@
                                 </div>
                             </div>
                             <div class="project-actions">
-                                <button class="btn-link" onclick="showUnderConstruction()">View Epic Board</button>
-                                <button class="btn-link" onclick="showUnderConstruction()">Update Status</button>
+                                <button class="btn-link">View Epic Board</button>
+                                <button class="btn-link">Update Status</button>
                             </div>
                         </div>
 
@@ -93,8 +93,8 @@
                                 </div>
                             </div>
                             <div class="project-actions">
-                                <button class="btn-link" onclick="showUnderConstruction()">View Epic Board</button>
-                                <button class="btn-link" onclick="showUnderConstruction()">Add Tasks</button>
+                                <button class="btn-link">View Epic Board</button>
+                                <button class="btn-link">Add Tasks</button>
                             </div>
                         </div>
 
@@ -121,8 +121,8 @@
                                 </div>
                             </div>
                             <div class="project-actions">
-                                <button class="btn-link" onclick="showUnderConstruction()">View Epic Board</button>
-                                <button class="btn-link" onclick="showUnderConstruction()">Contact Inspector</button>
+                                <button class="btn-link">View Epic Board</button>
+                                <button class="btn-link">Contact Inspector</button>
                             </div>
                         </div>
                     </div>
@@ -132,28 +132,28 @@
                     <section class="widget recent-activity">
                         <h3>Recent Activity</h3>
                         <ul class="activity-list">
-                            <li class="activity-item" onclick="showUnderConstruction()" style="cursor: pointer;">
+                            <li class="activity-item" style="cursor: pointer;">
                                 <div class="activity-icon task-completed">✓</div>
                                 <div class="activity-content">
                                     <span class="activity-text">Completed "Install cabinet doors" in Kitchen Epic</span>
                                     <span class="activity-time">2 hours ago</span>
                                 </div>
                             </li>
-                            <li class="activity-item" onclick="showUnderConstruction()" style="cursor: pointer;">
+                            <li class="activity-item" style="cursor: pointer;">
                                 <div class="activity-icon expense-added">💰</div>
                                 <div class="activity-content">
                                     <span class="activity-text">Added expense: Tile grout - $127.43</span>
                                     <span class="activity-time">5 hours ago</span>
                                 </div>
                             </li>
-                            <li class="activity-item" onclick="showUnderConstruction()" style="cursor: pointer;">
+                            <li class="activity-item" style="cursor: pointer;">
                                 <div class="activity-icon photo-uploaded">📷</div>
                                 <div class="activity-content">
                                     <span class="activity-text">Uploaded 3 progress photos to Bathroom Epic</span>
                                     <span class="activity-time">Yesterday</span>
                                 </div>
                             </li>
-                            <li class="activity-item" onclick="showUnderConstruction()" style="cursor: pointer;">
+                            <li class="activity-item" style="cursor: pointer;">
                                 <div class="activity-icon task-created">+</div>
                                 <div class="activity-content">
                                     <span class="activity-text">Created task "Research basement waterproofing"</span>
@@ -166,17 +166,17 @@
                     <section class="widget upcoming-tasks">
                         <h3>Upcoming Tasks</h3>
                         <ul class="task-list">
-                            <li class="task-item priority-high" onclick="showUnderConstruction()" style="cursor: pointer;">
+                            <li class="task-item priority-high" style="cursor: pointer;">
                                 <span class="task-priority high">!</span>
                                 <span class="task-text">Schedule electrical inspection</span>
                                 <span class="task-due">Due tomorrow</span>
                             </li>
-                            <li class="task-item priority-medium" onclick="showUnderConstruction()" style="cursor: pointer;">
+                            <li class="task-item priority-medium" style="cursor: pointer;">
                                 <span class="task-priority medium">•</span>
                                 <span class="task-text">Order bathroom vanity</span>
                                 <span class="task-due">Due Friday</span>
                             </li>
-                            <li class="task-item priority-low" onclick="showUnderConstruction()" style="cursor: pointer;">
+                            <li class="task-item priority-low" style="cursor: pointer;">
                                 <span class="task-priority low">-</span>
                                 <span class="task-text">Research countertop options</span>
                                 <span class="task-due">Due next week</span>
@@ -212,23 +212,6 @@
         </div>
     </main>
 
-    <script>
-        function showNewProjectModal() {
-            alert('🚧 New Project Feature\n\nThis would open a modal to create a new project epic with:\n• Project name and description\n• Budget allocation\n• Timeline estimation\n• Initial task breakdown\n\nComing soon!');
-        }
-        
-        function showUserMenu() {
-            alert('👤 User Menu\n\nThis would show:\n• Profile settings\n• Notification preferences\n• Account management\n• Sign out\n\nComing soon!');
-        }
-        
-        function showTaskDetails(taskName) {
-            alert('📋 Task Details\n\nThis would show detailed information about:\n"' + taskName + '"\n\nIncluding progress, notes, attachments, and comments.\n\nComing soon!');
-        }
-
-        function showUnderConstruction() {
-            alert('🚧 Feature Under Construction\n\nThis feature is being built out and will be available soon.\n\nFor now, you can explore the dashboard and other completed sections.');
-        }
-    </script>
     <script src="atlas-interactive.js"></script>
 </body>
 </html>
