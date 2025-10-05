@@ -644,4 +644,37 @@ class ProjectAtlas {
         document.addEventListener('keydown', escHandler);
         
         // Trigger show animation
-        setTimeout(() => modalOverlay.classList
+        setTimeout(() => modalOverlay.classList.add('show'), 10);
+        
+        return modalOverlay;
+    }
+
+    closeModal() {
+        const modal = document.getElementById('atlas-modal');
+        if (modal) {
+            modal.classList.remove('show');
+            setTimeout(() => modal.remove(), 300);
+        }
+    }
+
+    // ===== GLOBAL LISTENERS =====
+    setupGlobalListeners() {
+        // Replace the old modal functions
+        window.showNewTaskModal = () => this.showAddTaskModal();
+        window.showTaskDetail = (taskName) => {
+            const task = this.tasks.find(t => t.title === taskName);
+            if (task) {
+                this.showTaskDetailModal(task);
+            }
+        };
+    }
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.atlas = new ProjectAtlas();
+    });
+} else {
+    window.atlas = new ProjectAtlas();
+}
