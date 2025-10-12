@@ -1,647 +1,595 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Kanban Board - Drag and drop task management for your home improvement projects">
-    <meta name="robots" content="noindex, nofollow">
-    
-    <title>Kanban Board - Project Atlas</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
-    
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="atlas-interactive.css">
-    
-    <style>
-        /* Kanban-specific styles - Consider moving to atlas-interactive.css */
-        .kanban-container {
-            padding: var(--space-xl);
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-        
-        .board-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-xl);
-            padding-bottom: var(--space-md);
-            border-bottom: 1px solid var(--border-default);
-            gap: var(--space-lg);
-        }
-        
-        .board-header h2 {
-            margin-bottom: 0;
-        }
-        
-        .board-filters {
-            display: flex;
-            gap: var(--space-md);
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .filter-select {
-            padding: var(--space-sm) var(--space-md);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-md);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            font-size: 0.9375rem;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-        
-        .filter-select:hover {
-            border-color: var(--border-medium);
-        }
-        
-        .filter-select:focus {
-            outline: none;
-            border-color: var(--app-primary);
-            box-shadow: 0 0 0 3px var(--app-primary-light);
-        }
-        
-        .kanban-board {
-            display: flex;
-            gap: var(--space-lg);
-            overflow-x: auto;
-            padding: var(--space-md) 0;
-            min-height: 70vh;
-        }
-        
-        .kanban-board::-webkit-scrollbar {
-            height: 10px;
-        }
-        
-        .kanban-board::-webkit-scrollbar-track {
-            background: var(--gray-100);
-            border-radius: var(--radius-md);
-        }
-        
-        .kanban-board::-webkit-scrollbar-thumb {
-            background: var(--gray-400);
-            border-radius: var(--radius-md);
-        }
-        
-        .kanban-board::-webkit-scrollbar-thumb:hover {
-            background: var(--gray-500);
-        }
-        
-        .kanban-column {
-            min-width: 320px;
-            max-width: 350px;
-            border-radius: var(--radius-lg);
-            padding: var(--space-md);
-            display: flex;
-            flex-direction: column;
-            transition: background-color var(--transition-fast);
-        }
-        
-        /* Column colors */
-        .kanban-column.someday { 
-            background: linear-gradient(to bottom, #f8f9fa 0%, #f1f3f5 100%);
-        }
-        .kanban-column.planning { 
-            background: linear-gradient(to bottom, #fff8e1 0%, #fff3e0 100%);
-        }
-        .kanban-column.ready { 
-            background: linear-gradient(to bottom, #e8f5e9 0%, #e0f2e9 100%);
-        }
-        .kanban-column.in-progress { 
-            background: linear-gradient(to bottom, #e3f2fd 0%, #e1f5fe 100%);
-        }
-        .kanban-column.blocked { 
-            background: linear-gradient(to bottom, #ffebee 0%, #fce4ec 100%);
-        }
-        .kanban-column.done { 
-            background: linear-gradient(to bottom, #f1f8e9 0%, #e8f5e9 100%);
-        }
-        
-        .kanban-column.drag-over {
-            background: rgba(25, 118, 210, 0.1);
-            box-shadow: 0 0 0 2px var(--app-primary);
-        }
-        
-        .kanban-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-md);
-            padding-bottom: var(--space-sm);
-            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-        }
-        
-        .kanban-title-wrapper {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            flex: 1;
-        }
-        
-        .kanban-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .task-count {
-            background: rgba(25, 118, 210, 0.12);
-            color: var(--app-primary);
-            padding: var(--space-xs) var(--space-md);
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 600;
-            min-width: 28px;
-            text-align: center;
-        }
-        
-        .task-cards {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-md);
-            flex: 1;
-            min-height: 100px;
-            padding: var(--space-xs);
-        }
-        
-        .task-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            cursor: grab;
-            transition: all var(--transition-base);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .task-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-            border-color: var(--border-medium);
-        }
-        
-        .task-card:active {
-            cursor: grabbing;
-        }
-        
-        .task-card.dragging {
-            opacity: 0.5;
-            transform: rotate(2deg);
-        }
-        
-        .task-card.high-priority {
-            border-left: 4px solid var(--status-error);
-        }
-        
-        .task-card.medium-priority {
-            border-left: 4px solid var(--status-warning);
-        }
-        
-        .task-card.low-priority {
-            border-left: 4px solid var(--gray-400);
-        }
-        
-        .task-card.completed {
-            opacity: 0.75;
-            border-left: 4px solid var(--status-success);
-        }
-        
-        .task-title {
-            font-weight: 600;
-            font-size: 0.9375rem;
-            color: var(--text-primary);
-            margin-bottom: var(--space-sm);
-            line-height: 1.4;
-        }
-        
-        .task-meta {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-sm);
-            font-size: 0.8125rem;
-            color: var(--text-secondary);
-        }
-        
-        .task-project {
-            color: var(--app-primary);
-            font-weight: 500;
-        }
-        
-        .task-project.kitchen { color: #2196f3; }
-        .task-project.bathroom { color: #ff9800; }
-        .task-project.basement { color: #4caf50; }
-        
-        .task-due {
-            color: var(--text-tertiary);
-        }
-        
-        .task-due.overdue {
-            color: var(--status-error);
-            font-weight: 600;
-        }
-        
-        .task-due.due-soon {
-            color: var(--status-warning);
-            font-weight: 500;
-        }
-        
-        .task-labels {
-            display: flex;
-            gap: var(--space-sm);
-            flex-wrap: wrap;
-            margin-top: var(--space-sm);
-        }
-        
-        .task-label {
-            background: rgba(0, 0, 0, 0.08);
-            padding: var(--space-xs) var(--space-sm);
-            border-radius: var(--radius-full);
-            font-size: 0.6875rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-        
-        .add-task-btn {
-            background: transparent;
-            border: 2px dashed var(--border-default);
-            color: var(--text-tertiary);
-            padding: var(--space-md);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-size: 0.9375rem;
-            font-weight: 500;
-            transition: all var(--transition-fast);
-            margin-top: var(--space-md);
-            font-family: inherit;
-        }
-        
-        .add-task-btn:hover {
-            border-color: var(--app-primary);
-            color: var(--app-primary);
-            background: rgba(25, 118, 210, 0.05);
-        }
-        
-        .add-task-btn:focus {
-            outline: none;
-            border-color: var(--app-primary);
-            box-shadow: 0 0 0 3px var(--app-primary-light);
-        }
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <title>Kanban Board - Project Atlas</title>
 
-        /* Empty state */
-        .empty-column-message {
-            text-align: center;
-            color: var(--text-tertiary);
-            font-size: 0.875rem;
-            padding: var(--space-xl) var(--space-md);
-        }
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧱</text></svg>"/>
 
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .kanban-container {
-                padding: var(--space-lg);
-            }
-        }
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="atlas-interactive.css"/>
 
-        @media (max-width: 768px) {
-            .board-header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: var(--space-md);
-            }
+  <style>
+    :root{
+      --overlay: rgba(12,14,18,0.6);
+    }
 
-            .board-filters {
-                justify-content: stretch;
-                flex-direction: column;
-            }
-            
-            .filter-select {
-                width: 100%;
-            }
+    /* Layout */
+    .kanban-main{padding:var(--space-xl);max-width:1440px;margin:0 auto;}
+    .kanban-header{
+      display:flex;align-items:center;justify-content:space-between;gap:var(--space-lg);
+      margin-bottom:var(--space-xl);padding-bottom:var(--space-md);border-bottom:1px solid var(--border-default);
+    }
+    .board-controls,.board-filters{display:flex;align-items:center;gap:var(--space-md);flex-wrap:wrap;}
+    .filter-select{
+      padding:var(--space-sm) var(--space-md);border:1px solid var(--border-default);border-radius:var(--radius-md);
+      background:var(--bg-secondary);color:var(--text-primary);font-size:.9375rem;font-family:inherit;cursor:pointer;
+      transition:all var(--transition-fast);
+    }
+    .filter-select:hover{border-color:var(--border-medium);}
+    .filter-select:focus{outline:none;border-color:var(--app-primary);box-shadow:0 0 0 3px var(--app-primary-light);}
 
-            .kanban-board {
-                flex-direction: column;
-                gap: var(--space-xl);
-            }
+    .kanban-grid{
+      display:grid;grid-template-columns:repeat(6,minmax(240px,1fr));gap:var(--space-lg);align-items:start;
+    }
 
-            .kanban-column {
-                min-width: auto;
-                max-width: none;
-            }
-        }
+    /* Columns */
+    .kanban-column{
+      background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-sm);display:flex;flex-direction:column;min-height:420px;max-height:80vh;
+    }
+    .column-header{
+      display:flex;align-items:center;justify-content:space-between;gap:var(--space-sm);
+      padding:var(--space-md) var(--space-lg);border-bottom:1px solid var(--border-light);
+      position:sticky;top:0;background:var(--bg-secondary);z-index:1;border-top-left-radius:var(--radius-lg);border-top-right-radius:var(--radius-lg);
+    }
+    .column-title{font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:var(--space-sm);}
+    .task-count{
+      background:var(--gray-100);color:var(--text-secondary);font-size:.75rem;padding:.125rem .5rem;border-radius:999px;border:1px solid var(--border-light);
+    }
+    .task-cards{
+      padding:var(--space-md);display:flex;flex-direction:column;gap:var(--space-md);flex:1 1 auto;overflow:auto;
+    }
+    .task-cards.drag-over{outline:2px dashed var(--app-primary);outline-offset:-6px;background:var(--app-primary-lighter);}
 
-        @media (max-width: 480px) {
-            .kanban-container {
-                padding: var(--space-md);
-            }
-        }
-    </style>
+    .add-task-wrap{padding:var(--space-md);border-top:1px dashed var(--border-light);}
+    .add-task-btn{
+      width:100%;background:var(--gray-100);color:var(--text-secondary);border:1px solid var(--border-light);
+      border-radius:var(--radius-md);padding:var(--space-sm) var(--space-md);font-size:.875rem;
+    }
+    .add-task-btn:hover{background:var(--app-primary-lighter);color:var(--app-primary);border-color:var(--app-primary-light);}
+
+    /* Cards */
+    .task-card{
+      background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:var(--space-md);
+      box-shadow:var(--shadow-xs);cursor:grab;user-select:none;opacity:1;transition:transform .12s ease,box-shadow .12s ease,background .12s ease;
+    }
+    .task-card[aria-grabbed="true"]{cursor:grabbing;transform:scale(.98);box-shadow:var(--shadow-md);}
+    .task-title{font-weight:700;color:var(--text-primary);margin-bottom:var(--space-sm);}
+    .task-meta{display:flex;justify-content:space-between;gap:var(--space-md);font-size:.8125rem;color:var(--text-secondary);margin-bottom:var(--space-sm);flex-wrap:wrap;}
+    .task-labels{display:flex;gap:6px;flex-wrap:wrap;}
+    .task-label{font-size:.75rem;padding:2px 8px;border-radius:999px;border:1px solid var(--border-light);background:var(--gray-50);color:var(--text-secondary);}
+    .task-due.overdue{color:var(--status-error);font-weight:600;}
+    .task-project.kitchen{color:#1976d2;}
+    .task-project.basement{color:#4caf50;}
+    .task-project.bathroom{color:#ff9800;}
+
+    /* Modal (non-transparent, fixed) */
+    .modal-overlay{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;padding:2rem;z-index:999;}
+    .modal{width:min(720px,92vw);background:var(--bg-elevated, #fff);border-radius:var(--radius-xl);border:1px solid var(--border-default);box-shadow:var(--shadow-lg);overflow:hidden;}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border-light);}
+    .modal-body{padding:1rem 1.25rem;max-height:60vh;overflow:auto;}
+    .modal-actions{display:flex;gap:.75rem;justify-content:flex-end;padding:1rem 1.25rem;border-top:1px solid var(--border-light);background:var(--bg-secondary);}
+
+    .task-form .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+    .task-form label{display:block;font-size:.8125rem;color:var(--text-secondary);margin-bottom:.25rem;}
+    .task-form input[type="text"], .task-form textarea, .task-form select{
+      width:100%;padding:.625rem .75rem;border:1px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-primary);color:var(--text-primary);
+    }
+    .task-form textarea{min-height:110px;resize:vertical;}
+
+    /* Columns manager */
+    .cols-grid{display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:var(--space-md);}
+    .cols-row{display:flex;align-items:center;gap:.6rem;padding:.6rem;border:1px solid var(--border-light);border-radius:var(--radius-md);background:var(--gray-50);}
+    .cols-row label{font-weight:500;color:var(--text-primary);}
+
+    /* Responsive */
+    @media (max-width:1280px){.kanban-grid{grid-template-columns:repeat(3,minmax(240px,1fr));}}
+    @media (max-width:880px){.kanban-grid{grid-template-columns:repeat(2,minmax(240px,1fr));}.task-form .form-row{grid-template-columns:1fr;}}
+    @media (max-width:560px){.kanban-grid{grid-template-columns:1fr;}}
+  </style>
 </head>
 <body class="app-page">
-    <!-- Skip to Main Content -->
-    <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    
-    <!-- Application Header -->
-    <header class="app-header">
-        <div class="header-container">
-            <!-- Logo -->
-            <div class="logo">
-                <h1>Project <span class="atlas-blue">ATLAS</span></h1>
-                <span class="tagline">Home Project Management</span>
-            </div>
-            
-            <!-- Mobile Menu Toggle -->
-            <button class="mobile-menu-toggle" 
-                    onclick="toggleMobileMenu()" 
-                    aria-label="Toggle navigation menu"
-                    aria-expanded="false"
-                    aria-controls="mainNav">
-                <span aria-hidden="true">☰</span>
-            </button>
-            
-            <!-- Main Navigation -->
-            <nav class="main-nav" id="mainNav" aria-label="Main navigation">
-                <ul>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="kanban.html" class="active" aria-current="page">Kanban Board</a></li>
-                    <li><a href="budget.html">Budget Tracker</a></li>
-                    <li><a href="calendar.html">Calendar</a></li>
-                    <li><a href="documents.html">Documents</a></li>
-                </ul>
-            </nav>
-            
-            <!-- User Menu -->
-            <div class="user-menu">
-                <button class="btn btn-secondary" 
-                        onclick="showNewTaskModal()"
-                        aria-label="Create new task">
-                    <span aria-hidden="true">+</span> New Task
-                </button>
-                <button class="btn btn-secondary" 
-                        onclick="showColumnManagement()"
-                        aria-label="Manage columns">
-                    <span aria-hidden="true">⚙</span> Columns
-                </button>
-                <button class="user-avatar" 
-                        onclick="showUserMenu()" 
-                        aria-label="User menu"
-                        title="User Menu">
-                    AF
-                </button>
-            </div>
-        </div>
-    </header>
+  <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <!-- Main Content -->
-    <main class="kanban-container" id="main-content">
-        <!-- Board Header -->
-        <div class="board-header">
-            <h2>Project Kanban Board</h2>
-            
-            <!-- Filters -->
-            <div class="board-filters" role="group" aria-label="Board filters">
-                <label for="projectFilter" class="sr-only">Filter by project</label>
-                <select class="filter-select" 
-                        id="projectFilter" 
-                        aria-label="Filter by project"
-                        onchange="handleProjectFilter(this.value)">
-                    <option value="all">All Projects</option>
-                    <option value="kitchen">Kitchen Renovation</option>
-                    <option value="basement">Basement Finishing</option>
-                    <option value="bathroom">Bathroom Update</option>
-                </select>
-                
-                <label for="priorityFilter" class="sr-only">Filter by priority</label>
-                <select class="filter-select" 
-                        id="priorityFilter" 
-                        aria-label="Filter by priority"
-                        onchange="handlePriorityFilter(this.value)">
-                    <option value="all">All Priorities</option>
-                    <option value="high">High Priority</option>
-                    <option value="medium">Medium Priority</option>
-                    <option value="low">Low Priority</option>
-                </select>
-            </div>
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo">
+        <h1>Project <span class="atlas-blue">ATLAS</span></h1>
+        <span class="tagline">Home Project Management</span>
+      </div>
+
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mainNav">
+        <span aria-hidden="true">☰</span>
+      </button>
+
+      <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+        <ul>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="kanban.html" class="active" aria-current="page">Kanban Board</a></li>
+          <li><a href="budget.html">Budget</a></li>
+          <li><a href="calendar.html">Calendar</a></li>
+          <li><a href="documents.html">Documents</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-menu">
+        <button class="btn btn-secondary" id="quickAddBtn" aria-label="Quick add task"><span aria-hidden="true">+</span> Quick Add</button>
+        <button class="user-avatar" onclick="showUserMenu()" aria-label="User menu" title="User Menu">AF</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="kanban-main" id="main-content">
+    <section class="kanban-header">
+      <h2>Kanban Board</h2>
+      <div class="board-controls" role="group" aria-label="Board controls">
+        <div class="board-filters" role="group" aria-label="Board filters">
+          <label for="projectFilter" class="sr-only">Filter by project</label>
+          <select id="projectFilter" class="filter-select" aria-label="Filter by project">
+            <option value="all">All Projects</option>
+            <option value="kitchen">Kitchen</option>
+            <option value="basement">Basement</option>
+            <option value="bathroom">Bathroom</option>
+          </select>
+
+          <label for="priorityFilter" class="sr-only">Filter by priority</label>
+          <select id="priorityFilter" class="filter-select" aria-label="Filter by priority">
+            <option value="all">All Priorities</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
         </div>
 
-        <!-- Kanban Board -->
-        <div class="kanban-board" id="kanbanBoard" role="region" aria-label="Task board">
-            
-            <!-- Someday/Maybe Column -->
-            <section class="kanban-column someday" data-status="someday" aria-labelledby="someday-heading">
-                <header class="kanban-header">
-                    <div class="kanban-title-wrapper">
-                        <h3 class="kanban-title" id="someday-heading">Someday/Maybe</h3>
-                    </div>
-                    <span class="task-count" aria-label="Task count">0</span>
-                </header>
-                <div class="task-cards" 
-                     data-status="someday"
-                     role="list"
-                     aria-label="Someday/Maybe tasks">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-                <button class="add-task-btn" 
-                        onclick="showAddTaskModal('someday')"
-                        aria-label="Add task to Someday/Maybe">
-                    <span aria-hidden="true">+</span> Add task
-                </button>
-            </section>
+        <button id="manageColumnsBtn" class="btn btn-primary" type="button" aria-haspopup="dialog" aria-controls="columnsModal">Columns</button>
+      </div>
+    </section>
 
-            <!-- Research & Planning Column -->
-            <section class="kanban-column planning" data-status="planning" aria-labelledby="planning-heading">
-                <header class="kanban-header">
-                    <div class="kanban-title-wrapper">
-                        <h3 class="kanban-title" id="planning-heading">Research & Planning</h3>
-                    </div>
-                    <span class="task-count" aria-label="Task count">0</span>
-                </header>
-                <div class="task-cards" 
-                     data-status="planning"
-                     role="list"
-                     aria-label="Research & Planning tasks">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-                <button class="add-task-btn" 
-                        onclick="showAddTaskModal('planning')"
-                        aria-label="Add task to Research & Planning">
-                    <span aria-hidden="true">+</span> Add task
-                </button>
-            </section>
+    <!-- Grid -->
+    <section class="kanban-grid" aria-label="Kanban columns">
+      <article class="kanban-column" data-col="someday">
+        <header class="column-header"><div class="column-title">Someday/Maybe <span class="task-count">0</span></div></header>
+        <div class="task-cards" data-status="someday" aria-label="Someday/Maybe tasks"></div>
+        <div class="add-task-wrap"><button class="add-task-btn" type="button">+ Add task</button></div>
+      </article>
 
-            <!-- Permitted & Ready Column -->
-            <section class="kanban-column ready" data-status="ready" aria-labelledby="ready-heading">
-                <header class="kanban-header">
-                    <div class="kanban-title-wrapper">
-                        <h3 class="kanban-title" id="ready-heading">Permitted & Ready</h3>
-                    </div>
-                    <span class="task-count" aria-label="Task count">0</span>
-                </header>
-                <div class="task-cards" 
-                     data-status="ready"
-                     role="list"
-                     aria-label="Permitted & Ready tasks">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-                <button class="add-task-btn" 
-                        onclick="showAddTaskModal('ready')"
-                        aria-label="Add task to Permitted & Ready">
-                    <span aria-hidden="true">+</span> Add task
-                </button>
-            </section>
+      <article class="kanban-column" data-col="planning">
+        <header class="column-header"><div class="column-title">Research &amp; Planning <span class="task-count">0</span></div></header>
+        <div class="task-cards" data-status="planning" aria-label="Research & Planning tasks"></div>
+        <div class="add-task-wrap"><button class="add-task-btn" type="button">+ Add task</button></div>
+      </article>
 
-            <!-- Active Work Column -->
-            <section class="kanban-column in-progress" data-status="in-progress" aria-labelledby="in-progress-heading">
-                <header class="kanban-header">
-                    <div class="kanban-title-wrapper">
-                        <h3 class="kanban-title" id="in-progress-heading">Active Work</h3>
-                    </div>
-                    <span class="task-count" aria-label="Task count">0</span>
-                </header>
-                <div class="task-cards" 
-                     data-status="in-progress"
-                     role="list"
-                     aria-label="Active Work tasks">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-                <button class="add-task-btn" 
-                        onclick="showAddTaskModal('in-progress')"
-                        aria-label="Add task to Active Work">
-                    <span aria-hidden="true">+</span> Add task
-                </button>
-            </section>
+      <article class="kanban-column" data-col="ready">
+        <header class="column-header"><div class="column-title">Permitted &amp; Ready <span class="task-count">0</span></div></header>
+        <div class="task-cards" data-status="ready" aria-label="Permitted & Ready tasks"></div>
+        <div class="add-task-wrap"><button class="add-task-btn" type="button">+ Add task</button></div>
+      </article>
 
-            <!-- Waiting on External Column -->
-            <section class="kanban-column blocked" data-status="blocked" aria-labelledby="blocked-heading">
-                <header class="kanban-header">
-                    <div class="kanban-title-wrapper">
-                        <h3 class="kanban-title" id="blocked-heading">Waiting on External</h3>
-                    </div>
-                    <span class="task-count" aria-label="Task count">0</span>
-                </header>
-                <div class="task-cards" 
-                     data-status="blocked"
-                     role="list"
-                     aria-label="Waiting on External tasks">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-                <button class="add-task-btn" 
-                        onclick="showAddTaskModal('blocked')"
-                        aria-label="Add task to Waiting on External">
-                    <span aria-hidden="true">+</span> Add task
-                </button>
-            </section>
+      <article class="kanban-column" data-col="in-progress">
+        <header class="column-header"><div class="column-title">Active Work <span class="task-count">0</span></div></header>
+        <div class="task-cards" data-status="in-progress" aria-label="Active Work tasks"></div>
+        <div class="add-task-wrap"><button class="add-task-btn" type="button">+ Add task</button></div>
+      </article>
 
-            <!-- Done Done Column -->
-            <section class="kanban-column done" data-status="done" aria-labelledby="done-heading">
-                <header class="kanban-header">
-                    <div class="kanban-title-wrapper">
-                        <h3 class="kanban-title" id="done-heading">Done Done</h3>
-                    </div>
-                    <span class="task-count" aria-label="Task count">0</span>
-                </header>
-                <div class="task-cards" 
-                     data-status="done"
-                     role="list"
-                     aria-label="Done Done tasks">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-                <button class="add-task-btn" 
-                        onclick="showAddTaskModal('done')"
-                        aria-label="Add task to Done Done">
-                    <span aria-hidden="true">+</span> Add task
-                </button>
-            </section>
+      <article class="kanban-column" data-col="blocked">
+        <header class="column-header"><div class="column-title">Waiting on External <span class="task-count">0</span></div></header>
+        <div class="task-cards" data-status="blocked" aria-label="Waiting on External tasks"></div>
+        <div class="add-task-wrap"><button class="add-task-btn" type="button">+ Add task</button></div>
+      </article>
+
+      <article class="kanban-column" data-col="done">
+        <header class="column-header"><div class="column-title">Done Done <span class="task-count">0</span></div></header>
+        <div class="task-cards" data-status="done" aria-label="Done Done tasks"></div>
+        <div class="add-task-wrap"><button class="add-task-btn" type="button">+ Add task</button></div>
+      </article>
+    </section>
+  </main>
+
+  <!-- App Script (shared) -->
+  <script src="atlas-interactive.js"></script>
+
+  <script>
+    /* ---------- Header interactions ---------- */
+    function toggleMobileMenu(){
+      const nav=document.getElementById('mainNav');
+      const toggle=document.querySelector('.mobile-menu-toggle');
+      const expanded=toggle.getAttribute('aria-expanded')==='true';
+      toggle.setAttribute('aria-expanded', String(!expanded));
+      nav.style.display=expanded?'':'block';
+    }
+    function showUserMenu(){ alert('User menu coming soon.'); }
+
+    /* ---------- Simple storage ---------- */
+    const KS='atlas_tasks_v2';
+    const CS='atlas_hidden_columns_v2';
+    const PS='atlas_preferences_v1';
+    const getTasks=()=>JSON.parse(localStorage.getItem(KS) || '[]');
+    const setTasks=(arr)=>localStorage.setItem(KS, JSON.stringify(arr));
+    const getHidden=()=>JSON.parse(localStorage.getItem(CS) || '[]');
+    const setHidden=(arr)=>localStorage.setItem(CS, JSON.stringify(arr));
+    const getPrefs=()=>JSON.parse(localStorage.getItem(PS) || '{"project":"all","priority":"all"}');
+    const setPrefs=(obj)=>localStorage.setItem(PS, JSON.stringify(obj));
+
+    /* ---------- Seed data (only if empty) ---------- */
+    function seed(){
+      if(getTasks().length) return;
+      const today=new Date();
+      const addDays=(d)=>{const t=new Date(today);t.setDate(t.getDate()+d);return t.toISOString().slice(0,10);};
+      const data=[
+        {id:'t1',title:'Install smart dimmers in living room',desc:'Replace 3 gang with Lutron Caseta. Label circuits.',status:'planning',project:'kitchen',priority:'medium',labels:['electrical','smart-home'],due:addDays(7)},
+        {id:'t2',title:'Basement framing inspection',desc:'Confirm fire blocking & egress.',status:'ready',project:'basement',priority:'high',labels:['permit'],due:addDays(2)},
+        {id:'t3',title:'Order bathroom tile samples',desc:'Green hex, matte black trim.',status:'someday',project:'bathroom',priority:'low',labels:['materials'],due:null},
+        {id:'t4',title:'Assemble workbench v2',desc:'French-cleat integration + casters.',status:'in-progress',project:'basement',priority:'medium',labels:['woodworking'],due:addDays(1)},
+        {id:'t5',title:'Call electrician for subpanel',desc:'Quote 60A to garage.',status:'blocked',project:'basement',priority:'high',labels:['vendor'],due:addDays(10)},
+        {id:'t6',title:'Seal grout in guest bath',desc:'Use solvent-based sealer.',status:'done',project:'bathroom',priority:'low',labels:['maintenance'],due:addDays(-14)}
+      ];
+      setTasks(data);
+    }
+
+    /* ---------- Render ---------- */
+    function byStatus(status){return getTasks().filter(t=>t.status===status);}
+    function fmtDue(d){
+      if(!d) return 'No due';
+      const now=new Date().toISOString().slice(0,10);
+      const overdue=d<now;
+      return `<span class="task-due ${overdue?'overdue':''}">${d}</span>`;
+    }
+    function makeCard(t){
+      const el=document.createElement('article');
+      el.className='task-card';
+      el.setAttribute('role','article');
+      el.setAttribute('tabindex','0');
+      el.setAttribute('draggable','true');
+      el.dataset.id=t.id;
+
+      el.innerHTML=`
+        <div class="task-title">${escapeHtml(t.title)}</div>
+        <div class="task-meta">
+          <span class="task-project ${escapeHtml(t.project)}">${escapeHtml(cap(t.project))}</span>
+          <span class="task-priority">${escapeHtml(cap(t.priority))}</span>
         </div>
-    </main>
+        <div class="task-labels">${(t.labels||[]).map(l=>`<span class="task-label">${escapeHtml(l)}</span>`).join('')}</div>
+        <div class="task-meta"><span>${fmtDue(t.due)}</span><span>#${escapeHtml(t.id)}</span></div>
+      `;
 
-    <!-- Scripts -->
-    <script>
-        // Mobile menu toggle with accessibility
-        function toggleMobileMenu() {
-            const nav = document.getElementById('mainNav');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            const isExpanded = nav.classList.toggle('active');
-            
-            // Update ARIA attribute
-            toggle.setAttribute('aria-expanded', isExpanded);
-        }
-        
-        // Show new task modal
-        function showNewTaskModal() {
-            if (window.atlas && typeof window.atlas.showAddTaskModal === 'function') {
-                window.atlas.showAddTaskModal();
-            } else {
-                console.log('New task modal - Atlas not fully initialized yet');
-                // Fallback behavior
-                alert('Add New Task\n\nThis will open a form to create a new task.');
-            }
-        }
-        
-        // Show add task modal for specific column
-        function showAddTaskModal(status) {
-            if (window.atlas && typeof window.atlas.showAddTaskModal === 'function') {
-                window.atlas.showAddTaskModal(status);
-            } else {
-                console.log(`Add task to ${status} - Atlas not fully initialized yet`);
-            }
-        }
-        
-        // Show column management
-        function showColumnManagement() {
-            alert('🛠️ Column Management\n\nCustomize your workflow:\n\n• Rename columns\n• Add/remove columns\n• Reorder stages\n• Set WIP limits\n\nComing soon!');
-        }
-        
-        // Filter handlers
-        function handleProjectFilter(value) {
-            console.log('Filter by project:', value);
-            if (window.atlas && typeof window.atlas.filterByProject === 'function') {
-                window.atlas.filterByProject(value);
-            }
-        }
-        
-        function handlePriorityFilter(value) {
-            console.log('Filter by priority:', value);
-            if (window.atlas && typeof window.atlas.filterByPriority === 'function') {
-                window.atlas.filterByPriority(value);
-            }
-        }
-        
-        // Show user menu
-        function showUserMenu() {
-            console.log('Show user menu');
-            // Implementation in atlas-interactive.js
-        }
-        
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const nav = document.getElementById('mainNav');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            if (nav.classList.contains('active') && 
-                !nav.contains(event.target) && 
-                !toggle.contains(event.target)) {
-                toggleMobileMenu();
-            }
+      // Open details
+      el.addEventListener('dblclick',()=>openTaskDetail(t.id));
+      el.addEventListener('keydown',(e)=>{ if(e.key==='Enter' || e.key===' '){e.preventDefault();openTaskDetail(t.id);} });
+
+      // DnD source
+      el.addEventListener('dragstart', (e)=>{
+        el.setAttribute('aria-grabbed','true');
+        e.dataTransfer.effectAllowed='move';
+        e.dataTransfer.setData('text/plain', t.id);
+        requestAnimationFrame(()=>el.classList.add('dragging'));
+      });
+      el.addEventListener('dragend', ()=>{
+        el.removeAttribute('aria-grabbed');
+        el.classList.remove('dragging');
+      });
+
+      return el;
+    }
+    function renderCounts(){
+      document.querySelectorAll('.kanban-column').forEach(col=>{
+        const key=col.dataset.col;
+        const count=byStatus(key).length;
+        col.querySelector('.task-count').textContent=String(count);
+      });
+    }
+    function renderBoard(){
+      const {project,priority}=getPrefs();
+      document.querySelectorAll('.task-cards').forEach(zone=>{
+        const status=zone.dataset.status;
+        zone.innerHTML='';
+        let list=byStatus(status);
+        if(project!=='all') list=list.filter(t=>t.project===project);
+        if(priority!=='all') list=list.filter(t=>t.priority===priority);
+        list.forEach(t=>zone.appendChild(makeCard(t)));
+      });
+      renderCounts();
+    }
+
+    /* ---------- Filters ---------- */
+    const projectFilter=document.getElementById('projectFilter');
+    const priorityFilter=document.getElementById('priorityFilter');
+    function syncFiltersFromPrefs(){
+      const p=getPrefs();
+      projectFilter.value=p.project||'all';
+      priorityFilter.value=p.priority||'all';
+    }
+    projectFilter.addEventListener('change',()=>{ setPrefs({...getPrefs(),project:projectFilter.value}); renderBoard(); });
+    priorityFilter.addEventListener('change',()=>{ setPrefs({...getPrefs(),priority:priorityFilter.value}); renderBoard(); });
+
+    /* ---------- Columns manager ---------- */
+    const COLUMNS=[
+      {key:'someday',label:'Someday/Maybe'},
+      {key:'planning',label:'Research & Planning'},
+      {key:'ready',label:'Permitted & Ready'},
+      {key:'in-progress',label:'Active Work'},
+      {key:'blocked',label:'Waiting on External'},
+      {key:'done',label:'Done Done'}
+    ];
+    document.getElementById('manageColumnsBtn').addEventListener('click',openColumnsModal);
+    function openColumnsModal(){
+      const hidden=new Set(getHidden());
+      const body=`
+        <form id="columnsForm" class="task-form">
+          <div class="form-row" style="grid-template-columns:1fr;">
+            <div class="cols-grid">
+              ${COLUMNS.map(c=>`
+                <div class="cols-row">
+                  <input type="checkbox" id="col-${c.key}" value="${c.key}" ${hidden.has(c.key)?'':'checked'}/>
+                  <label for="col-${c.key}">${c.label}</label>
+                </div>`).join('')}
+            </div>
+          </div>
+        </form>`;
+      const actions=`<button class="btn btn-secondary" data-close>Cancel</button><button class="btn btn-primary" data-apply>Apply</button>`;
+      const modal=spawnModal('Manage Columns',body,actions);
+      modal.querySelector('[data-close]').addEventListener('click',()=>closeModal(modal));
+      modal.querySelector('[data-apply]').addEventListener('click',()=>{
+        const kept=[...modal.querySelectorAll('input[type="checkbox"]')].filter(cb=>cb.checked).map(cb=>cb.value);
+        const toHide=COLUMNS.map(c=>c.key).filter(k=>!kept.includes(k));
+        setHidden(toHide);
+        applyHidden();
+        closeModal(modal);
+      });
+    }
+    function applyHidden(){
+      const hidden=new Set(getHidden());
+      document.querySelectorAll('.kanban-column').forEach(col=>{
+        const key=col.dataset.col;
+        col.style.display=hidden.has(key)?'none':'';
+      });
+      renderCounts();
+    }
+
+    /* ---------- DnD targets ---------- */
+    function setupDropzones(){
+      document.querySelectorAll('.task-cards').forEach(zone=>{
+        // Prevent duplicate listeners: replace node
+        const newZone=zone.cloneNode(true);
+        zone.parentNode.replaceChild(newZone,zone);
+
+        newZone.addEventListener('dragover',(e)=>{
+          e.preventDefault(); e.dataTransfer.dropEffect='move';
+          newZone.classList.add('drag-over');
+          const dragging=document.querySelector('.task-card.dragging');
+          if(!dragging) return;
+
+          const after=getDragAfterElement(newZone,e.clientY);
+          if(after==null){ newZone.appendChild(dragging); } else { newZone.insertBefore(dragging,after); }
         });
-        
-        // Close mobile menu on escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const nav = document.getElementById('mainNav');
-                if (nav.classList.contains('active')) {
-                    toggleMobileMenu();
-                }
-            }
+        newZone.addEventListener('dragleave',(e)=>{ if(e.currentTarget===newZone){ newZone.classList.remove('drag-over'); }});
+        newZone.addEventListener('drop',(e)=>{
+          e.preventDefault(); newZone.classList.remove('drag-over');
+          const id=e.dataTransfer.getData('text/plain');
+          if(!id) return;
+          const tasks=getTasks();
+          const idx=tasks.findIndex(t=>t.id===id);
+          if(idx>-1){
+            tasks[idx].status=newZone.dataset.status;
+            setTasks(tasks);
+            renderBoard();
+          }
         });
-    </script>
-    
-    <!-- Main Interactive Script -->
-    <script src="atlas-interactive.js"></script>
+      });
+    }
+    function getDragAfterElement(container, y){
+      const els=[...container.querySelectorAll('.task-card:not(.dragging)')];
+      return els.reduce((closest,child)=>{
+        const box=child.getBoundingClientRect();
+        const offset=y - box.top - box.height/2;
+        if(offset<0 && offset>closest.offset){ return {offset,element:child}; } else { return closest; }
+      }, {offset:Number.NEGATIVE_INFINITY, element:null}).element;
+    }
+
+    /* ---------- Task detail modal ---------- */
+    function openTaskDetail(id){
+      const t=getTasks().find(x=>x.id===id);
+      if(!t) return;
+      const body=`
+        <form id="taskForm" class="task-form">
+          <div class="form-row">
+            <div>
+              <label>Title</label>
+              <input type="text" name="title" value="${escapeAttr(t.title)}" required/>
+            </div>
+            <div>
+              <label>Project</label>
+              <select name="project">
+                <option value="kitchen" ${t.project==='kitchen'?'selected':''}>Kitchen</option>
+                <option value="basement" ${t.project==='basement'?'selected':''}>Basement</option>
+                <option value="bathroom" ${t.project==='bathroom'?'selected':''}>Bathroom</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Status</label>
+              <select name="status">
+                ${COLUMNS.map(c=>`<option value="${c.key}" ${t.status===c.key?'selected':''}>${c.label}</option>`).join('')}
+              </select>
+            </div>
+            <div>
+              <label>Priority</label>
+              <select name="priority">
+                <option value="high" ${t.priority==='high'?'selected':''}>High</option>
+                <option value="medium" ${t.priority==='medium'?'selected':''}>Medium</option>
+                <option value="low" ${t.priority==='low'?'selected':''}>Low</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row" style="grid-template-columns:1fr;">
+            <div>
+              <label>Description</label>
+              <textarea name="desc">${escapeHtml(t.desc||'')}</textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Due Date</label>
+              <input type="text" name="due" value="${escapeAttr(t.due||'')}" placeholder="YYYY-MM-DD or blank"/>
+            </div>
+            <div>
+              <label>Labels (comma-separated)</label>
+              <input type="text" name="labels" value="${escapeAttr((t.labels||[]).join(', '))}"/>
+            </div>
+          </div>
+        </form>
+      `;
+      const actions=`
+        <button class="btn btn-danger" data-delete>Delete</button>
+        <span style="flex:1"></span>
+        <button class="btn btn-secondary" data-close>Cancel</button>
+        <button class="btn btn-primary" data-save>Save</button>
+      `;
+      const modal=spawnModal('Task Details', body, actions);
+      modal.querySelector('[data-close]').addEventListener('click',()=>closeModal(modal));
+      modal.querySelector('[data-delete]').addEventListener('click',()=>{
+        const tasks=getTasks().filter(x=>x.id!==id);
+        setTasks(tasks); closeModal(modal); renderBoard();
+      });
+      modal.querySelector('[data-save]').addEventListener('click',()=>{
+        const f=modal.querySelector('#taskForm');
+        const tasks=getTasks();
+        const i=tasks.findIndex(x=>x.id===id);
+        if(i>-1){
+          tasks[i]={...tasks[i],
+            title:f.title.value.trim(),
+            project:f.project.value,
+            status:f.status.value,
+            priority:f.priority.value,
+            desc:f.desc.value.trim(),
+            due:f.due.value.trim()||null,
+            labels:f.labels.value.split(',').map(s=>s.trim()).filter(Boolean)
+          };
+          setTasks(tasks);
+        }
+        closeModal(modal); renderBoard();
+      });
+    }
+
+    /* ---------- Quick Add ---------- */
+    document.getElementById('quickAddBtn').addEventListener('click',()=>openAddTaskModal('planning'));
+    document.querySelectorAll('.add-task-btn').forEach((btn)=>{
+      btn.addEventListener('click',()=>{
+        const col=btn.closest('.kanban-column')?.dataset.col || 'planning';
+        openAddTaskModal(col);
+      });
+    });
+    function openAddTaskModal(defaultStatus='planning'){
+      const body=`
+        <form id="newTaskForm" class="task-form">
+          <div class="form-row">
+            <div><label>Title</label><input type="text" name="title" required placeholder="What needs doing?"/></div>
+            <div>
+              <label>Status</label>
+              <select name="status">${COLUMNS.map(c=>`<option value="${c.key}" ${c.key===defaultStatus?'selected':''}>${c.label}</option>`).join('')}</select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Project</label>
+              <select name="project">
+                <option value="kitchen">Kitchen</option>
+                <option value="basement">Basement</option>
+                <option value="bathroom">Bathroom</option>
+              </select>
+            </div>
+            <div>
+              <label>Priority</label>
+              <select name="priority">
+                <option value="high">High</option>
+                <option value="medium" selected>Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row" style="grid-template-columns:1fr;">
+            <div><label>Description</label><textarea name="desc" placeholder="Add notes, links, measurements…"></textarea></div>
+          </div>
+          <div class="form-row">
+            <div><label>Due Date</label><input type="text" name="due" placeholder="YYYY-MM-DD"/></div>
+            <div><label>Labels (comma-separated)</label><input type="text" name="labels" placeholder="materials, wiring"/></div>
+          </div>
+        </form>
+      `;
+      const actions=`<button class="btn btn-secondary" data-close>Cancel</button><button class="btn btn-primary" data-create>Create</button>`;
+      const modal=spawnModal('Add Task',body,actions);
+      modal.querySelector('[data-close]').addEventListener('click',()=>closeModal(modal));
+      modal.querySelector('[data-create]').addEventListener('click',()=>{
+        const f=modal.querySelector('#newTaskForm');
+        if(!f.reportValidity()) return;
+        const tasks=getTasks();
+        const id='t'+(Math.max(0,...tasks.map(t=>+(t.id||'t0').replace('t','')))+1);
+        tasks.push({
+          id, title:f.title.value.trim(), status:f.status.value, project:f.project.value, priority:f.priority.value,
+          desc:f.desc.value.trim(), due:f.due.value.trim()||null,
+          labels:f.labels.value.split(',').map(s=>s.trim()).filter(Boolean)
+        });
+        setTasks(tasks); closeModal(modal); renderBoard();
+      });
+    }
+
+    /* ---------- Utility ---------- */
+    function cap(s){return (s||'').slice(0,1).toUpperCase()+s.slice(1);}
+    function escapeHtml(s){return (s??'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));}
+    function escapeAttr(s){return escapeHtml(s).replace(/"/g,'&quot;');}
+
+    function spawnModal(title, bodyHTML, actionsHTML){
+      const wrap=document.createElement('div'); wrap.className='modal-overlay';
+      wrap.innerHTML=`
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+          <div class="modal-header">
+            <h3 id="modalTitle">${escapeHtml(title)}</h3>
+            <button class="btn-icon" data-x aria-label="Close">&times;</button>
+          </div>
+          <div class="modal-body">${bodyHTML}</div>
+          <div class="modal-actions">${actionsHTML||''}</div>
+        </div>`;
+      document.body.appendChild(wrap);
+      wrap.querySelector('[data-x]')?.addEventListener('click',()=>closeModal(wrap));
+      return wrap;
+    }
+    function closeModal(node){ node?.remove(); }
+
+    /* ---------- Init ---------- */
+    (function init(){
+      seed();
+      syncFiltersFromPrefs();
+      renderBoard();
+      applyHidden();
+      setupDropzones();
+    })();
+
+    // Rebind dropzones each render
+    const _renderBoard=renderBoard;
+    renderBoard=function(){ _renderBoard(); setupDropzones(); };
+
+    // Keep counts and layout correct when storage changes (multi-tab)
+    window.addEventListener('storage',(e)=>{
+      if(e.key===KS || e.key===CS || e.key===PS){ renderBoard(); applyHidden(); }
+    });
+  </script>
 </body>
 </html>
