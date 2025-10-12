@@ -3,138 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Atlas</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1e3a8a, #3730a3);
-            color: white;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-        /* main content area */
-        .container {
-            max-width: 800px;
-            padding: 20px;
-        }
-        h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-        }
-        .blue-text {
-            color: #60a5fa;
-        }
-        .subtitle {
-            font-size: 1.2rem;
-            color: #cbd5e1;
-            margin-bottom: 40px;
-        }
-        /* the three feature boxes */
-        .features {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 40px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            width: 220px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .card h3 {
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-        .card p {
-            color: #cbd5e1;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-        .launch-btn {
-            background: #3b82f6;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-block;
-        }
-        .launch-btn:hover {
-            background: #2563eb;
-        }
-        /* navigation at top */
-        nav {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-        nav a {
-            color: #cbd5e1;
-            text-decoration: none;
-        }
-        nav a:hover {
-            color: white;
-        }
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 2.5rem;
-            }
-            .features {
-                flex-direction: column;
-                align-items: center;
-            }
-            nav {
-                position: static;
-                margin-bottom: 20px;
-            }
-        }
-    </style>
+    <meta name="description" content="Project Atlas - Professional home improvement project management platform. Track projects, manage budgets, and plan renovations with ease.">
+    <meta name="keywords" content="home improvement, project management, renovation tracker, budget planning, home projects">
+    <meta name="author" content="Andrew Foster">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Project Atlas - Home Project Management">
+    <meta property="og:description" content="Home improvement project management that actually works">
+    <meta property="og:type" content="website">
+    
+    <title>Project Atlas - Home Improvement Project Management</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 </head>
-<body>
-    <nav>
-        <ul>
-            <li><a href="about.html">About</a></li>
-            <li><a href="contact.html">Contact</a></li>
-        </ul>
-    </nav>
-    <div class="container">
-        <h1>Project <span class="blue-text">ATLAS</span></h1>
-        <p class="subtitle">Home improvement project management that actually works</p>
-        
-        <div class="features">
-            <div class="card">
-                <h3>📊 Track Projects</h3>
-                <p>Keep all your home projects organized in one place</p>
+<body class="landing-page">
+    <!-- Skip to Main Content for Accessibility -->
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    
+    <!-- Header Navigation -->
+    <header class="landing-header">
+        <nav class="landing-nav" aria-label="Main navigation">
+            <ul>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="landing-main" id="main-content">
+        <div class="hero-section">
+            <!-- Hero Title -->
+            <h1>
+                Project <span class="atlas-blue">ATLAS</span>
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="hero-subtitle">
+                Home improvement project management that actually works
+            </p>
+            
+            <!-- Feature Cards -->
+            <div class="feature-cards">
+                <article class="feature-card">
+                    <span class="feature-icon" aria-hidden="true">📊</span>
+                    <h3>Track Projects</h3>
+                    <p>Keep all your home projects organized in one place with real-time status updates</p>
+                </article>
+                
+                <article class="feature-card">
+                    <span class="feature-icon" aria-hidden="true">🔧</span>
+                    <h3>Smart Planning</h3>
+                    <p>Get intelligent help planning your renovation projects step by step</p>
+                </article>
+                
+                <article class="feature-card">
+                    <span class="feature-icon" aria-hidden="true">💰</span>
+                    <h3>Budget Control</h3>
+                    <p>Track costs and stay within your renovation budget with detailed expense tracking</p>
+                </article>
             </div>
             
-            <div class="card">
-                <h3>🔧 Smart Planning</h3>
-                <p>Get help planning your renovation projects step by step</p>
-            </div>
-            
-            <div class="card">
-                <h3>💰 Budget Control</h3>
-                <p>Track costs and stay within your renovation budget</p>
+            <!-- Call to Action -->
+            <div class="cta-section">
+                <a href="dashboard.html" class="btn-get-started">
+                    Get Started
+                    <span aria-hidden="true">→</span>
+                </a>
             </div>
         </div>
-        
-        <a href="dashboard.html" class="launch-btn">Get Started</a>
-    </div>
+    </main>
+
+    <!-- Optional: Add structured data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Project Atlas",
+        "description": "Home improvement project management platform",
+        "applicationCategory": "ProductivityApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "Project tracking",
+            "Budget management",
+            "Task planning",
+            "Calendar integration",
+            "Document organization"
+        ]
+    }
+    </script>
 </body>
 </html>
