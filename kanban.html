@@ -3,147 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kanban Board - Drag and drop task management for your home improvement projects">
+    <meta name="robots" content="noindex, nofollow">
+    
     <title>Kanban Board - Project Atlas</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="atlas-interactive.css">
-</head>
-<body class="app-page">
-    <header class="app-header">
-        <div class="header-container">
-            <div class="logo">
-                <h1>Project <span class="atlas-blue">ATLAS</span></h1>
-                <span class="tagline">Home Project Management</span>
-            </div>
-            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
-                ☰
-            </button>
-            <nav class="main-nav" id="mainNav">
-                <ul>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="kanban.html" class="active">Kanban Board</a></li>
-                    <li><a href="budget.html">Budget Tracker</a></li>
-                    <li><a href="calendar.html">Calendar</a></li>
-                    <li><a href="documents.html">Documents</a></li>
-                </ul>
-            </nav>
-            <div class="user-menu">
-                <button class="btn-secondary" onclick="showNewTaskModal()">+ New Task</button>
-                <button class="btn-secondary" onclick="showColumnManagement()">⚙ Columns</button>
-                <div class="user-avatar">AF</div>
-            </div>
-        </div>
-    </header>
-
-    <main class="kanban-container">
-        <div class="board-header">
-            <h2>Project Kanban Board</h2>
-            <div class="board-filters">
-                <select class="filter-select" id="projectFilter">
-                    <option>All Projects</option>
-                    <option>Kitchen Renovation</option>
-                    <option>Basement Finishing</option>
-                    <option>Bathroom Update</option>
-                </select>
-                <select class="filter-select" id="priorityFilter">
-                    <option>All Priorities</option>
-                    <option>High Priority</option>
-                    <option>Medium Priority</option>
-                    <option>Low Priority</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="kanban-board" id="kanbanBoard">
-            <!-- Someday/Maybe Column -->
-            <div class="kanban-column someday">
-                <div class="kanban-header">
-                    <div class="kanban-title-wrapper">
-                        <span class="kanban-title">Someday/Maybe</span>
-                    </div>
-                    <span class="task-count">0</span>
-                </div>
-                <div class="task-cards" data-status="someday">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-                <button class="add-task-btn">+ Add task</button>
-            </div>
-
-            <!-- Research & Planning Column -->
-            <div class="kanban-column planning">
-                <div class="kanban-header">
-                    <div class="kanban-title-wrapper">
-                        <span class="kanban-title">Research & Planning</span>
-                    </div>
-                    <span class="task-count">0</span>
-                </div>
-                <div class="task-cards" data-status="planning">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-                <button class="add-task-btn">+ Add task</button>
-            </div>
-
-            <!-- Permitted & Ready Column -->
-            <div class="kanban-column ready">
-                <div class="kanban-header">
-                    <div class="kanban-title-wrapper">
-                        <span class="kanban-title">Permitted & Ready</span>
-                    </div>
-                    <span class="task-count">0</span>
-                </div>
-                <div class="task-cards" data-status="ready">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-                <button class="add-task-btn">+ Add task</button>
-            </div>
-
-            <!-- Active Work Column -->
-            <div class="kanban-column in-progress">
-                <div class="kanban-header">
-                    <div class="kanban-title-wrapper">
-                        <span class="kanban-title">Active Work</span>
-                    </div>
-                    <span class="task-count">0</span>
-                </div>
-                <div class="task-cards" data-status="in-progress">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-                <button class="add-task-btn">+ Add task</button>
-            </div>
-
-            <!-- Waiting on External Column -->
-            <div class="kanban-column blocked">
-                <div class="kanban-header">
-                    <div class="kanban-title-wrapper">
-                        <span class="kanban-title">Waiting on External</span>
-                    </div>
-                    <span class="task-count">0</span>
-                </div>
-                <div class="task-cards" data-status="blocked">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-                <button class="add-task-btn">+ Add task</button>
-            </div>
-
-            <!-- Done Done Column -->
-            <div class="kanban-column done">
-                <div class="kanban-header">
-                    <div class="kanban-title-wrapper">
-                        <span class="kanban-title">Done Done</span>
-                    </div>
-                    <span class="task-count">0</span>
-                </div>
-                <div class="task-cards" data-status="done">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-                <button class="add-task-btn">+ Add task</button>
-            </div>
-        </div>
-    </main>
-
+    
     <style>
+        /* Kanban-specific styles - Consider moving to atlas-interactive.css */
         .kanban-container {
-            padding: 2rem;
+            padding: var(--space-xl);
             max-width: 1600px;
             margin: 0 auto;
         }
@@ -152,157 +27,204 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-default);
+            gap: var(--space-lg);
+        }
+        
+        .board-header h2 {
+            margin-bottom: 0;
         }
         
         .board-filters {
             display: flex;
-            gap: 1rem;
+            gap: var(--space-md);
             align-items: center;
+            flex-wrap: wrap;
         }
         
         .filter-select {
-            padding: 0.5rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            background: var(--surface);
-            color: var(--text-dark);
-            font-size: 0.9rem;
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .filter-select:hover {
+            border-color: var(--border-medium);
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--app-primary);
+            box-shadow: 0 0 0 3px var(--app-primary-light);
         }
         
         .kanban-board {
             display: flex;
-            gap: 1.5rem;
+            gap: var(--space-lg);
             overflow-x: auto;
-            padding: 1rem 0;
+            padding: var(--space-md) 0;
             min-height: 70vh;
         }
         
-        .kanban-column {
-            min-width: 300px;
-            border-radius: 8px;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
+        .kanban-board::-webkit-scrollbar {
+            height: 10px;
         }
         
-        .kanban-column.someday { background: #f8f9fa; }
-        .kanban-column.planning { background: #fff3e0; }
-        .kanban-column.ready { background: #e8f5e8; }
-        .kanban-column.in-progress { background: var(--app-bg-light); }
-        .kanban-column.blocked { background: #ffebee; }
-        .kanban-column.done { background: #f1f8e9; }
+        .kanban-board::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+        }
+        
+        .kanban-board::-webkit-scrollbar-thumb {
+            background: var(--gray-400);
+            border-radius: var(--radius-md);
+        }
+        
+        .kanban-board::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-500);
+        }
+        
+        .kanban-column {
+            min-width: 320px;
+            max-width: 350px;
+            border-radius: var(--radius-lg);
+            padding: var(--space-md);
+            display: flex;
+            flex-direction: column;
+            transition: background-color var(--transition-fast);
+        }
+        
+        /* Column colors */
+        .kanban-column.someday { 
+            background: linear-gradient(to bottom, #f8f9fa 0%, #f1f3f5 100%);
+        }
+        .kanban-column.planning { 
+            background: linear-gradient(to bottom, #fff8e1 0%, #fff3e0 100%);
+        }
+        .kanban-column.ready { 
+            background: linear-gradient(to bottom, #e8f5e9 0%, #e0f2e9 100%);
+        }
+        .kanban-column.in-progress { 
+            background: linear-gradient(to bottom, #e3f2fd 0%, #e1f5fe 100%);
+        }
+        .kanban-column.blocked { 
+            background: linear-gradient(to bottom, #ffebee 0%, #fce4ec 100%);
+        }
+        .kanban-column.done { 
+            background: linear-gradient(to bottom, #f1f8e9 0%, #e8f5e9 100%);
+        }
+        
+        .kanban-column.drag-over {
+            background: rgba(25, 118, 210, 0.1);
+            box-shadow: 0 0 0 2px var(--app-primary);
+        }
         
         .kanban-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid rgba(0,0,0,0.1);
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-sm);
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
         }
         
         .kanban-title-wrapper {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: var(--space-sm);
             flex: 1;
         }
         
         .kanban-title {
             font-size: 1rem;
             font-weight: 600;
-            color: var(--text-dark);
-        }
-        
-        .edit-column-btn {
-            background: none;
-            border: none;
-            color: var(--text-light);
-            cursor: pointer;
-            padding: 0.25rem;
-            font-size: 0.9rem;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .kanban-header:hover .edit-column-btn {
-            opacity: 1;
-        }
-        
-        .edit-column-btn:hover {
-            color: var(--app-primary);
+            color: var(--text-primary);
         }
         
         .task-count {
-            background: rgba(25, 118, 210, 0.1);
+            background: rgba(25, 118, 210, 0.12);
             color: var(--app-primary);
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-full);
             font-size: 0.75rem;
             font-weight: 600;
+            min-width: 28px;
+            text-align: center;
         }
         
         .task-cards {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: var(--space-md);
             flex: 1;
             min-height: 100px;
+            padding: var(--space-xs);
         }
         
         .task-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
             cursor: grab;
-            transition: all 0.2s ease;
+            transition: all var(--transition-base);
             box-shadow: var(--shadow-sm);
         }
         
         .task-card:hover {
-            box-shadow: 0 4px 8px var(--shadow-md);
-            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+            border-color: var(--border-medium);
         }
         
         .task-card:active {
             cursor: grabbing;
         }
         
+        .task-card.dragging {
+            opacity: 0.5;
+            transform: rotate(2deg);
+        }
+        
         .task-card.high-priority {
-            border-left: 4px solid var(--error);
+            border-left: 4px solid var(--status-error);
         }
         
         .task-card.medium-priority {
-            border-left: 4px solid var(--warning);
+            border-left: 4px solid var(--status-warning);
         }
         
         .task-card.low-priority {
-            border-left: 4px solid var(--text-light);
+            border-left: 4px solid var(--gray-400);
         }
         
         .task-card.completed {
-            opacity: 0.7;
-            border-left: 4px solid var(--success);
+            opacity: 0.75;
+            border-left: 4px solid var(--status-success);
         }
         
         .task-title {
             font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
             line-height: 1.4;
         }
         
         .task-meta {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-            font-size: 0.8rem;
-            color: var(--text-medium);
+            gap: var(--space-sm);
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
         }
         
         .task-project {
@@ -315,39 +237,47 @@
         .task-project.basement { color: #4caf50; }
         
         .task-due {
-            color: var(--text-light);
+            color: var(--text-tertiary);
         }
         
         .task-due.overdue {
-            color: var(--error);
+            color: var(--status-error);
+            font-weight: 600;
+        }
+        
+        .task-due.due-soon {
+            color: var(--status-warning);
             font-weight: 500;
         }
         
         .task-labels {
             display: flex;
-            gap: 0.5rem;
+            gap: var(--space-sm);
             flex-wrap: wrap;
-            margin-top: 0.5rem;
+            margin-top: var(--space-sm);
         }
         
         .task-label {
-            background: rgba(0,0,0,0.1);
-            padding: 0.2rem 0.5rem;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            color: var(--text-medium);
+            background: rgba(0, 0, 0, 0.08);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-full);
+            font-size: 0.6875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
         
         .add-task-btn {
             background: transparent;
-            border: 2px dashed var(--border);
-            color: var(--text-light);
-            padding: 1rem;
-            border-radius: 6px;
+            border: 2px dashed var(--border-default);
+            color: var(--text-tertiary);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-            margin-top: 1rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+            margin-top: var(--space-md);
+            font-family: inherit;
         }
         
         .add-task-btn:hover {
@@ -355,49 +285,363 @@
             color: var(--app-primary);
             background: rgba(25, 118, 210, 0.05);
         }
+        
+        .add-task-btn:focus {
+            outline: none;
+            border-color: var(--app-primary);
+            box-shadow: 0 0 0 3px var(--app-primary-light);
+        }
+
+        /* Empty state */
+        .empty-column-message {
+            text-align: center;
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+            padding: var(--space-xl) var(--space-md);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .kanban-container {
+                padding: var(--space-lg);
+            }
+        }
 
         @media (max-width: 768px) {
             .board-header {
                 flex-direction: column;
-                gap: 1rem;
                 align-items: stretch;
+                gap: var(--space-md);
             }
 
             .board-filters {
-                justify-content: center;
+                justify-content: stretch;
+                flex-direction: column;
+            }
+            
+            .filter-select {
+                width: 100%;
             }
 
             .kanban-board {
                 flex-direction: column;
-                gap: 2rem;
+                gap: var(--space-xl);
             }
 
             .kanban-column {
                 min-width: auto;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kanban-container {
+                padding: var(--space-md);
             }
         }
     </style>
+</head>
+<body class="app-page">
+    <!-- Skip to Main Content -->
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    
+    <!-- Application Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo">
+                <h1>Project <span class="atlas-blue">ATLAS</span></h1>
+                <span class="tagline">Home Project Management</span>
+            </div>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" 
+                    onclick="toggleMobileMenu()" 
+                    aria-label="Toggle navigation menu"
+                    aria-expanded="false"
+                    aria-controls="mainNav">
+                <span aria-hidden="true">☰</span>
+            </button>
+            
+            <!-- Main Navigation -->
+            <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="kanban.html" class="active" aria-current="page">Kanban Board</a></li>
+                    <li><a href="budget.html">Budget Tracker</a></li>
+                    <li><a href="calendar.html">Calendar</a></li>
+                    <li><a href="documents.html">Documents</a></li>
+                </ul>
+            </nav>
+            
+            <!-- User Menu -->
+            <div class="user-menu">
+                <button class="btn btn-secondary" 
+                        onclick="showNewTaskModal()"
+                        aria-label="Create new task">
+                    <span aria-hidden="true">+</span> New Task
+                </button>
+                <button class="btn btn-secondary" 
+                        onclick="showColumnManagement()"
+                        aria-label="Manage columns">
+                    <span aria-hidden="true">⚙</span> Columns
+                </button>
+                <button class="user-avatar" 
+                        onclick="showUserMenu()" 
+                        aria-label="User menu"
+                        title="User Menu">
+                    AF
+                </button>
+            </div>
+        </div>
+    </header>
 
+    <!-- Main Content -->
+    <main class="kanban-container" id="main-content">
+        <!-- Board Header -->
+        <div class="board-header">
+            <h2>Project Kanban Board</h2>
+            
+            <!-- Filters -->
+            <div class="board-filters" role="group" aria-label="Board filters">
+                <label for="projectFilter" class="sr-only">Filter by project</label>
+                <select class="filter-select" 
+                        id="projectFilter" 
+                        aria-label="Filter by project"
+                        onchange="handleProjectFilter(this.value)">
+                    <option value="all">All Projects</option>
+                    <option value="kitchen">Kitchen Renovation</option>
+                    <option value="basement">Basement Finishing</option>
+                    <option value="bathroom">Bathroom Update</option>
+                </select>
+                
+                <label for="priorityFilter" class="sr-only">Filter by priority</label>
+                <select class="filter-select" 
+                        id="priorityFilter" 
+                        aria-label="Filter by priority"
+                        onchange="handlePriorityFilter(this.value)">
+                    <option value="all">All Priorities</option>
+                    <option value="high">High Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="low">Low Priority</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Kanban Board -->
+        <div class="kanban-board" id="kanbanBoard" role="region" aria-label="Task board">
+            
+            <!-- Someday/Maybe Column -->
+            <section class="kanban-column someday" data-status="someday" aria-labelledby="someday-heading">
+                <header class="kanban-header">
+                    <div class="kanban-title-wrapper">
+                        <h3 class="kanban-title" id="someday-heading">Someday/Maybe</h3>
+                    </div>
+                    <span class="task-count" aria-label="Task count">0</span>
+                </header>
+                <div class="task-cards" 
+                     data-status="someday"
+                     role="list"
+                     aria-label="Someday/Maybe tasks">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+                <button class="add-task-btn" 
+                        onclick="showAddTaskModal('someday')"
+                        aria-label="Add task to Someday/Maybe">
+                    <span aria-hidden="true">+</span> Add task
+                </button>
+            </section>
+
+            <!-- Research & Planning Column -->
+            <section class="kanban-column planning" data-status="planning" aria-labelledby="planning-heading">
+                <header class="kanban-header">
+                    <div class="kanban-title-wrapper">
+                        <h3 class="kanban-title" id="planning-heading">Research & Planning</h3>
+                    </div>
+                    <span class="task-count" aria-label="Task count">0</span>
+                </header>
+                <div class="task-cards" 
+                     data-status="planning"
+                     role="list"
+                     aria-label="Research & Planning tasks">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+                <button class="add-task-btn" 
+                        onclick="showAddTaskModal('planning')"
+                        aria-label="Add task to Research & Planning">
+                    <span aria-hidden="true">+</span> Add task
+                </button>
+            </section>
+
+            <!-- Permitted & Ready Column -->
+            <section class="kanban-column ready" data-status="ready" aria-labelledby="ready-heading">
+                <header class="kanban-header">
+                    <div class="kanban-title-wrapper">
+                        <h3 class="kanban-title" id="ready-heading">Permitted & Ready</h3>
+                    </div>
+                    <span class="task-count" aria-label="Task count">0</span>
+                </header>
+                <div class="task-cards" 
+                     data-status="ready"
+                     role="list"
+                     aria-label="Permitted & Ready tasks">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+                <button class="add-task-btn" 
+                        onclick="showAddTaskModal('ready')"
+                        aria-label="Add task to Permitted & Ready">
+                    <span aria-hidden="true">+</span> Add task
+                </button>
+            </section>
+
+            <!-- Active Work Column -->
+            <section class="kanban-column in-progress" data-status="in-progress" aria-labelledby="in-progress-heading">
+                <header class="kanban-header">
+                    <div class="kanban-title-wrapper">
+                        <h3 class="kanban-title" id="in-progress-heading">Active Work</h3>
+                    </div>
+                    <span class="task-count" aria-label="Task count">0</span>
+                </header>
+                <div class="task-cards" 
+                     data-status="in-progress"
+                     role="list"
+                     aria-label="Active Work tasks">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+                <button class="add-task-btn" 
+                        onclick="showAddTaskModal('in-progress')"
+                        aria-label="Add task to Active Work">
+                    <span aria-hidden="true">+</span> Add task
+                </button>
+            </section>
+
+            <!-- Waiting on External Column -->
+            <section class="kanban-column blocked" data-status="blocked" aria-labelledby="blocked-heading">
+                <header class="kanban-header">
+                    <div class="kanban-title-wrapper">
+                        <h3 class="kanban-title" id="blocked-heading">Waiting on External</h3>
+                    </div>
+                    <span class="task-count" aria-label="Task count">0</span>
+                </header>
+                <div class="task-cards" 
+                     data-status="blocked"
+                     role="list"
+                     aria-label="Waiting on External tasks">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+                <button class="add-task-btn" 
+                        onclick="showAddTaskModal('blocked')"
+                        aria-label="Add task to Waiting on External">
+                    <span aria-hidden="true">+</span> Add task
+                </button>
+            </section>
+
+            <!-- Done Done Column -->
+            <section class="kanban-column done" data-status="done" aria-labelledby="done-heading">
+                <header class="kanban-header">
+                    <div class="kanban-title-wrapper">
+                        <h3 class="kanban-title" id="done-heading">Done Done</h3>
+                    </div>
+                    <span class="task-count" aria-label="Task count">0</span>
+                </header>
+                <div class="task-cards" 
+                     data-status="done"
+                     role="list"
+                     aria-label="Done Done tasks">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+                <button class="add-task-btn" 
+                        onclick="showAddTaskModal('done')"
+                        aria-label="Add task to Done Done">
+                    <span aria-hidden="true">+</span> Add task
+                </button>
+            </section>
+        </div>
+    </main>
+
+    <!-- Scripts -->
     <script>
+        // Mobile menu toggle with accessibility
         function toggleMobileMenu() {
             const nav = document.getElementById('mainNav');
-            nav.classList.toggle('active');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            const isExpanded = nav.classList.toggle('active');
+            
+            // Update ARIA attribute
+            toggle.setAttribute('aria-expanded', isExpanded);
         }
         
+        // Show new task modal
         function showNewTaskModal() {
-            if (window.atlas) {
+            if (window.atlas && typeof window.atlas.showAddTaskModal === 'function') {
                 window.atlas.showAddTaskModal();
             } else {
-                console.error('Atlas not initialized');
+                console.log('New task modal - Atlas not fully initialized yet');
+                // Fallback behavior
+                alert('Add New Task\n\nThis will open a form to create a new task.');
             }
         }
         
-        function showColumnManagement() {
-            if (window.atlas) {
-                alert('🛠️ Column Management\n\nThis feature allows you to:\n• Customize column names\n• Add/remove columns\n• Reorder workflow stages\n• Set column WIP limits\n\nComing soon!');
+        // Show add task modal for specific column
+        function showAddTaskModal(status) {
+            if (window.atlas && typeof window.atlas.showAddTaskModal === 'function') {
+                window.atlas.showAddTaskModal(status);
+            } else {
+                console.log(`Add task to ${status} - Atlas not fully initialized yet`);
             }
         }
+        
+        // Show column management
+        function showColumnManagement() {
+            alert('🛠️ Column Management\n\nCustomize your workflow:\n\n• Rename columns\n• Add/remove columns\n• Reorder stages\n• Set WIP limits\n\nComing soon!');
+        }
+        
+        // Filter handlers
+        function handleProjectFilter(value) {
+            console.log('Filter by project:', value);
+            if (window.atlas && typeof window.atlas.filterByProject === 'function') {
+                window.atlas.filterByProject(value);
+            }
+        }
+        
+        function handlePriorityFilter(value) {
+            console.log('Filter by priority:', value);
+            if (window.atlas && typeof window.atlas.filterByPriority === 'function') {
+                window.atlas.filterByPriority(value);
+            }
+        }
+        
+        // Show user menu
+        function showUserMenu() {
+            console.log('Show user menu');
+            // Implementation in atlas-interactive.js
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('mainNav');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (nav.classList.contains('active') && 
+                !nav.contains(event.target) && 
+                !toggle.contains(event.target)) {
+                toggleMobileMenu();
+            }
+        });
+        
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const nav = document.getElementById('mainNav');
+                if (nav.classList.contains('active')) {
+                    toggleMobileMenu();
+                }
+            }
+        });
     </script>
+    
+    <!-- Main Interactive Script -->
     <script src="atlas-interactive.js"></script>
 </body>
 </html>
