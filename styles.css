@@ -815,79 +815,650 @@ h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
 }
 
 /* ===========================================
-   RESPONSIVE DESIGN
-   Mobile-first approach for better performance
+   ENHANCED CONTACT FORM STYLES
+   Integrated from contact-form.css
    =========================================== */
 
-@media (max-width: 1024px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr; /* Stack on tablets */
+/* Form Message Display */
+.form-message {
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideDown 0.3s ease;
+    position: relative;
+}
+
+.form-message.success {
+    border-left: 4px solid var(--success);
+    background: rgba(76, 175, 80, 0.05);
+}
+
+.form-message.error {
+    border-left: 4px solid var(--error);
+    background: rgba(244, 67, 54, 0.05);
+}
+
+.message-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-right: 2rem;
+}
+
+.message-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.form-message.success .message-icon::before {
+    content: '✓';
+    color: var(--success);
+}
+
+.form-message.error .message-icon::before {
+    content: '⚠';
+    color: var(--error);
+}
+
+.message-text {
+    color: var(--text-dark);
+    line-height: 1.5;
+    flex: 1;
+}
+
+.message-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-light);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.message-close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-dark);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
     }
-    
-    .header-container {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .main-nav ul {
-        gap: 1rem;
-    }
-    
-    .hero-section h1 {
-        font-size: 3rem;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-@media (max-width: 768px) {
-    .app-page {
-        background-size: auto, 100% 200px; /* Smaller gradient on mobile */
+/* Form Row Layout */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.required {
+    color: #ff6b6b;
+    font-weight: bold;
+}
+
+.optional {
+    color: var(--text-light);
+    font-size: 0.85rem;
+    font-weight: normal;
+}
+
+/* Field Error Messages */
+.field-error {
+    display: block;
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    min-height: 1.2rem;
+}
+
+/* Character Counter */
+.char-count {
+    display: block;
+    text-align: right;
+    color: var(--text-light);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+#char-counter {
+    font-weight: 600;
+}
+
+/* Checkbox Groups */
+.checkbox-group {
+    margin-bottom: 1rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.checkbox-label:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin-top: 0.25rem;
+    cursor: pointer;
+    accent-color: var(--atlas-accent);
+}
+
+.checkbox-text {
+    color: var(--landing-muted);
+    line-height: 1.4;
+}
+
+/* Submit Button States */
+.submit-btn {
+    position: relative;
+    min-width: 200px;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.submit-btn:disabled:hover {
+    background: #3b82f6;
+    transform: none;
+}
+
+.btn-text,
+.btn-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Loading Spinner */
+.spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===========================================
+   COMPREHENSIVE RESPONSIVE DESIGN
+   Mobile-first approach for all pages
+   =========================================== */
+
+/* Large Tablets and Small Desktops (1024px and below) */
+@media (max-width: 1024px) {
+    /* Dashboard Layout */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
     }
     
+    /* Header Adjustments */
+    .header-container {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    /* Navigation */
+    .main-nav ul {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    /* Projects Page */
+    .projects-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Calendar */
+    .calendar-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .calendar-sidebar {
+        order: -1;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        display: grid;
+    }
+    
+    /* Documents Page */
+    .documents-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .documents-sidebar {
+        order: -1;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        display: grid;
+    }
+    
+    /* Budget Page */
+    .budget-content {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Landing Page */
+    .hero-section h1 {
+        font-size: 3rem;
+    }
+    
+    .feature-cards {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+}
+
+/* Tablets (768px and below) */
+@media (max-width: 768px) {
+    /* Background Adjustments */
+    .app-page {
+        background-size: auto, 100% 200px;
+    }
+    
+    /* Main Containers */
     .dashboard-main,
-    .static-main {
+    .static-main,
+    .kanban-container,
+    .budget-main,
+    .calendar-main,
+    .documents-main {
         padding: 1rem;
     }
     
+    /* Navigation */
     .main-nav ul {
         flex-wrap: wrap;
         justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .main-nav a {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    /* User Menu */
+    .user-menu {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    /* Landing Page */
+    .hero-section h1 {
+        font-size: 2.5rem;
     }
     
     .feature-cards {
         grid-template-columns: 1fr;
     }
     
-    .hero-section h1 {
-        font-size: 2.5rem;
-    }
-    
     .landing-header {
-        position: static; /* Remove fixed positioning on mobile */
+        position: static;
         text-align: center;
         padding: 1rem;
     }
     
     .landing-nav ul {
         justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    /* Static Pages */
+    .static-header {
+        padding: 1rem;
+    }
+    
+    .static-nav ul {
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    /* Projects Page */
+    .projects-header,
+    .board-header,
+    .budget-header,
+    .calendar-header,
+    .documents-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+        text-align: center;
+    }
+    
+    .project-filters,
+    .board-filters,
+    .budget-controls,
+    .view-controls,
+    .documents-controls {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .projects-stats,
+    .budget-overview,
+    .documents-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Kanban Board */
+    .kanban-board {
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .kanban-column {
+        min-width: auto;
+    }
+    
+    /* Budget Page */
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Calendar */
+    .calendar-day {
+        min-height: 80px;
+        font-size: 0.8rem;
+    }
+    
+    .event-title {
+        font-size: 0.7rem;
+    }
+    
+    .calendar-sidebar {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Documents */
+    .documents-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    .doc-meta {
+        flex-direction: row;
+        gap: 1rem;
+    }
+    
+    /* Contact Form */
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .contact-form {
+        padding: 2rem 1.5rem;
+    }
+    
+    .form-message {
+        padding: 1rem;
+    }
+    
+    .message-content {
+        flex-direction: column;
+        text-align: center;
+        padding-right: 0;
+    }
+    
+    .message-close {
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+    
+    /* Progress Info */
+    .progress-info {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 }
 
-/* Edge case: really small screens */
+/* Mobile Phones (480px and below) */
 @media (max-width: 480px) {
+    /* Typography */
+    body {
+        font-size: 14px;
+    }
+    
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.3rem; }
+    h3 { font-size: 1.1rem; }
+    
+    /* Landing Page */
     .hero-section h1 {
         font-size: 2rem;
     }
     
-    .static-content,
-    .contact-form {
-        padding: 1.5rem; /* Reduce padding on tiny screens */
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    /* Header */
+    .logo h1 {
+        font-size: 1.2rem;
+    }
+    
+    .tagline {
+        font-size: 0.65rem;
+    }
+    
+    /* Navigation - Stack vertically */
+    .main-nav ul {
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+    }
+    
+    .main-nav a {
+        display: block;
+        text-align: center;
+        padding: 0.75rem;
+    }
+    
+    /* Buttons */
+    .btn-primary,
+    .btn-secondary,
+    .btn-get-started {
+        width: 100%;
+        text-align: center;
+        padding: 0.75rem 1rem;
+    }
+    
+    .submit-btn {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    /* Project Cards */
+    .project-card,
+    .widget,
+    .budget-card,
+    .stat-card {
+        padding: 1rem;
+    }
+    
+    /* Stats */
+    .projects-stats,
+    .budget-overview,
+    .documents-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Tables and Lists */
+    .project-actions,
+    .task-detail-actions,
+    .form-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .project-actions button,
+    .task-detail-actions button {
+        width: 100%;
+    }
+    
+    /* Forms */
+    .contact-form,
+    .static-content {
+        padding: 1.5rem 1rem;
+    }
+    
+    .contact-form h3 {
+        font-size: 1.25rem;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 0.75rem;
+        font-size: 16px; /* Prevents iOS zoom on focus */
+    }
+    
+    /* Calendar */
+    .calendar-grid {
+        font-size: 0.75rem;
+    }
+    
+    /* Documents */
+    .documents-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Kanban */
+    .task-card {
+        font-size: 0.85rem;
+    }
+    
+    /* Budget */
+    .expense-entry {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .expense-cost {
+        align-self: flex-end;
+    }
+}
+
+/* Very Small Screens (360px and below) */
+@media (max-width: 360px) {
+    .hero-section h1 {
+        font-size: 1.75rem;
+    }
+    
+    .contact-form,
+    .static-content {
+        padding: 1rem 0.75rem;
+    }
+    
+    .filter-select,
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 14px;
+    }
+}
+
+/* ===========================================
+   ACCESSIBILITY & PRINT STYLES
+   =========================================== */
+
+/* Focus Visible for Keyboard Navigation */
+.form-group input:focus-visible,
+.form-group textarea:focus-visible,
+.form-group select:focus-visible,
+.checkbox-label:focus-within {
+    outline: 2px solid var(--atlas-accent);
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        border-width: 2px;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .form-message,
+    .submit-btn,
+    .spinner {
+        animation: none;
+        transition: none;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .app-header,
+    .landing-header,
+    .static-header,
+    .user-menu,
+    .submit-btn,
+    .message-close,
+    .btn-primary,
+    .btn-secondary {
+        display: none;
+    }
+    
+    .contact-form,
+    .static-content {
+        background: white;
+        border: 1px solid #000;
+        color: #000;
+    }
+    
+    .app-page,
+    .static-page,
+    .landing-page {
+        background: white;
+        color: #000;
     }
 }
 
 /*
- * TODO for future versions:
- * - Add dark mode support (system preference detection)
- * - Implement better focus management for accessibility  
- * - Consider adding CSS Grid fallbacks for older browsers
- * - Test with actual renovation photos to ensure image handling works
+ * Enhanced Responsive Design Complete
+ * Covers: Landing, About, Contact, Dashboard, Projects, Kanban, Budget, Calendar, Documents
+ * Breakpoints: 1024px, 768px, 480px, 360px
+ * Features: Mobile-first, Accessibility, Print support
  */
