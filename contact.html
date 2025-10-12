@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact - Project Atlas</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="contact-form.css">
 </head>
 <body class="static-page">
     <header class="static-header">
@@ -31,74 +32,143 @@
             </ul>
         </div>
 
-        <form class="contact-form" onsubmit="handleSubmit(event)">
+        <!-- Success/Error Message Container -->
+        <div id="form-message" class="form-message" style="display: none;">
+            <div class="message-content">
+                <span class="message-icon"></span>
+                <span class="message-text"></span>
+            </div>
+            <button class="message-close" onclick="closeMessage()">&times;</button>
+        </div>
+
+        <form class="contact-form" id="contactForm" action="process-contact.php" method="POST">
             <h3>Send Us a Message</h3>
             <p>Tell us about your renovation project challenges or ask any questions about Project Atlas. We're here to help!</p>
 
-            <div class="form-group">
-                <label for="name">Full Name *</label>
-                <input type="text" id="name" name="name" required>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Full Name <span class="required">*</span></label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        required 
+                        minlength="2"
+                        maxlength="100"
+                        placeholder="John Doe"
+                        aria-required="true">
+                    <span class="field-error" id="name-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required
+                        maxlength="100"
+                        placeholder="john@example.com"
+                        aria-required="true">
+                    <span class="field-error" id="email-error"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="phone">Phone Number <span class="optional">(Optional)</span></label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="phone"
+                        pattern="[0-9\-\+\(\)\s]+"
+                        maxlength="20"
+                        placeholder="(555) 123-4567">
+                    <span class="field-error" id="phone-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="project-type">What's Your Biggest Challenge?</label>
+                    <select id="project-type" name="project_type">
+                        <option value="">Select a challenge</option>
+                        <option value="tracking">Keeping track of multiple projects</option>
+                        <option value="budget">Budget management and cost overruns</option>
+                        <option value="contractors">Coordinating with contractors</option>
+                        <option value="timeline">Timeline planning and dependencies</option>
+                        <option value="documentation">Documenting progress and decisions</option>
+                        <option value="permits">Permit and inspection management</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="experience">Your Experience Level</label>
+                    <select id="experience" name="experience">
+                        <option value="">Select experience level</option>
+                        <option value="first-time">First-time renovator</option>
+                        <option value="some">Some renovation experience</option>
+                        <option value="experienced">Experienced DIYer</option>
+                        <option value="contractor">Professional contractor</option>
+                        <option value="property-manager">Property manager/investor</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tools">Current Project Management Tools</label>
+                    <select id="tools" name="tools">
+                        <option value="">What do you use now?</option>
+                        <option value="spreadsheets">Spreadsheets (Excel, Google Sheets)</option>
+                        <option value="notes">Notes apps or notebooks</option>
+                        <option value="trello">Trello or similar kanban tools</option>
+                        <option value="jira">Jira or enterprise tools</option>
+                        <option value="home-apps">Home-specific apps</option>
+                        <option value="nothing">Nothing organized</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="email">Email Address *</label>
-                <input type="email" id="email" name="email" required>
+                <label for="message">Message <span class="required">*</span></label>
+                <textarea 
+                    id="message" 
+                    name="message" 
+                    rows="6" 
+                    required 
+                    minlength="10"
+                    maxlength="2000"
+                    placeholder="Tell us about your project management challenges, specific pain points you're facing, or questions about Project Atlas..."
+                    aria-required="true"></textarea>
+                <span class="field-error" id="message-error"></span>
+                <span class="char-count"><span id="char-counter">0</span> / 2000</span>
             </div>
 
-            <div class="form-group">
-                <label for="project-type">What's Your Biggest Project Management Challenge?</label>
-                <select id="project-type" name="project-type">
-                    <option value="">Select a challenge</option>
-                    <option value="tracking">Keeping track of multiple projects</option>
-                    <option value="budget">Budget management and cost overruns</option>
-                    <option value="contractors">Coordinating with contractors</option>
-                    <option value="timeline">Timeline planning and dependencies</option>
-                    <option value="documentation">Documenting progress and decisions</option>
-                    <option value="permits">Permit and inspection management</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="experience">Your Experience Level</label>
-                <select id="experience" name="experience">
-                    <option value="">Select experience level</option>
-                    <option value="first-time">First-time renovator</option>
-                    <option value="some">Some renovation experience</option>
-                    <option value="experienced">Experienced DIYer</option>
-                    <option value="contractor">Professional contractor</option>
-                    <option value="property-manager">Property manager/investor</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="tools">Current Project Management Tools</label>
-                <select id="tools" name="tools">
-                    <option value="">What do you use now?</option>
-                    <option value="spreadsheets">Spreadsheets (Excel, Google Sheets)</option>
-                    <option value="notes">Notes apps or notebooks</option>
-                    <option value="trello">Trello or similar kanban tools</option>
-                    <option value="jira">Jira or enterprise tools</option>
-                    <option value="home-apps">Home-specific apps</option>
-                    <option value="nothing">Nothing organized</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="message">Message *</label>
-                <textarea id="message" name="message" rows="6" required placeholder="Tell us about your project management challenges, specific pain points you're facing, or questions about Project Atlas..."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" id="beta" name="beta" style="margin-right: 0.5rem;">
-                    I'm interested in beta testing Project Atlas when it's available
+            <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="beta" name="beta" value="yes">
+                    <span class="checkbox-text">I'm interested in beta testing Project Atlas when it's available</span>
                 </label>
             </div>
 
+            <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="newsletter" name="newsletter" value="yes">
+                    <span class="checkbox-text">Subscribe to project updates and newsletter</span>
+                </label>
+            </div>
+
+            <!-- Honeypot field for spam prevention -->
+            <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+
             <div class="cta-section">
-                <button type="submit" class="btn-get-started" style="border: none; cursor: pointer;">Send Message</button>
+                <button type="submit" class="btn-get-started submit-btn" id="submitBtn">
+                    <span class="btn-text">Send Message</span>
+                    <span class="btn-loading" style="display:none;">
+                        <span class="spinner"></span> Sending...
+                    </span>
+                </button>
             </div>
         </form>
 
@@ -115,12 +185,6 @@
         </div>
     </main>
 
-    <script>
-        function handleSubmit(event) {
-            event.preventDefault();
-            alert('Thank you for your message! We will get back to you within 24 hours. If you\'re interested in beta testing, we\'ll add you to our early access list.');
-            event.target.reset();
-        }
-    </script>
+    <script src="contact-form.js"></script>
 </body>
 </html>
