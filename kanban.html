@@ -39,13 +39,13 @@
         <div class="board-header">
             <h2>Project Kanban Board</h2>
             <div class="board-filters">
-                <select class="filter-select">
+                <select class="filter-select" id="projectFilter">
                     <option>All Projects</option>
                     <option>Kitchen Renovation</option>
                     <option>Basement Finishing</option>
                     <option>Bathroom Update</option>
                 </select>
-                <select class="filter-select">
+                <select class="filter-select" id="priorityFilter">
                     <option>All Priorities</option>
                     <option>High Priority</option>
                     <option>Medium Priority</option>
@@ -55,7 +55,89 @@
         </div>
 
         <div class="kanban-board" id="kanbanBoard">
-            <!-- Columns will be dynamically rendered by JavaScript -->
+            <!-- Someday/Maybe Column -->
+            <div class="kanban-column someday">
+                <div class="kanban-header">
+                    <div class="kanban-title-wrapper">
+                        <span class="kanban-title">Someday/Maybe</span>
+                    </div>
+                    <span class="task-count">0</span>
+                </div>
+                <div class="task-cards" data-status="someday">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+                <button class="add-task-btn">+ Add task</button>
+            </div>
+
+            <!-- Research & Planning Column -->
+            <div class="kanban-column planning">
+                <div class="kanban-header">
+                    <div class="kanban-title-wrapper">
+                        <span class="kanban-title">Research & Planning</span>
+                    </div>
+                    <span class="task-count">0</span>
+                </div>
+                <div class="task-cards" data-status="planning">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+                <button class="add-task-btn">+ Add task</button>
+            </div>
+
+            <!-- Permitted & Ready Column -->
+            <div class="kanban-column ready">
+                <div class="kanban-header">
+                    <div class="kanban-title-wrapper">
+                        <span class="kanban-title">Permitted & Ready</span>
+                    </div>
+                    <span class="task-count">0</span>
+                </div>
+                <div class="task-cards" data-status="ready">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+                <button class="add-task-btn">+ Add task</button>
+            </div>
+
+            <!-- Active Work Column -->
+            <div class="kanban-column in-progress">
+                <div class="kanban-header">
+                    <div class="kanban-title-wrapper">
+                        <span class="kanban-title">Active Work</span>
+                    </div>
+                    <span class="task-count">0</span>
+                </div>
+                <div class="task-cards" data-status="in-progress">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+                <button class="add-task-btn">+ Add task</button>
+            </div>
+
+            <!-- Waiting on External Column -->
+            <div class="kanban-column blocked">
+                <div class="kanban-header">
+                    <div class="kanban-title-wrapper">
+                        <span class="kanban-title">Waiting on External</span>
+                    </div>
+                    <span class="task-count">0</span>
+                </div>
+                <div class="task-cards" data-status="blocked">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+                <button class="add-task-btn">+ Add task</button>
+            </div>
+
+            <!-- Done Done Column -->
+            <div class="kanban-column done">
+                <div class="kanban-header">
+                    <div class="kanban-title-wrapper">
+                        <span class="kanban-title">Done Done</span>
+                    </div>
+                    <span class="task-count">0</span>
+                </div>
+                <div class="task-cards" data-status="done">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+                <button class="add-task-btn">+ Add task</button>
+            </div>
         </div>
     </main>
 
@@ -168,6 +250,7 @@
             flex-direction: column;
             gap: 1rem;
             flex: 1;
+            min-height: 100px;
         }
         
         .task-card {
@@ -175,7 +258,7 @@
             border: 1px solid var(--border);
             border-radius: 6px;
             padding: 1rem;
-            cursor: pointer;
+            cursor: grab;
             transition: all 0.2s ease;
             box-shadow: var(--shadow-sm);
         }
@@ -183,6 +266,10 @@
         .task-card:hover {
             box-shadow: 0 4px 8px var(--shadow-md);
             transform: translateY(-1px);
+        }
+        
+        .task-card:active {
+            cursor: grabbing;
         }
         
         .task-card.high-priority {
@@ -222,6 +309,10 @@
             color: var(--app-primary);
             font-weight: 500;
         }
+        
+        .task-project.kitchen { color: #2196f3; }
+        .task-project.bathroom { color: #ff9800; }
+        .task-project.basement { color: #4caf50; }
         
         .task-due {
             color: var(--text-light);
@@ -293,9 +384,17 @@
             nav.classList.toggle('active');
         }
         
+        function showNewTaskModal() {
+            if (window.atlas) {
+                window.atlas.showAddTaskModal();
+            } else {
+                console.error('Atlas not initialized');
+            }
+        }
+        
         function showColumnManagement() {
             if (window.atlas) {
-                window.atlas.showColumnManagement();
+                alert('🛠️ Column Management\n\nThis feature allows you to:\n• Customize column names\n• Add/remove columns\n• Reorder workflow stages\n• Set column WIP limits\n\nComing soon!');
             }
         }
     </script>
