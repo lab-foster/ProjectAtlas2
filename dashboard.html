@@ -9,7 +9,7 @@
     <title>Dashboard - Project Atlas</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗂️</text></svg>">
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css">
@@ -52,12 +52,12 @@
             <!-- User Menu -->
             <div class="user-menu">
                 <button class="btn btn-secondary" 
-                        onclick="showNewProjectModal()"
+                        onclick="if(window.atlas && window.atlas.showNewProjectModal) { window.atlas.showNewProjectModal(); } else { alert('Loading...'); }"
                         aria-label="Create new project">
                     <span aria-hidden="true">+</span> New Project
                 </button>
                 <button class="user-avatar" 
-                        onclick="showUserMenu()" 
+                        onclick="if(window.atlas && window.atlas.showUserMenu) { window.atlas.showUserMenu(); } else { alert('Loading...'); }" 
                         aria-label="User menu"
                         title="User Menu">
                     AF
@@ -72,7 +72,7 @@
             <!-- Dashboard Header -->
             <section class="dashboard-header">
                 <h2>Welcome back, Andrew</h2>
-                <p>You have <strong>3 active projects</strong> and <strong>2 items</strong> that need your attention</p>
+                <p id="dashboardSummary">You have <strong>3 active projects</strong> and <strong>2 items</strong> that need your attention</p>
             </section>
 
             <!-- Dashboard Grid -->
@@ -81,9 +81,9 @@
                 <section class="project-overview" aria-labelledby="projects-heading">
                     <h3 id="projects-heading">Active Projects</h3>
                     
-                    <div class="project-cards">
+                    <div class="project-cards" id="projectCardsContainer">
                         <!-- Kitchen Renovation Project -->
-                        <article class="project-card status-in-progress" data-project-id="1">
+                        <article class="project-card status-in-progress" data-project-id="kitchen">
                             <div class="project-header">
                                 <h4>Kitchen Renovation Epic</h4>
                                 <span class="status-badge in-progress" role="status">In Progress</span>
@@ -110,17 +110,17 @@
                             </div>
                             
                             <div class="project-actions">
-                                <button class="btn-link" onclick="viewProject(1)" aria-label="View Kitchen Renovation Epic board">
+                                <button class="btn-link" onclick="viewProject('kitchen')" aria-label="View Kitchen Renovation Epic board">
                                     View Epic Board
                                 </button>
-                                <button class="btn-link" onclick="addTasks(1)" aria-label="Add tasks to Kitchen Renovation Epic">
+                                <button class="btn-link" onclick="if(window.atlas && window.atlas.showAddTaskModal) { window.atlas.showAddTaskModal('planning'); }" aria-label="Add tasks to Kitchen Renovation Epic">
                                     Add Tasks
                                 </button>
                             </div>
                         </article>
 
                         <!-- Basement Finishing Project -->
-                        <article class="project-card status-planning" data-project-id="2">
+                        <article class="project-card status-planning" data-project-id="basement">
                             <div class="project-header">
                                 <h4>Basement Finishing Epic</h4>
                                 <span class="status-badge planning" role="status">Planning</span>
@@ -147,17 +147,17 @@
                             </div>
                             
                             <div class="project-actions">
-                                <button class="btn-link" onclick="viewProject(2)" aria-label="View Basement Finishing Epic board">
+                                <button class="btn-link" onclick="viewProject('basement')" aria-label="View Basement Finishing Epic board">
                                     View Epic Board
                                 </button>
-                                <button class="btn-link" onclick="addTasks(2)" aria-label="Add tasks to Basement Finishing Epic">
+                                <button class="btn-link" onclick="if(window.atlas && window.atlas.showAddTaskModal) { window.atlas.showAddTaskModal('planning'); }" aria-label="Add tasks to Basement Finishing Epic">
                                     Add Tasks
                                 </button>
                             </div>
                         </article>
 
                         <!-- Bathroom Update Project -->
-                        <article class="project-card status-blocked" data-project-id="3">
+                        <article class="project-card status-blocked" data-project-id="bathroom">
                             <div class="project-header">
                                 <h4>Bathroom Update Epic</h4>
                                 <span class="status-badge blocked" role="status">Blocked</span>
@@ -184,10 +184,10 @@
                             </div>
                             
                             <div class="project-actions">
-                                <button class="btn-link" onclick="viewProject(3)" aria-label="View Bathroom Update Epic board">
+                                <button class="btn-link" onclick="viewProject('bathroom')" aria-label="View Bathroom Update Epic board">
                                     View Epic Board
                                 </button>
-                                <button class="btn-link" onclick="addTasks(3)" aria-label="Add tasks to Bathroom Update Epic">
+                                <button class="btn-link" onclick="if(window.atlas && window.atlas.showAddTaskModal) { window.atlas.showAddTaskModal('planning'); }" aria-label="Add tasks to Bathroom Update Epic">
                                     Add Tasks
                                 </button>
                             </div>
@@ -201,8 +201,8 @@
                     <section class="widget recent-activity" aria-labelledby="activity-heading">
                         <h3 id="activity-heading">Recent Activity</h3>
                         
-                        <ul class="activity-list">
-                            <li class="activity-item" role="button" tabindex="0" onclick="viewActivity(1)" onkeypress="handleKeyPress(event, 'viewActivity', 1)">
+                        <ul class="activity-list" id="activityListContainer">
+                            <li class="activity-item" role="button" tabindex="0" onclick="viewActivityDetail('1')" onkeypress="handleKeyPress(event, 'viewActivityDetail', '1')">
                                 <div class="activity-icon task-completed" aria-hidden="true">
                                     <span>✓</span>
                                 </div>
@@ -212,7 +212,7 @@
                                 </div>
                             </li>
                             
-                            <li class="activity-item" role="button" tabindex="0" onclick="viewActivity(2)" onkeypress="handleKeyPress(event, 'viewActivity', 2)">
+                            <li class="activity-item" role="button" tabindex="0" onclick="viewActivityDetail('2')" onkeypress="handleKeyPress(event, 'viewActivityDetail', '2')">
                                 <div class="activity-icon expense-added" aria-hidden="true">
                                     <span>💰</span>
                                 </div>
@@ -222,7 +222,7 @@
                                 </div>
                             </li>
                             
-                            <li class="activity-item" role="button" tabindex="0" onclick="viewActivity(3)" onkeypress="handleKeyPress(event, 'viewActivity', 3)">
+                            <li class="activity-item" role="button" tabindex="0" onclick="viewActivityDetail('3')" onkeypress="handleKeyPress(event, 'viewActivityDetail', '3')">
                                 <div class="activity-icon photo-uploaded" aria-hidden="true">
                                     <span>📷</span>
                                 </div>
@@ -232,7 +232,7 @@
                                 </div>
                             </li>
                             
-                            <li class="activity-item" role="button" tabindex="0" onclick="viewActivity(4)" onkeypress="handleKeyPress(event, 'viewActivity', 4)">
+                            <li class="activity-item" role="button" tabindex="0" onclick="viewActivityDetail('4')" onkeypress="handleKeyPress(event, 'viewActivityDetail', '4')">
                                 <div class="activity-icon task-created" aria-hidden="true">
                                     <span>+</span>
                                 </div>
@@ -248,22 +248,22 @@
                     <section class="widget upcoming-tasks" aria-labelledby="tasks-heading">
                         <h3 id="tasks-heading">Upcoming Tasks</h3>
                         
-                        <ul class="task-list">
-                            <li class="task-item priority-high" role="button" tabindex="0" onclick="viewTask(1)" onkeypress="handleKeyPress(event, 'viewTask', 1)">
+                        <ul class="task-list" id="upcomingTasksContainer">
+                            <li class="task-item priority-high" role="button" tabindex="0" onclick="viewTaskDetail('t9')" onkeypress="handleKeyPress(event, 'viewTaskDetail', 't9')">
                                 <span class="task-priority high" aria-label="High priority">!</span>
-                                <span class="task-text">Schedule electrical inspection</span>
+                                <span class="task-text">Schedule plumbing inspection</span>
                                 <time class="task-due" datetime="2025-10-13">Due tomorrow</time>
                             </li>
                             
-                            <li class="task-item priority-medium" role="button" tabindex="0" onclick="viewTask(2)" onkeypress="handleKeyPress(event, 'viewTask', 2)">
+                            <li class="task-item priority-medium" role="button" tabindex="0" onclick="viewTaskDetail('t11')" onkeypress="handleKeyPress(event, 'viewTaskDetail', 't11')">
                                 <span class="task-priority medium" aria-label="Medium priority">•</span>
                                 <span class="task-text">Order bathroom vanity</span>
                                 <time class="task-due" datetime="2025-10-15">Due Friday</time>
                             </li>
                             
-                            <li class="task-item priority-low" role="button" tabindex="0" onclick="viewTask(3)" onkeypress="handleKeyPress(event, 'viewTask', 3)">
+                            <li class="task-item priority-low" role="button" tabindex="0" onclick="viewTaskDetail('t8')" onkeypress="handleKeyPress(event, 'viewTaskDetail', 't8')">
                                 <span class="task-priority low" aria-label="Low priority">-</span>
-                                <span class="task-text">Research countertop options</span>
+                                <span class="task-text">Research countertop materials</span>
                                 <time class="task-due" datetime="2025-10-18">Due next week</time>
                             </li>
                         </ul>
@@ -326,39 +326,36 @@
             }
         }
         
-        // Placeholder functions for interactivity (to be implemented in atlas-interactive.js)
-        function viewProject(id) {
-            console.log('View project:', id);
-            // Navigate to project detail or kanban board
-            window.location.href = `kanban.html?project=${id}`;
+        // View project function
+        function viewProject(projectId) {
+            console.log('View project:', projectId);
+            window.location.href = `kanban.html?project=${projectId}`;
         }
         
-        function addTasks(id) {
-            console.log('Add tasks to project:', id);
-            // Show add task modal
-            if (typeof showNewTaskModal === 'function') {
-                showNewTaskModal(id);
+        // View activity detail
+        function viewActivityDetail(activityId) {
+            console.log('View activity:', activityId);
+            if (window.atlas && typeof window.atlas.showActivityDetail === 'function') {
+                window.atlas.showActivityDetail(activityId);
+            } else {
+                // Fallback until atlas is loaded
+                alert('Loading activity details...');
             }
         }
         
-        function viewActivity(id) {
-            console.log('View activity:', id);
-            // Show activity detail modal or navigate
-        }
-        
-        function viewTask(id) {
-            console.log('View task:', id);
-            // Show task detail modal or navigate
-        }
-        
-        function showNewProjectModal() {
-            console.log('Show new project modal');
-            // Implementation in atlas-interactive.js
-        }
-        
-        function showUserMenu() {
-            console.log('Show user menu');
-            // Implementation in atlas-interactive.js
+        // View task detail
+        function viewTaskDetail(taskId) {
+            console.log('View task:', taskId);
+            if (window.atlas && window.atlas.tasks) {
+                const task = window.atlas.tasks.find(t => t.id === taskId);
+                if (task && typeof window.atlas.showTaskDetailModal === 'function') {
+                    window.atlas.showTaskDetailModal(task);
+                } else {
+                    alert('Task details loading...');
+                }
+            } else {
+                alert('Loading task details...');
+            }
         }
         
         // Close mobile menu when clicking outside
