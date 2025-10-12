@@ -3,445 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Document Management - Organize and access contracts, permits, photos, and receipts for your home improvement projects">
+    <meta name="robots" content="noindex, nofollow">
+    
     <title>Documents - Project Atlas</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css">
-</head>
-<body class="app-page">
-    <header class="app-header">
-        <div class="header-container">
-            <div class="logo">
-                <h1>Project <span class="atlas-blue">ATLAS</span></h1>
-                <span class="tagline">Home Project Management</span>
-            </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="kanban.html">Kanban Board</a></li>
-                    <li><a href="budget.html">Budget Tracker</a></li>
-                    <li><a href="calendar.html">Calendar</a></li>
-                    <li><a href="documents.html" class="active">Documents</a></li>
-                </ul>
-            </nav>
-            <div class="user-menu">
-                <button class="btn-secondary" onclick="showUploadModal()">+ Upload File</button>
-                <div class="user-avatar">AF</div>
-            </div>
-        </div>
-    </header>
-
-    <main class="documents-main">
-        <div class="documents-header">
-            <h2>Document Management</h2>
-            <div class="documents-controls">
-                <select class="filter-select">
-                    <option>All Projects</option>
-                    <option>Kitchen Renovation</option>
-                    <option>Basement Finishing</option>
-                    <option>Bathroom Update</option>
-                </select>
-                <select class="filter-select">
-                    <option>All Types</option>
-                    <option>Contracts</option>
-                    <option>Permits</option>
-                    <option>Photos</option>
-                    <option>Receipts</option>
-                    <option>Plans</option>
-                </select>
-                <div class="view-toggle">
-                    <button class="view-btn active">Grid</button>
-                    <button class="view-btn" onclick="toggleListView()">List</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="documents-stats">
-            <div class="stat-card">
-                <div class="stat-icon">📁</div>
-                <div class="stat-info">
-                    <span class="stat-number">247</span>
-                    <span class="stat-label">Total Files</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📷</div>
-                <div class="stat-info">
-                    <span class="stat-number">189</span>
-                    <span class="stat-label">Photos</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📋</div>
-                <div class="stat-info">
-                    <span class="stat-number">34</span>
-                    <span class="stat-label">Documents</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">💾</div>
-                <div class="stat-info">
-                    <span class="stat-number">2.1 GB</span>
-                    <span class="stat-label">Storage Used</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="documents-content">
-            <div class="documents-sidebar">
-                <div class="folder-tree">
-                    <h3>Project Folders</h3>
-                    <div class="folder-list">
-                        <div class="folder-item active" onclick="selectFolder('all')">
-                            <span class="folder-icon">📁</span>
-                            <span class="folder-name">All Documents</span>
-                            <span class="file-count">247</span>
-                        </div>
-                        <div class="folder-item" onclick="selectFolder('kitchen')">
-                            <span class="folder-icon">🏠</span>
-                            <span class="folder-name">Kitchen Renovation</span>
-                            <span class="file-count">142</span>
-                        </div>
-                        <div class="folder-item" onclick="selectFolder('basement')">
-                            <span class="folder-icon">🏗️</span>
-                            <span class="folder-name">Basement Finishing</span>
-                            <span class="file-count">67</span>
-                        </div>
-                        <div class="folder-item" onclick="selectFolder('bathroom')">
-                            <span class="folder-icon">🚿</span>
-                            <span class="folder-name">Bathroom Update</span>
-                            <span class="file-count">38</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="recent-uploads">
-                    <h3>Recent Uploads</h3>
-                    <div class="recent-list">
-                        <div class="recent-item" onclick="showFileDetails('Electrical permit')">
-                            <div class="file-icon pdf">📄</div>
-                            <div class="recent-info">
-                                <div class="recent-name">Electrical permit approval</div>
-                                <div class="recent-date">2 hours ago</div>
-                            </div>
-                        </div>
-                        <div class="recent-item" onclick="showFileDetails('Progress photos')">
-                            <div class="file-icon photos">📷</div>
-                            <div class="recent-info">
-                                <div class="recent-name">Kitchen progress (5 photos)</div>
-                                <div class="recent-date">Yesterday</div>
-                            </div>
-                        </div>
-                        <div class="recent-item" onclick="showFileDetails('Receipt scan')">
-                            <div class="file-icon image">🖼️</div>
-                            <div class="recent-info">
-                                <div class="recent-name">Home Depot receipt</div>
-                                <div class="recent-date">3 days ago</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="documents-grid">
-                <div class="document-card contract" onclick="showFileDetails('Kitchen contract')">
-                    <div class="doc-header">
-                        <div class="file-icon large">📋</div>
-                        <div class="file-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
-                        </div>
-                    </div>
-                    <div class="doc-info">
-                        <div class="doc-title">Kitchen renovation contract</div>
-                        <div class="doc-meta">
-                            <span class="doc-project">Kitchen Renovation</span>
-                            <span class="doc-date">Oct 15, 2024</span>
-                            <span class="doc-size">2.4 MB</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="document-card photos" onclick="showFileDetails('Before photos')">
-                    <div class="doc-header">
-                        <div class="file-icon large">📷</div>
-                        <div class="file-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
-                        </div>
-                    </div>
-                    <div class="doc-info">
-                        <div class="doc-title">Kitchen before photos</div>
-                        <div class="doc-meta">
-                            <span class="doc-project">Kitchen Renovation</span>
-                            <span class="doc-date">Oct 12, 2024</span>
-                            <span class="doc-size">12 photos</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="document-card permit" onclick="showFileDetails('Building permit')">
-                    <div class="doc-header">
-                        <div class="file-icon large">📜</div>
-                        <div class="file-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
-                        </div>
-                    </div>
-                    <div class="doc-info">
-                        <div class="doc-title">Basement building permits</div>
-                        <div class="doc-meta">
-                            <span class="doc-project">Basement Finishing</span>
-                            <span class="doc-date">Nov 1, 2024</span>
-                            <span class="doc-size">1.1 MB</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="document-card receipt" onclick="showFileDetails('Material receipts')">
-                    <div class="doc-header">
-                        <div class="file-icon large">🧾</div>
-                        <div class="file-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
-                        </div>
-                    </div>
-                    <div class="doc-info">
-                        <div class="doc-title">Material purchase receipts</div>
-                        <div class="doc-meta">
-                            <span class="doc-project">Kitchen Renovation</span>
-                            <span class="doc-date">Nov 5, 2024</span>
-                            <span class="doc-size">8 files</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="document-card plans" onclick="showFileDetails('Floor plans')">
-                    <div class="doc-header">
-                        <div class="file-icon large">📐</div>
-                        <div class="file-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
-                        </div>
-                    </div>
-                    <div class="doc-info">
-                        <div class="doc-title">Basement floor plans</div>
-                        <div class="doc-meta">
-                            <span class="doc-project">Basement Finishing</span>
-                            <span class="doc-date">Oct 20, 2024</span>
-                            <span class="doc-size">3.7 MB</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="document-card photos" onclick="showFileDetails('Progress update')">
-                    <div class="doc-header">
-                        <div class="file-icon large">📷</div>
-                        <div class="file-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
-                        </div>
-                    </div>
-                    <div class="doc-info">
-                        <div class="doc-title">Kitchen progress update</div>
-                        <div class="doc-meta">
-                            <span class="doc-project">Kitchen Renovation</span>
-                            <span class="doc-date">Nov 10, 2024</span>
-                            <span class="doc-size">18 photos</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="document-card inspection" onclick="showFileDetails('Inspection report')">
-                    <div class="doc-header">
-                        <div class="file-icon large">✅</div>
-                        <div class="file-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
-                        </div>
-                    </div>
-                    <div class="doc-info">
-                        <div class="doc-title">Plumbing inspection report</div>
-                        <div class="doc-meta">
-                            <span class="doc-project">Bathroom Update</span>
-                            <span class="doc-date">Nov 8, 2024</span>
-                            <span class="doc-size">756 KB</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="document-card warranty" onclick="showFileDetails('Warranty info')">
-                    <div class="doc-header">
-                        <div class="file-icon large">🛡️</div>
-                        <div class="file-actions">
-                            <button class="action-btn" onclick="event.stopPropagation(); showShareModal()">Share</button>
-                        </div>
-                    </div>
-                    <div class="doc-info">
-                        <div class="doc-title">Appliance warranties</div>
-                        <div class="doc-meta">
-                            <span class="doc-project">Kitchen Renovation</span>
-                            <span class="doc-date">Oct 30, 2024</span>
-                            <span class="doc-size">4 documents</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
+    <link rel="stylesheet" href="atlas-interactive.css">
+    
     <style>
+        /* Documents page specific styles */
         .documents-main {
+            padding: var(--space-xl);
             max-width: 1600px;
             margin: 0 auto;
-            padding: 2rem;
         }
 
         .documents-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-default);
+            gap: var(--space-lg);
             flex-wrap: wrap;
-            gap: 1rem;
+        }
+
+        .documents-header h2 {
+            margin-bottom: 0;
         }
 
         .documents-controls {
             display: flex;
-            gap: 1rem;
+            gap: var(--space-md);
             align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .filter-select:hover {
+            border-color: var(--border-medium);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--app-primary);
+            box-shadow: 0 0 0 3px var(--app-primary-light);
         }
 
         .view-toggle {
             display: flex;
-            border: 1px solid var(--border);
-            border-radius: 4px;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
             overflow: hidden;
         }
 
         .view-btn {
-            padding: 0.5rem 1rem;
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
             border: none;
-            background: var(--surface);
+            border-right: 1px solid var(--border-default);
             cursor: pointer;
+            transition: all var(--transition-fast);
             font-weight: 500;
-            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .view-btn:last-child {
+            border-right: none;
+        }
+
+        .view-btn:hover {
+            background: var(--app-primary-lighter);
+            color: var(--app-primary);
         }
 
         .view-btn.active {
             background: var(--app-primary);
-            color: white;
+            color: var(--white);
         }
 
+        /* Document Stats */
         .documents-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-2xl);
         }
 
         .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
             display: flex;
             align-items: center;
-            gap: 1rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.5rem;
+            gap: var(--space-md);
             box-shadow: var(--shadow-sm);
+            transition: all var(--transition-base);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .stat-icon {
-            font-size: 2rem;
-            opacity: 0.8;
+            font-size: 2.5rem;
+            flex-shrink: 0;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
         }
 
         .stat-number {
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 1.75rem;
+            font-weight: 700;
             color: var(--app-primary);
-            display: block;
+            line-height: 1.2;
         }
 
         .stat-label {
-            color: var(--text-medium);
-            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: var(--space-xs);
         }
 
+        /* Content Layout */
         .documents-content {
             display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 2rem;
+            grid-template-columns: 300px 1fr;
+            gap: var(--space-2xl);
         }
 
+        /* Sidebar */
         .documents-sidebar {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: var(--space-xl);
         }
 
-        .folder-tree, .recent-uploads {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.5rem;
+        .folder-tree,
+        .recent-uploads {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
             box-shadow: var(--shadow-sm);
         }
 
-        .folder-tree h3, .recent-uploads h3 {
-            margin: 0 0 1rem 0;
-            color: var(--text-dark);
+        .folder-tree h3,
+        .recent-uploads h3 {
             font-size: 1rem;
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
+            font-weight: 600;
         }
 
-        .folder-list, .recent-list {
+        .folder-list {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: var(--space-xs);
         }
 
         .folder-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            border-radius: 6px;
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all var(--transition-fast);
         }
 
         .folder-item:hover {
-            background: var(--app-bg-light);
+            background: var(--app-primary-lighter);
         }
 
         .folder-item.active {
-            background: var(--app-light-blue);
-            color: var(--app-primary);
+            background: var(--app-primary-lighter);
+            border-left: 3px solid var(--app-primary);
         }
 
         .folder-icon {
-            font-size: 1.1rem;
+            font-size: 1.25rem;
+            flex-shrink: 0;
         }
 
         .folder-name {
             flex: 1;
             font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
         }
 
         .file-count {
-            background: rgba(0,0,0,0.1);
-            padding: 0.2rem 0.5rem;
-            border-radius: 10px;
             font-size: 0.75rem;
-            color: var(--text-medium);
+            color: var(--text-tertiary);
+            background: var(--gray-100);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-full);
+            font-weight: 600;
+        }
+
+        .folder-item.active .file-count {
+            background: var(--app-primary);
+            color: var(--white);
+        }
+
+        /* Recent Uploads */
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
         }
 
         .recent-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            border-radius: 6px;
+            gap: var(--space-md);
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all var(--transition-fast);
         }
 
         .recent-item:hover {
-            background: var(--app-bg-light);
+            background: var(--app-primary-lighter);
         }
 
         .file-icon {
@@ -449,6 +256,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .file-icon.large {
@@ -457,51 +265,58 @@
 
         .recent-info {
             flex: 1;
+            min-width: 0;
         }
 
         .recent-name {
             font-weight: 500;
-            color: var(--text-dark);
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            margin-bottom: var(--space-xs);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .recent-date {
             font-size: 0.75rem;
-            color: var(--text-light);
+            color: var(--text-tertiary);
         }
 
+        /* Documents Grid */
         .documents-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
+            gap: var(--space-lg);
         }
 
         .document-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all var(--transition-base);
             box-shadow: var(--shadow-sm);
+            position: relative;
         }
 
         .document-card:hover {
             box-shadow: var(--shadow-md);
             transform: translateY(-2px);
+            border-color: var(--app-primary-light);
         }
 
         .doc-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 1rem;
+            margin-bottom: var(--space-md);
         }
 
         .file-actions {
             opacity: 0;
-            transition: opacity 0.2s ease;
+            transition: opacity var(--transition-fast);
         }
 
         .document-card:hover .file-actions {
@@ -509,18 +324,21 @@
         }
 
         .action-btn {
-            padding: 0.25rem 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            background: var(--surface);
+            padding: var(--space-xs) var(--space-md);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
             color: var(--app-primary);
-            font-size: 0.8rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all var(--transition-fast);
         }
 
         .action-btn:hover {
-            background: var(--app-light-blue);
+            background: var(--app-primary);
+            color: var(--white);
+            border-color: var(--app-primary);
         }
 
         .doc-info {
@@ -529,37 +347,65 @@
 
         .doc-title {
             font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            margin-bottom: var(--space-md);
             font-size: 1rem;
-            line-height: 1.3;
+            line-height: 1.4;
         }
 
         .doc-meta {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: var(--space-xs);
         }
 
         .doc-project {
             color: var(--app-primary);
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: 0.8125rem;
+            font-weight: 600;
         }
 
-        .doc-date, .doc-size {
-            color: var(--text-light);
-            font-size: 0.8rem;
+        .doc-date,
+        .doc-size {
+            color: var(--text-tertiary);
+            font-size: 0.8125rem;
         }
 
-        /* Document type styling */
-        .document-card.contract { border-left: 4px solid #2196f3; }
-        .document-card.photos { border-left: 4px solid #ff9800; }
-        .document-card.permit { border-left: 4px solid #4caf50; }
-        .document-card.receipt { border-left: 4px solid #9c27b0; }
-        .document-card.plans { border-left: 4px solid #f44336; }
-        .document-card.inspection { border-left: 4px solid #00bcd4; }
-        .document-card.warranty { border-left: 4px solid #795548; }
+        /* Document Type Border Styling */
+        .document-card.contract {
+            border-left: 4px solid #2196f3;
+        }
+
+        .document-card.photos {
+            border-left: 4px solid #ff9800;
+        }
+
+        .document-card.permit {
+            border-left: 4px solid #4caf50;
+        }
+
+        .document-card.receipt {
+            border-left: 4px solid #9c27b0;
+        }
+
+        .document-card.plans {
+            border-left: 4px solid #f44336;
+        }
+
+        .document-card.inspection {
+            border-left: 4px solid #00bcd4;
+        }
+
+        .document-card.warranty {
+            border-left: 4px solid #795548;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .documents-content {
+                grid-template-columns: 280px 1fr;
+            }
+        }
 
         @media (max-width: 1024px) {
             .documents-content {
@@ -568,8 +414,8 @@
 
             .documents-sidebar {
                 order: -1;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                 display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
 
             .documents-grid {
@@ -578,6 +424,10 @@
         }
 
         @media (max-width: 768px) {
+            .documents-main {
+                padding: var(--space-lg);
+            }
+
             .documents-header {
                 flex-direction: column;
                 align-items: stretch;
@@ -585,7 +435,12 @@
             }
 
             .documents-controls {
-                justify-content: center;
+                flex-direction: column;
+            }
+
+            .filter-select,
+            .view-toggle {
+                width: 100%;
             }
 
             .documents-sidebar {
@@ -598,39 +453,617 @@
 
             .doc-meta {
                 flex-direction: row;
-                gap: 1rem;
+                flex-wrap: wrap;
+                gap: var(--space-md);
+            }
+
+            .documents-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .documents-main {
+                padding: var(--space-md);
+            }
+
+            .documents-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: var(--space-md);
+            }
+
+            .folder-tree,
+            .recent-uploads {
+                padding: var(--space-md);
+            }
+
+            .document-card {
+                padding: var(--space-md);
             }
         }
     </style>
+</head>
+<body class="app-page">
+    <!-- Skip to Main Content -->
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    
+    <!-- Application Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo">
+                <h1>Project <span class="atlas-blue">ATLAS</span></h1>
+                <span class="tagline">Home Project Management</span>
+            </div>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" 
+                    onclick="toggleMobileMenu()" 
+                    aria-label="Toggle navigation menu"
+                    aria-expanded="false"
+                    aria-controls="mainNav">
+                <span aria-hidden="true">☰</span>
+            </button>
+            
+            <!-- Main Navigation -->
+            <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="kanban.html">Kanban Board</a></li>
+                    <li><a href="budget.html">Budget Tracker</a></li>
+                    <li><a href="calendar.html">Calendar</a></li>
+                    <li><a href="documents.html" class="active" aria-current="page">Documents</a></li>
+                </ul>
+            </nav>
+            
+            <!-- User Menu -->
+            <div class="user-menu">
+                <button class="btn btn-secondary" 
+                        onclick="showUploadModal()"
+                        aria-label="Upload files">
+                    <span aria-hidden="true">+</span> Upload File
+                </button>
+                <button class="user-avatar" 
+                        onclick="showUserMenu()" 
+                        aria-label="User menu"
+                        title="User Menu">
+                    AF
+                </button>
+            </div>
+        </div>
+    </header>
 
+    <!-- Main Content -->
+    <main class="documents-main" id="main-content">
+        <!-- Documents Header -->
+        <div class="documents-header">
+            <h2>Document Management</h2>
+            
+            <!-- Document Controls -->
+            <div class="documents-controls" role="group" aria-label="Document controls">
+                <label for="projectFilterDocs" class="sr-only">Filter by project</label>
+                <select class="filter-select" 
+                        id="projectFilterDocs"
+                        aria-label="Filter by project"
+                        onchange="handleProjectFilter(this.value)">
+                    <option value="all">All Projects</option>
+                    <option value="kitchen">Kitchen Renovation</option>
+                    <option value="basement">Basement Finishing</option>
+                    <option value="bathroom">Bathroom Update</option>
+                </select>
+                
+                <label for="typeFilterDocs" class="sr-only">Filter by type</label>
+                <select class="filter-select" 
+                        id="typeFilterDocs"
+                        aria-label="Filter by document type"
+                        onchange="handleTypeFilter(this.value)">
+                    <option value="all">All Types</option>
+                    <option value="contracts">Contracts</option>
+                    <option value="permits">Permits</option>
+                    <option value="photos">Photos</option>
+                    <option value="receipts">Receipts</option>
+                    <option value="plans">Plans</option>
+                </select>
+                
+                <div class="view-toggle" role="radiogroup" aria-label="View mode">
+                    <button class="view-btn active" 
+                            role="radio" 
+                            aria-checked="true"
+                            onclick="changeView('grid')">
+                        Grid
+                    </button>
+                    <button class="view-btn" 
+                            role="radio" 
+                            aria-checked="false"
+                            onclick="toggleListView()">
+                        List
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Statistics -->
+        <section class="documents-stats" aria-label="Document statistics">
+            <article class="stat-card">
+                <div class="stat-icon" aria-hidden="true">📁</div>
+                <div class="stat-info">
+                    <span class="stat-number" aria-label="247 total files">247</span>
+                    <span class="stat-label">Total Files</span>
+                </div>
+            </article>
+            
+            <article class="stat-card">
+                <div class="stat-icon" aria-hidden="true">📷</div>
+                <div class="stat-info">
+                    <span class="stat-number" aria-label="189 photos">189</span>
+                    <span class="stat-label">Photos</span>
+                </div>
+            </article>
+            
+            <article class="stat-card">
+                <div class="stat-icon" aria-hidden="true">📋</div>
+                <div class="stat-info">
+                    <span class="stat-number" aria-label="34 documents">34</span>
+                    <span class="stat-label">Documents</span>
+                </div>
+            </article>
+            
+            <article class="stat-card">
+                <div class="stat-icon" aria-hidden="true">💾</div>
+                <div class="stat-info">
+                    <span class="stat-number" aria-label="2.1 gigabytes used">2.1 GB</span>
+                    <span class="stat-label">Storage Used</span>
+                </div>
+            </article>
+        </section>
+
+        <!-- Documents Content -->
+        <div class="documents-content">
+            <!-- Sidebar -->
+            <aside class="documents-sidebar" aria-label="Document navigation">
+                <!-- Folder Tree -->
+                <nav class="folder-tree" aria-labelledby="folders-heading">
+                    <h3 id="folders-heading">Project Folders</h3>
+                    
+                    <div class="folder-list" role="list">
+                        <div class="folder-item active" 
+                             role="button"
+                             tabindex="0"
+                             data-folder-id="all"
+                             onclick="selectFolder('all')"
+                             onkeypress="handleKeyPress(event, 'selectFolder', 'all')"
+                             aria-label="All documents, 247 files">
+                            <span class="folder-icon" aria-hidden="true">📁</span>
+                            <span class="folder-name">All Documents</span>
+                            <span class="file-count">247</span>
+                        </div>
+                        
+                        <div class="folder-item" 
+                             role="button"
+                             tabindex="0"
+                             data-folder-id="kitchen"
+                             onclick="selectFolder('kitchen')"
+                             onkeypress="handleKeyPress(event, 'selectFolder', 'kitchen')"
+                             aria-label="Kitchen Renovation, 142 files">
+                            <span class="folder-icon" aria-hidden="true">🏠</span>
+                            <span class="folder-name">Kitchen Renovation</span>
+                            <span class="file-count">142</span>
+                        </div>
+                        
+                        <div class="folder-item" 
+                             role="button"
+                             tabindex="0"
+                             data-folder-id="basement"
+                             onclick="selectFolder('basement')"
+                             onkeypress="handleKeyPress(event, 'selectFolder', 'basement')"
+                             aria-label="Basement Finishing, 67 files">
+                            <span class="folder-icon" aria-hidden="true">🏗️</span>
+                            <span class="folder-name">Basement Finishing</span>
+                            <span class="file-count">67</span>
+                        </div>
+                        
+                        <div class="folder-item" 
+                             role="button"
+                             tabindex="0"
+                             data-folder-id="bathroom"
+                             onclick="selectFolder('bathroom')"
+                             onkeypress="handleKeyPress(event, 'selectFolder', 'bathroom')"
+                             aria-label="Bathroom Update, 38 files">
+                            <span class="folder-icon" aria-hidden="true">🚿</span>
+                            <span class="folder-name">Bathroom Update</span>
+                            <span class="file-count">38</span>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Recent Uploads -->
+                <section class="recent-uploads" aria-labelledby="recent-heading">
+                    <h3 id="recent-heading">Recent Uploads</h3>
+                    
+                    <div class="recent-list">
+                        <article class="recent-item" 
+                                 role="button"
+                                 tabindex="0"
+                                 data-file-id="file-1"
+                                 onclick="showFileDetails('file-1')"
+                                 onkeypress="handleKeyPress(event, 'showFileDetails', 'file-1')">
+                            <div class="file-icon pdf" aria-hidden="true">📄</div>
+                            <div class="recent-info">
+                                <div class="recent-name">Electrical permit approval</div>
+                                <time class="recent-date" datetime="2024-11-21T10:00:00">2 hours ago</time>
+                            </div>
+                        </article>
+                        
+                        <article class="recent-item" 
+                                 role="button"
+                                 tabindex="0"
+                                 data-file-id="file-2"
+                                 onclick="showFileDetails('file-2')"
+                                 onkeypress="handleKeyPress(event, 'showFileDetails', 'file-2')">
+                            <div class="file-icon photos" aria-hidden="true">📷</div>
+                            <div class="recent-info">
+                                <div class="recent-name">Kitchen progress (5 photos)</div>
+                                <time class="recent-date" datetime="2024-11-20">Yesterday</time>
+                            </div>
+                        </article>
+                        
+                        <article class="recent-item" 
+                                 role="button"
+                                 tabindex="0"
+                                 data-file-id="file-3"
+                                 onclick="showFileDetails('file-3')"
+                                 onkeypress="handleKeyPress(event, 'showFileDetails', 'file-3')">
+                            <div class="file-icon image" aria-hidden="true">🖼️</div>
+                            <div class="recent-info">
+                                <div class="recent-name">Home Depot receipt</div>
+                                <time class="recent-date" datetime="2024-11-18">3 days ago</time>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- Documents Grid -->
+            <section class="documents-grid" aria-label="Document files">
+                <!-- Contract Document -->
+                <article class="document-card contract" 
+                         role="button"
+                         tabindex="0"
+                         data-doc-id="doc-1"
+                         onclick="showFileDetails('doc-1')"
+                         onkeypress="handleKeyPress(event, 'showFileDetails', 'doc-1')">
+                    <div class="doc-header">
+                        <div class="file-icon large" aria-hidden="true">📋</div>
+                        <div class="file-actions">
+                            <button class="action-btn" 
+                                    onclick="event.stopPropagation(); showShareModal('doc-1')"
+                                    aria-label="Share kitchen renovation contract">
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Kitchen renovation contract</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Kitchen Renovation</span>
+                            <time class="doc-date" datetime="2024-10-15">Oct 15, 2024</time>
+                            <span class="doc-size">2.4 MB</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Photos Document -->
+                <article class="document-card photos" 
+                         role="button"
+                         tabindex="0"
+                         data-doc-id="doc-2"
+                         onclick="showFileDetails('doc-2')"
+                         onkeypress="handleKeyPress(event, 'showFileDetails', 'doc-2')">
+                    <div class="doc-header">
+                        <div class="file-icon large" aria-hidden="true">📷</div>
+                        <div class="file-actions">
+                            <button class="action-btn" 
+                                    onclick="event.stopPropagation(); showShareModal('doc-2')"
+                                    aria-label="Share kitchen before photos">
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Kitchen before photos</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Kitchen Renovation</span>
+                            <time class="doc-date" datetime="2024-10-12">Oct 12, 2024</time>
+                            <span class="doc-size">12 photos</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Permit Document -->
+                <article class="document-card permit" 
+                         role="button"
+                         tabindex="0"
+                         data-doc-id="doc-3"
+                         onclick="showFileDetails('doc-3')"
+                         onkeypress="handleKeyPress(event, 'showFileDetails', 'doc-3')">
+                    <div class="doc-header">
+                        <div class="file-icon large" aria-hidden="true">📜</div>
+                        <div class="file-actions">
+                            <button class="action-btn" 
+                                    onclick="event.stopPropagation(); showShareModal('doc-3')"
+                                    aria-label="Share basement building permits">
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Basement building permits</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Basement Finishing</span>
+                            <time class="doc-date" datetime="2024-11-01">Nov 1, 2024</time>
+                            <span class="doc-size">1.1 MB</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Receipt Document -->
+                <article class="document-card receipt" 
+                         role="button"
+                         tabindex="0"
+                         data-doc-id="doc-4"
+                         onclick="showFileDetails('doc-4')"
+                         onkeypress="handleKeyPress(event, 'showFileDetails', 'doc-4')">
+                    <div class="doc-header">
+                        <div class="file-icon large" aria-hidden="true">🧾</div>
+                        <div class="file-actions">
+                            <button class="action-btn" 
+                                    onclick="event.stopPropagation(); showShareModal('doc-4')"
+                                    aria-label="Share material receipts">
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Material receipts - cabinets</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Kitchen Renovation</span>
+                            <time class="doc-date" datetime="2024-10-20">Oct 20, 2024</time>
+                            <span class="doc-size">856 KB</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Plans Document -->
+                <article class="document-card plans" 
+                         role="button"
+                         tabindex="0"
+                         data-doc-id="doc-5"
+                         onclick="showFileDetails('doc-5')"
+                         onkeypress="handleKeyPress(event, 'showFileDetails', 'doc-5')">
+                    <div class="doc-header">
+                        <div class="file-icon large" aria-hidden="true">📐</div>
+                        <div class="file-actions">
+                            <button class="action-btn" 
+                                    onclick="event.stopPropagation(); showShareModal('doc-5')"
+                                    aria-label="Share basement floor plans">
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Basement floor plans</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Basement Finishing</span>
+                            <time class="doc-date" datetime="2024-10-25">Oct 25, 2024</time>
+                            <span class="doc-size">3.2 MB</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Inspection Document -->
+                <article class="document-card inspection" 
+                         role="button"
+                         tabindex="0"
+                         data-doc-id="doc-6"
+                         onclick="showFileDetails('doc-6')"
+                         onkeypress="handleKeyPress(event, 'showFileDetails', 'doc-6')">
+                    <div class="doc-header">
+                        <div class="file-icon large" aria-hidden="true">✓</div>
+                        <div class="file-actions">
+                            <button class="action-btn" 
+                                    onclick="event.stopPropagation(); showShareModal('doc-6')"
+                                    aria-label="Share plumbing inspection report">
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Plumbing inspection report</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Bathroom Update</span>
+                            <time class="doc-date" datetime="2024-11-06">Nov 6, 2024</time>
+                            <span class="doc-size">1.5 MB</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Warranty Document -->
+                <article class="document-card warranty" 
+                         role="button"
+                         tabindex="0"
+                         data-doc-id="doc-7"
+                         onclick="showFileDetails('doc-7')"
+                         onkeypress="handleKeyPress(event, 'showFileDetails', 'doc-7')">
+                    <div class="doc-header">
+                        <div class="file-icon large" aria-hidden="true">🛡️</div>
+                        <div class="file-actions">
+                            <button class="action-btn" 
+                                    onclick="event.stopPropagation(); showShareModal('doc-7')"
+                                    aria-label="Share appliance warranties">
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Appliance warranties</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Kitchen Renovation</span>
+                            <time class="doc-date" datetime="2024-10-30">Oct 30, 2024</time>
+                            <span class="doc-size">4.8 MB</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Photos Document 2 -->
+                <article class="document-card photos" 
+                         role="button"
+                         tabindex="0"
+                         data-doc-id="doc-8"
+                         onclick="showFileDetails('doc-8')"
+                         onkeypress="handleKeyPress(event, 'showFileDetails', 'doc-8')">
+                    <div class="doc-header">
+                        <div class="file-icon large" aria-hidden="true">📷</div>
+                        <div class="file-actions">
+                            <button class="action-btn" 
+                                    onclick="event.stopPropagation(); showShareModal('doc-8')"
+                                    aria-label="Share basement progress photos">
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">Basement progress photos</div>
+                        <div class="doc-meta">
+                            <span class="doc-project">Basement Finishing</span>
+                            <time class="doc-date" datetime="2024-11-15">Nov 15, 2024</time>
+                            <span class="doc-size">8 photos</span>
+                        </div>
+                    </div>
+                </article>
+            </section>
+        </div>
+    </main>
+
+    <!-- Scripts -->
     <script>
+        // Mobile menu toggle with accessibility
+        function toggleMobileMenu() {
+            const nav = document.getElementById('mainNav');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            const isExpanded = nav.classList.toggle('active');
+            
+            // Update ARIA attribute
+            toggle.setAttribute('aria-expanded', isExpanded);
+        }
+        
+        // Keyboard accessibility helper
+        function handleKeyPress(event, functionName, id) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                window[functionName](id);
+            }
+        }
+        
+        // Filter handlers
+        function handleProjectFilter(value) {
+            console.log('Filter by project:', value);
+            if (window.atlas && typeof window.atlas.filterDocsByProject === 'function') {
+                window.atlas.filterDocsByProject(value);
+            }
+        }
+        
+        function handleTypeFilter(value) {
+            console.log('Filter by type:', value);
+            if (window.atlas && typeof window.atlas.filterDocsByType === 'function') {
+                window.atlas.filterDocsByType(value);
+            }
+        }
+        
+        // Document functions
         function showUploadModal() {
-            alert('📤 Upload Files\n\nThis would open a file upload interface with:\n• Drag & drop support\n• Project assignment\n• File categorization\n• Bulk upload options\n• Progress tracking\n• Automatic organization\n\nComing soon!');
+            console.log('Show upload modal');
+            alert('📤 Upload Files\n\nFeatures:\n• Drag & drop support\n• Project assignment\n• File categorization\n• Bulk upload\n• Progress tracking\n• Auto-organization\n\nComing soon!');
         }
 
-        function showFileDetails(fileName) {
-            alert('📄 File Details: "' + fileName + '"\n\nThis would show:\n• File preview/thumbnail\n• Download options\n• Version history\n• Sharing permissions\n• Comments and notes\n• Related tasks/projects\n• Edit/delete options\n\nComing soon!');
+        function showFileDetails(fileId) {
+            console.log('Show file details:', fileId);
+            alert('📄 File Details\n\nView:\n• File preview/thumbnail\n• Download options\n• Version history\n• Sharing permissions\n• Comments and notes\n• Related tasks/projects\n\nComing soon!');
         }
 
         function selectFolder(folderId) {
+            console.log('Select folder:', folderId);
+            
             // Remove active class from all folders
             document.querySelectorAll('.folder-item').forEach(item => {
                 item.classList.remove('active');
             });
             
             // Add active class to clicked folder
-            event.target.closest('.folder-item').classList.add('active');
+            const folderItem = document.querySelector(`[data-folder-id="${folderId}"]`);
+            if (folderItem) {
+                folderItem.classList.add('active');
+            }
             
-            alert('📁 Folder Selected\n\nThis would filter the documents view to show only files from the selected project folder.\n\nComing soon!');
+            // Filter documents (ready for implementation)
+            if (window.atlas && typeof window.atlas.filterByFolder === 'function') {
+                window.atlas.filterByFolder(folderId);
+            }
+        }
+
+        function changeView(view) {
+            console.log('Change view to:', view);
+            // Update active button state
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-checked', 'false');
+            });
+            event.target.classList.add('active');
+            event.target.setAttribute('aria-checked', 'true');
         }
 
         function toggleListView() {
-            alert('📋 List View\n\nThis would switch to a detailed list view showing:\n• File names in a table format\n• Sort options (name, date, size, type)\n• Bulk selection actions\n• More detailed metadata\n\nComing soon!');
+            console.log('Toggle list view');
+            alert('📋 List View\n\nFeatures:\n• Table format\n• Sort options\n• Bulk selection\n• Detailed metadata\n\nComing soon!');
         }
 
-        function showShareModal() {
-            alert('🔗 Share File\n\nThis would open sharing options:\n• Generate shareable links\n• Set permissions (view/edit)\n• Email sharing\n• Contractor access\n• Expiration dates\n\nComing soon!');
+        function showShareModal(docId) {
+            console.log('Show share modal for:', docId);
+            alert('🔗 Share File\n\nOptions:\n• Generate shareable links\n• Set permissions\n• Email sharing\n• Contractor access\n• Expiration dates\n\nComing soon!');
         }
+        
+        function showUserMenu() {
+            console.log('Show user menu');
+            // Implementation in atlas-interactive.js
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('mainNav');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (nav.classList.contains('active') && 
+                !nav.contains(event.target) && 
+                !toggle.contains(event.target)) {
+                toggleMobileMenu();
+            }
+        });
+        
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const nav = document.getElementById('mainNav');
+                if (nav.classList.contains('active')) {
+                    toggleMobileMenu();
+                }
+            }
+        });
     </script>
+    
+    <!-- Main Interactive Script -->
+    <script src="atlas-interactive.js"></script>
 </body>
 </html>
