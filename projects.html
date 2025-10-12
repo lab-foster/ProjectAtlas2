@@ -3,406 +3,752 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Project Management - View and manage all your home improvement projects and tasks">
+    <meta name="robots" content="noindex, nofollow">
+    
     <title>Projects - Project Atlas</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="atlas-interactive.css">
+    
+    <style>
+        /* Projects page specific styles */
+        .projects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-default);
+            gap: var(--space-lg);
+        }
+
+        .projects-header h2 {
+            margin-bottom: 0;
+        }
+
+        .project-filters {
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .filter-select:hover {
+            border-color: var(--border-medium);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--app-primary);
+            box-shadow: 0 0 0 3px var(--app-primary-light);
+        }
+
+        .projects-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-base);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-number {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--app-primary);
+            display: block;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: var(--space-sm);
+            display: block;
+        }
+
+        .projects-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xl);
+        }
+
+        .project-epic {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-base);
+        }
+
+        .project-epic:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--app-primary-light);
+        }
+
+        .epic-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-lg);
+            gap: var(--space-md);
+        }
+
+        .epic-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.375rem;
+        }
+
+        .epic-actions {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-xs);
+        }
+
+        .epic-meta {
+            margin-bottom: var(--space-lg);
+        }
+
+        .epic-progress {
+            background: var(--app-primary-lighter);
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--app-primary-light);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-md);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .progress-info > span {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .progress-info strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .epic-tasks {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .epic-tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-sm);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .epic-tasks-header h4 {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .task-item:hover {
+            background: var(--app-primary-lighter);
+            border-color: var(--app-primary-light);
+        }
+
+        .task-checkbox {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .task-item.completed .task-checkbox {
+            background: var(--status-success-bg);
+            color: var(--status-success);
+        }
+
+        .task-item.active .task-checkbox {
+            background: var(--status-info-bg);
+            color: var(--status-info);
+        }
+
+        .task-item.blocked .task-checkbox {
+            background: var(--status-error-bg);
+            color: var(--status-error);
+        }
+
+        .task-item.pending .task-checkbox {
+            background: var(--gray-100);
+            color: var(--text-tertiary);
+        }
+
+        .task-name {
+            flex: 1;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+        }
+
+        .task-status {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--gray-100);
+            border-radius: var(--radius-sm);
+        }
+
+        .task-item.completed .task-name {
+            text-decoration: line-through;
+            color: var(--text-tertiary);
+        }
+
+        .task-item.completed .task-status {
+            background: var(--status-success-bg);
+            color: var(--status-success);
+        }
+
+        .task-item.active .task-status {
+            background: var(--status-info-bg);
+            color: var(--status-info);
+        }
+
+        .task-item.blocked .task-status {
+            background: var(--status-error-bg);
+            color: var(--status-error);
+        }
+
+        .view-all-tasks {
+            margin-top: var(--space-md);
+            text-align: center;
+            padding: var(--space-md);
+            color: var(--app-primary);
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+        }
+
+        .view-all-tasks:hover {
+            background: var(--app-primary-lighter);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .projects-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .projects-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .project-filters {
+                justify-content: stretch;
+                flex-direction: column;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+
+            .projects-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--space-md);
+            }
+
+            .progress-info {
+                flex-direction: column;
+                gap: var(--space-xs);
+            }
+
+            .epic-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .projects-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .project-epic {
+                padding: var(--space-lg);
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body class="app-page">
+    <!-- Skip to Main Content -->
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    
+    <!-- Application Header -->
     <header class="app-header">
         <div class="header-container">
+            <!-- Logo -->
             <div class="logo">
                 <h1>Project <span class="atlas-blue">ATLAS</span></h1>
                 <span class="tagline">Home Project Management</span>
             </div>
-            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
-                ☰
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" 
+                    onclick="toggleMobileMenu()" 
+                    aria-label="Toggle navigation menu"
+                    aria-expanded="false"
+                    aria-controls="mainNav">
+                <span aria-hidden="true">☰</span>
             </button>
-            <nav class="main-nav" id="mainNav">
+            
+            <!-- Main Navigation -->
+            <nav class="main-nav" id="mainNav" aria-label="Main navigation">
                 <ul>
                     <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="projects.html" class="active">Projects</a></li>
+                    <li><a href="projects.html" class="active" aria-current="page">Projects</a></li>
                     <li><a href="kanban.html">Kanban Board</a></li>
                     <li><a href="budget.html">Budget Tracker</a></li>
                     <li><a href="calendar.html">Calendar</a></li>
                     <li><a href="documents.html">Documents</a></li>
                 </ul>
             </nav>
+            
+            <!-- User Menu -->
             <div class="user-menu">
-                <button class="btn-secondary" onclick="showNewProjectModal()">+ New Project</button>
-                <div class="user-avatar">AF</div>
+                <button class="btn btn-secondary" 
+                        onclick="showNewProjectModal()"
+                        aria-label="Create new project">
+                    <span aria-hidden="true">+</span> New Project
+                </button>
+                <button class="user-avatar" 
+                        onclick="showUserMenu()" 
+                        aria-label="User menu"
+                        title="User Menu">
+                    AF
+                </button>
             </div>
         </div>
     </header>
 
-    <main class="dashboard-main">
+    <!-- Main Content -->
+    <main class="dashboard-main" id="main-content">
+        <!-- Page Header -->
         <div class="projects-header">
             <h2>Project Management</h2>
-            <div class="project-filters">
-                <select class="filter-select">
-                    <option>All Status</option>
-                    <option>Active</option>
-                    <option>Planning</option>
-                    <option>On Hold</option>
-                    <option>Completed</option>
+            
+            <!-- Filters -->
+            <div class="project-filters" role="group" aria-label="Project filters">
+                <label for="statusFilter" class="sr-only">Filter by status</label>
+                <select class="filter-select" 
+                        id="statusFilter"
+                        aria-label="Filter by status"
+                        onchange="handleStatusFilter(this.value)">
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="planning">Planning</option>
+                    <option value="on-hold">On Hold</option>
+                    <option value="completed">Completed</option>
                 </select>
-                <select class="filter-select">
-                    <option>All Priorities</option>
-                    <option>High Priority</option>
-                    <option>Medium Priority</option>
-                    <option>Low Priority</option>
+                
+                <label for="priorityFilter" class="sr-only">Filter by priority</label>
+                <select class="filter-select" 
+                        id="priorityFilter"
+                        aria-label="Filter by priority"
+                        onchange="handlePriorityFilter(this.value)">
+                    <option value="all">All Priorities</option>
+                    <option value="high">High Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="low">Low Priority</option>
                 </select>
             </div>
         </div>
 
-        <div class="projects-stats">
-            <div class="stat-card">
-                <span class="stat-number">3</span>
+        <!-- Project Statistics -->
+        <section class="projects-stats" aria-label="Project statistics">
+            <article class="stat-card">
+                <span class="stat-number" aria-label="3 active projects">3</span>
                 <span class="stat-label">Active Projects</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number">47</span>
+            </article>
+            
+            <article class="stat-card">
+                <span class="stat-number" aria-label="47 total tasks">47</span>
                 <span class="stat-label">Total Tasks</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number">62%</span>
+            </article>
+            
+            <article class="stat-card">
+                <span class="stat-number" aria-label="62 percent average progress">62%</span>
                 <span class="stat-label">Average Progress</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number">$75K</span>
+            </article>
+            
+            <article class="stat-card">
+                <span class="stat-number" aria-label="75 thousand dollar total budget">$75K</span>
                 <span class="stat-label">Total Budget</span>
-            </div>
-        </div>
+            </article>
+        </section>
 
-        <div class="projects-list">
-            <div class="project-epic">
-                <div class="epic-header">
-                    <h3>Kitchen Renovation Epic</h3>
-                    <span class="status-badge in-progress">In Progress</span>
-                </div>
+        <!-- Projects List -->
+        <section class="projects-list" aria-label="Active projects">
+            
+            <!-- Kitchen Renovation Epic -->
+            <article class="project-epic" data-project-id="1" data-status="in-progress">
+                <header class="epic-header">
+                    <div>
+                        <h3>Kitchen Renovation Epic</h3>
+                        <div class="epic-actions">
+                            <button class="btn-link" onclick="viewProject(1)">View Board</button>
+                            <button class="btn-link" onclick="editProject(1)">Edit</button>
+                        </div>
+                    </div>
+                    <span class="status-badge in-progress" role="status">In Progress</span>
+                </header>
+                
                 <div class="epic-meta">
                     <div class="epic-progress">
                         <div class="progress-info">
-                            <span>Progress: 65%</span>
-                            <span>Budget: $23,400 / $28,000</span>
-                            <span>Timeline: Week 6 of 10</span>
+                            <span><strong>Progress:</strong> 65%</span>
+                            <span><strong>Budget:</strong> $23,400 / $28,000</span>
+                            <span><strong>Timeline:</strong> Week 6 of 10</span>
                         </div>
-                        <div class="progress-bar">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress: 65%">
                             <div class="progress-fill" style="width: 65%"></div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="epic-tasks">
-                    <div class="task-item completed">
-                        <span class="task-checkbox">✓</span>
+                    <div class="epic-tasks-header">
+                        <h4>Tasks (6)</h4>
+                        <span class="text-sm text-tertiary">4 completed</span>
+                    </div>
+                    
+                    <div class="task-item completed" 
+                         data-task-id="1-1"
+                         role="button"
+                         tabindex="0"
+                         onclick="viewTask('1-1')"
+                         onkeypress="handleKeyPress(event, 'viewTask', '1-1')">
+                        <span class="task-checkbox" aria-hidden="true">✓</span>
                         <span class="task-name">Demo existing kitchen</span>
                         <span class="task-status">Completed</span>
                     </div>
-                    <div class="task-item completed">
-                        <span class="task-checkbox">✓</span>
+                    
+                    <div class="task-item completed" data-task-id="1-2" role="button" tabindex="0" onclick="viewTask('1-2')" onkeypress="handleKeyPress(event, 'viewTask', '1-2')">
+                        <span class="task-checkbox" aria-hidden="true">✓</span>
                         <span class="task-name">Install new electrical</span>
                         <span class="task-status">Completed</span>
                     </div>
-                    <div class="task-item completed">
-                        <span class="task-checkbox">✓</span>
+                    
+                    <div class="task-item completed" data-task-id="1-3" role="button" tabindex="0" onclick="viewTask('1-3')" onkeypress="handleKeyPress(event, 'viewTask', '1-3')">
+                        <span class="task-checkbox" aria-hidden="true">✓</span>
                         <span class="task-name">Install cabinets</span>
                         <span class="task-status">Completed</span>
                     </div>
-                    <div class="task-item active">
-                        <span class="task-checkbox">◐</span>
+                    
+                    <div class="task-item active" data-task-id="1-4" role="button" tabindex="0" onclick="viewTask('1-4')" onkeypress="handleKeyPress(event, 'viewTask', '1-4')">
+                        <span class="task-checkbox" aria-hidden="true">◐</span>
                         <span class="task-name">Install countertops</span>
                         <span class="task-status">In Progress</span>
                     </div>
-                    <div class="task-item pending">
-                        <span class="task-checkbox">○</span>
+                    
+                    <div class="task-item pending" data-task-id="1-5" role="button" tabindex="0" onclick="viewTask('1-5')" onkeypress="handleKeyPress(event, 'viewTask', '1-5')">
+                        <span class="task-checkbox" aria-hidden="true">○</span>
                         <span class="task-name">Install backsplash</span>
                         <span class="task-status">Pending</span>
                     </div>
-                    <div class="task-item pending">
-                        <span class="task-checkbox">○</span>
+                    
+                    <div class="task-item pending" data-task-id="1-6" role="button" tabindex="0" onclick="viewTask('1-6')" onkeypress="handleKeyPress(event, 'viewTask', '1-6')">
+                        <span class="task-checkbox" aria-hidden="true">○</span>
                         <span class="task-name">Final cleanup</span>
                         <span class="task-status">Pending</span>
                     </div>
                 </div>
-            </div>
+            </article>
 
-            <div class="project-epic">
-                <div class="epic-header">
-                    <h3>Basement Finishing Epic</h3>
-                    <span class="status-badge planning">Planning</span>
-                </div>
+            <!-- Basement Finishing Epic -->
+            <article class="project-epic" data-project-id="2" data-status="planning">
+                <header class="epic-header">
+                    <div>
+                        <h3>Basement Finishing Epic</h3>
+                        <div class="epic-actions">
+                            <button class="btn-link" onclick="viewProject(2)">View Board</button>
+                            <button class="btn-link" onclick="editProject(2)">Edit</button>
+                        </div>
+                    </div>
+                    <span class="status-badge planning" role="status">Planning</span>
+                </header>
+                
                 <div class="epic-meta">
                     <div class="epic-progress">
                         <div class="progress-info">
-                            <span>Progress: 15%</span>
-                            <span>Budget: $5,200 / $35,000</span>
-                            <span>Timeline: Planning Phase</span>
+                            <span><strong>Progress:</strong> 15%</span>
+                            <span><strong>Budget:</strong> $5,200 / $35,000</span>
+                            <span><strong>Timeline:</strong> Planning Phase</span>
                         </div>
-                        <div class="progress-bar">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress: 15%">
                             <div class="progress-fill" style="width: 15%"></div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="epic-tasks">
-                    <div class="task-item completed">
-                        <span class="task-checkbox">✓</span>
+                    <div class="epic-tasks-header">
+                        <h4>Tasks (5)</h4>
+                        <span class="text-sm text-tertiary">1 completed</span>
+                    </div>
+                    
+                    <div class="task-item completed" data-task-id="2-1" role="button" tabindex="0" onclick="viewTask('2-1')" onkeypress="handleKeyPress(event, 'viewTask', '2-1')">
+                        <span class="task-checkbox" aria-hidden="true">✓</span>
                         <span class="task-name">Measure basement dimensions</span>
                         <span class="task-status">Completed</span>
                     </div>
-                    <div class="task-item active">
-                        <span class="task-checkbox">◐</span>
+                    
+                    <div class="task-item active" data-task-id="2-2" role="button" tabindex="0" onclick="viewTask('2-2')" onkeypress="handleKeyPress(event, 'viewTask', '2-2')">
+                        <span class="task-checkbox" aria-hidden="true">◐</span>
                         <span class="task-name">Research waterproofing options</span>
                         <span class="task-status">In Progress</span>
                     </div>
-                    <div class="task-item pending">
-                        <span class="task-checkbox">○</span>
+                    
+                    <div class="task-item pending" data-task-id="2-3" role="button" tabindex="0" onclick="viewTask('2-3')" onkeypress="handleKeyPress(event, 'viewTask', '2-3')">
+                        <span class="task-checkbox" aria-hidden="true">○</span>
                         <span class="task-name">Get contractor quotes</span>
                         <span class="task-status">Pending</span>
                     </div>
-                    <div class="task-item pending">
-                        <span class="task-checkbox">○</span>
+                    
+                    <div class="task-item pending" data-task-id="2-4" role="button" tabindex="0" onclick="viewTask('2-4')" onkeypress="handleKeyPress(event, 'viewTask', '2-4')">
+                        <span class="task-checkbox" aria-hidden="true">○</span>
                         <span class="task-name">Apply for permits</span>
                         <span class="task-status">Pending</span>
                     </div>
-                    <div class="task-item pending">
-                        <span class="task-checkbox">○</span>
+                    
+                    <div class="task-item pending" data-task-id="2-5" role="button" tabindex="0" onclick="viewTask('2-5')" onkeypress="handleKeyPress(event, 'viewTask', '2-5')">
+                        <span class="task-checkbox" aria-hidden="true">○</span>
                         <span class="task-name">Order materials</span>
                         <span class="task-status">Pending</span>
                     </div>
                 </div>
-            </div>
+            </article>
 
-            <div class="project-epic">
-                <div class="epic-header">
-                    <h3>Bathroom Update Epic</h3>
-                    <span class="status-badge blocked">Blocked</span>
-                </div>
+            <!-- Bathroom Update Epic -->
+            <article class="project-epic" data-project-id="3" data-status="blocked">
+                <header class="epic-header">
+                    <div>
+                        <h3>Bathroom Update Epic</h3>
+                        <div class="epic-actions">
+                            <button class="btn-link" onclick="viewProject(3)">View Board</button>
+                            <button class="btn-link" onclick="editProject(3)">Edit</button>
+                        </div>
+                    </div>
+                    <span class="status-badge blocked" role="status">Blocked</span>
+                </header>
+                
                 <div class="epic-meta">
                     <div class="epic-progress">
                         <div class="progress-info">
-                            <span>Progress: 40%</span>
-                            <span>Budget: $8,100 / $12,000</span>
-                            <span>Blocked: Inspection pending</span>
+                            <span><strong>Progress:</strong> 40%</span>
+                            <span><strong>Budget:</strong> $8,100 / $12,000</span>
+                            <span><strong>Blocked:</strong> Inspection pending</span>
                         </div>
-                        <div class="progress-bar">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress: 40%">
                             <div class="progress-fill" style="width: 40%"></div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="epic-tasks">
-                    <div class="task-item completed">
-                        <span class="task-checkbox">✓</span>
+                    <div class="epic-tasks-header">
+                        <h4>Tasks (4)</h4>
+                        <span class="text-sm text-tertiary">2 completed, 1 blocked</span>
+                    </div>
+                    
+                    <div class="task-item completed" data-task-id="3-1" role="button" tabindex="0" onclick="viewTask('3-1')" onkeypress="handleKeyPress(event, 'viewTask', '3-1')">
+                        <span class="task-checkbox" aria-hidden="true">✓</span>
                         <span class="task-name">Remove old fixtures</span>
                         <span class="task-status">Completed</span>
                     </div>
-                    <div class="task-item completed">
-                        <span class="task-checkbox">✓</span>
+                    
+                    <div class="task-item completed" data-task-id="3-2" role="button" tabindex="0" onclick="viewTask('3-2')" onkeypress="handleKeyPress(event, 'viewTask', '3-2')">
+                        <span class="task-checkbox" aria-hidden="true">✓</span>
                         <span class="task-name">Install new plumbing</span>
                         <span class="task-status">Completed</span>
                     </div>
-                    <div class="task-item blocked">
-                        <span class="task-checkbox">⚠</span>
+                    
+                    <div class="task-item blocked" data-task-id="3-3" role="button" tabindex="0" onclick="viewTask('3-3')" onkeypress="handleKeyPress(event, 'viewTask', '3-3')">
+                        <span class="task-checkbox" aria-hidden="true">⚠</span>
                         <span class="task-name">Plumbing inspection</span>
                         <span class="task-status">Blocked</span>
                     </div>
-                    <div class="task-item pending">
-                        <span class="task-checkbox">○</span>
+                    
+                    <div class="task-item pending" data-task-id="3-4" role="button" tabindex="0" onclick="viewTask('3-4')" onkeypress="handleKeyPress(event, 'viewTask', '3-4')">
+                        <span class="task-checkbox" aria-hidden="true">○</span>
                         <span class="task-name">Install new vanity</span>
                         <span class="task-status">Waiting</span>
                     </div>
                 </div>
-            </div>
-        </div>
+            </article>
+        </section>
     </main>
 
-    <style>
-        .projects-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .project-filters {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .filter-select {
-            padding: 0.5rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            background: var(--surface);
-            font-size: 0.9rem;
-        }
-
-        .projects-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 600;
-            color: var(--app-primary);
-            display: block;
-        }
-
-        .stat-label {
-            color: var(--text-medium);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-
-        .projects-list {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .project-epic {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 2rem;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .epic-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .epic-header h3 {
-            margin: 0;
-            color: var(--text-dark);
-        }
-
-        .epic-meta {
-            margin-bottom: 1.5rem;
-        }
-
-        .epic-progress {
-            background: var(--app-bg-light);
-            padding: 1rem;
-            border-radius: 6px;
-        }
-
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
-            color: var(--text-medium);
-        }
-
-        .epic-tasks {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .task-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
-            border-radius: 4px;
-            transition: background-color 0.2s ease;
-        }
-
-        .task-item:hover {
-            background: var(--app-bg-light);
-        }
-
-        .task-checkbox {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .task-item.completed .task-checkbox {
-            background: rgba(76, 175, 80, 0.1);
-            color: var(--success);
-        }
-
-        .task-item.active .task-checkbox {
-            background: rgba(33, 150, 243, 0.1);
-            color: var(--app-primary);
-        }
-
-        .task-item.blocked .task-checkbox {
-            background: rgba(244, 67, 54, 0.1);
-            color: var(--error);
-        }
-
-        .task-item.pending .task-checkbox {
-            background: var(--border-subtle);
-            color: var(--text-light);
-        }
-
-        .task-name {
-            flex: 1;
-            font-weight: 500;
-            color: var(--text-dark);
-        }
-
-        .task-status {
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-
-        .task-item.completed .task-name {
-            text-decoration: line-through;
-            color: var(--text-light);
-        }
-
-        @media (max-width: 768px) {
-            .projects-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: stretch;
-            }
-
-            .project-filters {
-                justify-content: center;
-            }
-
-            .progress-info {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-        }
-    </style>
-
+    <!-- Scripts -->
     <script>
+        // Mobile menu toggle with accessibility
         function toggleMobileMenu() {
             const nav = document.getElementById('mainNav');
-            nav.classList.toggle('active');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            const isExpanded = nav.classList.toggle('active');
+            
+            // Update ARIA attribute
+            toggle.setAttribute('aria-expanded', isExpanded);
         }
+        
+        // Keyboard accessibility helper
+        function handleKeyPress(event, functionName, id) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                window[functionName](id);
+            }
+        }
+        
+        // Filter handlers
+        function handleStatusFilter(value) {
+            console.log('Filter by status:', value);
+            if (window.atlas && typeof window.atlas.filterByStatus === 'function') {
+                window.atlas.filterByStatus(value);
+            }
+        }
+        
+        function handlePriorityFilter(value) {
+            console.log('Filter by priority:', value);
+            if (window.atlas && typeof window.atlas.filterByPriority === 'function') {
+                window.atlas.filterByPriority(value);
+            }
+        }
+        
+        // Project actions
+        function viewProject(id) {
+            console.log('View project:', id);
+            window.location.href = `kanban.html?project=${id}`;
+        }
+        
+        function editProject(id) {
+            console.log('Edit project:', id);
+            if (window.atlas && typeof window.atlas.showEditProjectModal === 'function') {
+                window.atlas.showEditProjectModal(id);
+            } else {
+                alert('Edit project feature coming soon!');
+            }
+        }
+        
+        function viewTask(id) {
+            console.log('View task:', id);
+            if (window.atlas && typeof window.atlas.showTaskDetail === 'function') {
+                window.atlas.showTaskDetail(id);
+            }
+        }
+        
+        function showNewProjectModal() {
+            console.log('Show new project modal');
+            if (window.atlas && typeof window.atlas.showNewProjectModal === 'function') {
+                window.atlas.showNewProjectModal();
+            } else {
+                alert('Create New Project\n\nThis will open a form to create a new project.');
+            }
+        }
+        
+        function showUserMenu() {
+            console.log('Show user menu');
+            // Implementation in atlas-interactive.js
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('mainNav');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (nav.classList.contains('active') && 
+                !nav.contains(event.target) && 
+                !toggle.contains(event.target)) {
+                toggleMobileMenu();
+            }
+        });
+        
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const nav = document.getElementById('mainNav');
+                if (nav.classList.contains('active')) {
+                    toggleMobileMenu();
+                }
+            }
+        });
     </script>
+    
+    <!-- Main Interactive Script -->
     <script src="atlas-interactive.js"></script>
 </body>
 </html>
