@@ -110,37 +110,53 @@ class ProjectAtlas {
 
     // ===== KANBAN PAGE =====
     initKanban() {
-        this.renderKanban();
-        this.setupKanbanDragDrop();
-        this.setupKanbanFilters();
-        this.setupAddTaskButtons();
+        console.log('Initializing Kanban board');
+        console.log('Tasks loaded:', this.tasks.length);
+        
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+            this.renderKanban();
+            this.setupKanbanFilters();
+            this.setupAddTaskButtons();
+        }, 100);
     }
 
     renderKanban() {
         const columns = ['someday', 'planning', 'ready', 'in-progress', 'blocked', 'done'];
         
+        console.log('Rendering kanban with', this.tasks.length, 'tasks');
+        
         columns.forEach(status => {
-            const column = document.querySelector(`.kanban-column.${status} .task-cards`);
-            if (!column) return;
+            const taskCardsContainer = document.querySelector(`.task-cards[data-status="${status}"]`);
+            
+            if (!taskCardsContainer) {
+                console.warn(`Could not find container for status: ${status}`);
+                return;
+            }
             
             // Clear existing cards
-            column.innerHTML = '';
+            taskCardsContainer.innerHTML = '';
             
             // Get filtered tasks for this column
             const tasks = this.getFilteredTasks().filter(t => t.status === status);
+            console.log(`Status ${status}: ${tasks.length} tasks`);
             
             // Render each task
             tasks.forEach(task => {
                 const card = this.createTaskCard(task);
-                column.appendChild(card);
+                taskCardsContainer.appendChild(card);
             });
             
             // Update task count
-            const countBadge = document.querySelector(`.kanban-column.${status} .task-count`);
+            const column = taskCardsContainer.closest('.kanban-column');
+            const countBadge = column ? column.querySelector('.task-count') : null;
             if (countBadge) {
                 countBadge.textContent = tasks.length;
             }
         });
+        
+        // Re-setup drag and drop after rendering
+        this.setupKanbanDragDrop();
     }
 
     createTaskCard(task) {
@@ -191,56 +207,82 @@ class ProjectAtlas {
         const cards = document.querySelectorAll('.task-card');
         const columns = document.querySelectorAll('.task-cards');
         
+        console.log('Setting up drag and drop for', cards.length, 'cards and', columns.length, 'columns');
+        
         // Set up draggable cards
         cards.forEach(card => {
-            card.addEventListener('dragstart', (e) => {
-                card.classList.add('dragging');
+            // Remove old listeners by cloning
+            const newCard = card.cloneNode(true);
+            card.parentNode.replaceChild(newCard, card);
+            
+            newCard.addEventListener('dragstart', (e) => {
+                newCard.classList.add('dragging');
+                newCard.dragging = true;
                 e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('text/html', card.innerHTML);
+                e.dataTransfer.setData('text/plain', newCard.dataset.taskId);
             });
             
-            card.addEventListener('dragend', (e) => {
-                card.classList.remove('dragging');
+            newCard.addEventListener('dragend', (e) => {
+                newCard.classList.remove('dragging');
+                newCard.dragging = false;
+            });
+            
+            // Re-add click handler
+            newCard.addEventListener('click', (e) => {
+                if (!newCard.dragging) {
+                    const taskId = newCard.dataset.taskId;
+                    const task = this.tasks.find(t => t.id === taskId);
+                    if (task) {
+                        this.showTaskDetailModal(task);
+                    }
+                }
             });
         });
         
         // Set up drop zones
         columns.forEach(column => {
-            column.addEventListener('dragover', (e) => {
+            // Remove old listeners by cloning
+            const newColumn = column.cloneNode(true);
+            column.parentNode.replaceChild(newColumn, column);
+            
+            newColumn.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'move';
                 
                 const dragging = document.querySelector('.dragging');
-                const afterElement = this.getDragAfterElement(column, e.clientY);
+                if (!dragging) return;
+                
+                const afterElement = this.getDragAfterElement(newColumn, e.clientY);
                 
                 if (afterElement == null) {
-                    column.appendChild(dragging);
+                    newColumn.appendChild(dragging);
                 } else {
-                    column.insertBefore(dragging, afterElement);
+                    newColumn.insertBefore(dragging, afterElement);
                 }
                 
-                column.classList.add('drag-over');
+                newColumn.classList.add('drag-over');
             });
             
-            column.addEventListener('dragleave', (e) => {
-                if (e.target === column) {
-                    column.classList.remove('drag-over');
+            newColumn.addEventListener('dragleave', (e) => {
+                if (e.target === newColumn) {
+                    newColumn.classList.remove('drag-over');
                 }
             });
             
-            column.addEventListener('drop', (e) => {
+            newColumn.addEventListener('drop', (e) => {
                 e.preventDefault();
-                column.classList.remove('drag-over');
+                newColumn.classList.remove('drag-over');
                 
                 const dragging = document.querySelector('.dragging');
+                if (!dragging) return;
+                
                 const taskId = dragging.dataset.taskId;
-                const newStatus = column.closest('.kanban-column').className.split(' ')[1];
+                const newStatus = newColumn.dataset.status;
+                
+                console.log('Dropped task', taskId, 'into', newStatus);
                 
                 // Update task status in data
                 this.updateTaskStatus(taskId, newStatus);
-                
-                // Show feedback animation
-                this.showStatusChangeNotification(taskId, newStatus);
             });
         });
     }
@@ -263,11 +305,33 @@ class ProjectAtlas {
     updateTaskStatus(taskId, newStatus) {
         const task = this.tasks.find(t => t.id === taskId);
         if (task) {
+            const oldStatus = task.status;
             task.status = newStatus;
             this.saveData();
-            this.renderKanban();
-            this.setupKanbanDragDrop(); // Re-attach listeners
+            
+            console.log(`Task ${taskId} moved from ${oldStatus} to ${newStatus}`);
+            
+            // Update the count badges
+            this.updateColumnCounts();
+            
+            // Show feedback animation
+            this.showStatusChangeNotification(taskId, newStatus);
         }
+    }
+    
+    updateColumnCounts() {
+        const columns = ['someday', 'planning', 'ready', 'in-progress', 'blocked', 'done'];
+        
+        columns.forEach(status => {
+            const tasks = this.getFilteredTasks().filter(t => t.status === status);
+            const column = document.querySelector(`.task-cards[data-status="${status}"]`);
+            if (column) {
+                const countBadge = column.closest('.kanban-column')?.querySelector('.task-count');
+                if (countBadge) {
+                    countBadge.textContent = tasks.length;
+                }
+            }
+        });
     }
 
     showStatusChangeNotification(taskId, newStatus) {
@@ -340,12 +404,18 @@ class ProjectAtlas {
     }
 
     setupAddTaskButtons() {
+        // Remove old listeners and set up new ones
         const addButtons = document.querySelectorAll('.add-task-btn');
         addButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            // Clone to remove old listeners
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            
+            newBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const column = btn.closest('.kanban-column');
-                const status = column.className.split(' ')[1];
+                const column = newBtn.closest('.kanban-column');
+                const status = column.querySelector('.task-cards').dataset.status;
+                console.log('Add task button clicked for status:', status);
                 this.showAddTaskModal(status);
             });
         });
