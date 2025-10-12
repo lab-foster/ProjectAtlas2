@@ -14,7 +14,10 @@
                 <h1>Project <span class="atlas-blue">ATLAS</span></h1>
                 <span class="tagline">Home Project Management</span>
             </div>
-            <nav class="main-nav">
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+                ☰
+            </button>
+            <nav class="main-nav" id="mainNav">
                 <ul>
                     <li><a href="dashboard.html">Dashboard</a></li>
                     <li><a href="projects.html" class="active">Projects</a></li>
@@ -106,7 +109,7 @@
                         <span class="task-status">Completed</span>
                     </div>
                     <div class="task-item active">
-                        <span class="task-checkbox">◗</span>
+                        <span class="task-checkbox">◐</span>
                         <span class="task-name">Install countertops</span>
                         <span class="task-status">In Progress</span>
                     </div>
@@ -148,7 +151,7 @@
                         <span class="task-status">Completed</span>
                     </div>
                     <div class="task-item active">
-                        <span class="task-checkbox">◗</span>
+                        <span class="task-checkbox">◐</span>
                         <span class="task-name">Research waterproofing options</span>
                         <span class="task-status">In Progress</span>
                     </div>
@@ -394,6 +397,12 @@
         }
     </style>
 
+    <script>
+        function toggleMobileMenu() {
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('active');
+        }
+    </script>
     <script src="atlas-interactive.js"></script>
 </body>
 </html>
