@@ -3,452 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Project Calendar - Schedule and track deadlines, inspections, and milestones for your home improvement projects">
+    <meta name="robots" content="noindex, nofollow">
+    
     <title>Calendar - Project Atlas</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css">
-</head>
-<body class="app-page">
-    <header class="app-header">
-        <div class="header-container">
-            <div class="logo">
-                <h1>Project <span class="atlas-blue">ATLAS</span></h1>
-                <span class="tagline">Home Project Management</span>
-            </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="kanban.html">Kanban Board</a></li>
-                    <li><a href="budget.html">Budget Tracker</a></li>
-                    <li><a href="calendar.html" class="active">Calendar</a></li>
-                    <li><a href="documents.html">Documents</a></li>
-                </ul>
-            </nav>
-            <div class="user-menu">
-                <button class="btn-secondary" onclick="showAddEventModal()">+ Schedule Task</button>
-                <div class="user-avatar">AF</div>
-            </div>
-        </div>
-    </header>
-
-    <main class="calendar-main">
-        <div class="calendar-header">
-            <div class="calendar-title">
-                <h2>Project Calendar</h2>
-                <div class="current-month">November 2024</div>
-            </div>
-            <div class="calendar-controls">
-                <button class="nav-btn" onclick="previousMonth()">‹</button>
-                <button class="today-btn" onclick="goToToday()">Today</button>
-                <button class="nav-btn" onclick="nextMonth()">›</button>
-            </div>
-            <div class="view-controls">
-                <select class="filter-select">
-                    <option>All Projects</option>
-                    <option>Kitchen Renovation</option>
-                    <option>Basement Finishing</option>
-                    <option>Bathroom Update</option>
-                </select>
-                <div class="view-toggle">
-                    <button class="view-btn active">Month</button>
-                    <button class="view-btn" onclick="showComingSoonAlert()">Week</button>
-                    <button class="view-btn" onclick="showComingSoonAlert()">Day</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="calendar-container">
-            <div class="calendar-grid">
-                <div class="calendar-header-row">
-                    <div class="day-header">Sun</div>
-                    <div class="day-header">Mon</div>
-                    <div class="day-header">Tue</div>
-                    <div class="day-header">Wed</div>
-                    <div class="day-header">Thu</div>
-                    <div class="day-header">Fri</div>
-                    <div class="day-header">Sat</div>
-                </div>
-
-                <!-- Week 1 -->
-                <div class="calendar-day other-month">
-                    <div class="day-number">27</div>
-                </div>
-                <div class="calendar-day other-month">
-                    <div class="day-number">28</div>
-                </div>
-                <div class="calendar-day other-month">
-                    <div class="day-number">29</div>
-                </div>
-                <div class="calendar-day other-month">
-                    <div class="day-number">30</div>
-                </div>
-                <div class="calendar-day other-month">
-                    <div class="day-number">31</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">1</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">2</div>
-                    <div class="event kitchen" onclick="showEventDetails('Material delivery')">
-                        <div class="event-title">Material delivery</div>
-                    </div>
-                </div>
-
-                <!-- Week 2 -->
-                <div class="calendar-day">
-                    <div class="day-number">3</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">4</div>
-                    <div class="event basement" onclick="showEventDetails('Contractor meeting')">
-                        <div class="event-title">Contractor meeting</div>
-                    </div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">5</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">6</div>
-                    <div class="event bathroom" onclick="showEventDetails('Plumbing inspection')">
-                        <div class="event-title">Plumbing inspection</div>
-                    </div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">7</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">8</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">9</div>
-                    <div class="event kitchen" onclick="showEventDetails('Backsplash work')">
-                        <div class="event-title">Backsplash work</div>
-                    </div>
-                </div>
-
-                <!-- Week 3 -->
-                <div class="calendar-day">
-                    <div class="day-number">10</div>
-                    <div class="event kitchen" onclick="showEventDetails('Backsplash work')">
-                        <div class="event-title">Backsplash work</div>
-                    </div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">11</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">12</div>
-                    <div class="event basement" onclick="showEventDetails('Permit application')">
-                        <div class="event-title">Permit application</div>
-                    </div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">13</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">14</div>
-                    <div class="event bathroom" onclick="showEventDetails('Vanity installation')">
-                        <div class="event-title">Vanity installation</div>
-                    </div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">15</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">16</div>
-                </div>
-
-                <!-- Week 4 -->
-                <div class="calendar-day">
-                    <div class="day-number">17</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">18</div>
-                    <div class="event kitchen" onclick="showEventDetails('Final kitchen cleanup')">
-                        <div class="event-title">Final kitchen cleanup</div>
-                    </div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">19</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">20</div>
-                </div>
-                <div class="calendar-day today">
-                    <div class="day-number">21</div>
-                    <div class="day-indicator">Today</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">22</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">23</div>
-                    <div class="event basement" onclick="showEventDetails('Material shopping')">
-                        <div class="event-title">Material shopping</div>
-                    </div>
-                </div>
-
-                <!-- Week 5 -->
-                <div class="calendar-day">
-                    <div class="day-number">24</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">25</div>
-                    <div class="event deadline" onclick="showEventDetails('Kitchen deadline')">
-                        <div class="event-title">Kitchen project deadline</div>
-                    </div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">26</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">27</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">28</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">29</div>
-                </div>
-                <div class="calendar-day">
-                    <div class="day-number">30</div>
-                    <div class="event basement" onclick="showEventDetails('Basement start')">
-                        <div class="event-title">Basement work begins</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="calendar-sidebar">
-                <div class="upcoming-events">
-                    <h3>Upcoming This Week</h3>
-                    <div class="event-list">
-                        <div class="upcoming-event high-priority" onclick="showEventDetails('Plumbing inspection')">
-                            <div class="event-date">Wed, Nov 6</div>
-                            <div class="event-name">Plumbing inspection</div>
-                            <div class="event-project bathroom">Bathroom Update</div>
-                        </div>
-                        <div class="upcoming-event medium-priority" onclick="showEventDetails('Backsplash work')">
-                            <div class="event-date">Sat, Nov 9</div>
-                            <div class="event-name">Backsplash tiling work</div>
-                            <div class="event-project kitchen">Kitchen Renovation</div>
-                        </div>
-                        <div class="upcoming-event low-priority" onclick="showEventDetails('Material shopping')">
-                            <div class="event-date">Sat, Nov 23</div>
-                            <div class="event-name">Basement material shopping</div>
-                            <div class="event-project basement">Basement Finishing</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="calendar-legend">
-                    <h3>Project Legend</h3>
-                    <div class="legend-items">
-                        <div class="legend-item">
-                            <div class="legend-color kitchen"></div>
-                            <span>Kitchen Renovation</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color bathroom"></div>
-                            <span>Bathroom Update</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color basement"></div>
-                            <span>Basement Finishing</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color deadline"></div>
-                            <span>Deadlines</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="calendar-stats">
-                    <h3>This Month</h3>
-                    <div class="stat-item">
-                        <span class="stat-label">Scheduled Tasks</span>
-                        <span class="stat-value">12</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Completed</span>
-                        <span class="stat-value">8</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Overdue</span>
-                        <span class="stat-value">1</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">This Week</span>
-                        <span class="stat-value">3</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
+    <link rel="stylesheet" href="atlas-interactive.css">
+    
     <style>
+        /* Calendar page specific styles */
         .calendar-main {
+            padding: var(--space-xl);
             max-width: 1600px;
             margin: 0 auto;
-            padding: 2rem;
         }
 
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-default);
+            gap: var(--space-lg);
             flex-wrap: wrap;
-            gap: 1rem;
         }
 
         .calendar-title h2 {
-            margin: 0;
-            color: var(--text-dark);
+            margin-bottom: var(--space-xs);
+            font-size: 1.5rem;
         }
 
         .current-month {
-            color: var(--text-medium);
-            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
             font-weight: 500;
         }
 
         .calendar-controls {
             display: flex;
-            gap: 0.5rem;
+            gap: var(--space-sm);
             align-items: center;
         }
 
-        .nav-btn, .today-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            background: var(--surface);
+        .nav-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border-default);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: var(--radius-md);
+            font-size: 1.25rem;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .nav-btn:hover, .today-btn:hover {
-            background: var(--app-light-blue);
+        .nav-btn:hover {
+            background: var(--app-primary-lighter);
+            border-color: var(--app-primary);
+            color: var(--app-primary);
+        }
+
+        .today-btn {
+            padding: var(--space-sm) var(--space-lg);
+            border: 1px solid var(--border-default);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .today-btn:hover {
+            background: var(--app-primary);
+            border-color: var(--app-primary);
+            color: var(--white);
         }
 
         .view-controls {
             display: flex;
-            gap: 1rem;
+            gap: var(--space-md);
             align-items: center;
+        }
+
+        .filter-select {
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .filter-select:hover {
+            border-color: var(--border-medium);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--app-primary);
+            box-shadow: 0 0 0 3px var(--app-primary-light);
         }
 
         .view-toggle {
             display: flex;
-            border: 1px solid var(--border);
-            border-radius: 4px;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
             overflow: hidden;
         }
 
         .view-btn {
-            padding: 0.5rem 1rem;
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
             border: none;
-            background: var(--surface);
+            border-right: 1px solid var(--border-default);
             cursor: pointer;
+            transition: all var(--transition-fast);
             font-weight: 500;
-            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .view-btn:last-child {
+            border-right: none;
+        }
+
+        .view-btn:hover {
+            background: var(--app-primary-lighter);
+            color: var(--app-primary);
         }
 
         .view-btn.active {
             background: var(--app-primary);
-            color: white;
+            color: var(--white);
         }
 
-        .view-btn:not(.active):hover {
-            background: var(--app-light-blue);
-        }
-
+        /* Calendar Grid */
         .calendar-container {
             display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 2rem;
+            grid-template-columns: 1fr 350px;
+            gap: var(--space-xl);
+        }
+
+        .calendar-grid {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .calendar-header-row {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            margin-bottom: var(--space-sm);
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            padding: var(--space-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .calendar-grid > .calendar-day {
+            display: inline-block;
         }
 
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .calendar-header-row {
-            display: contents;
-        }
-
-        .day-header {
-            padding: 1rem;
-            background: var(--app-light-blue);
-            color: var(--app-primary);
-            font-weight: 600;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
+            gap: 1px;
+            background: var(--border-light);
         }
 
         .calendar-day {
+            background: var(--bg-secondary);
             min-height: 120px;
-            padding: 0.5rem;
-            border-right: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
+            padding: var(--space-sm);
             position: relative;
+            transition: all var(--transition-fast);
             cursor: pointer;
-            transition: background-color 0.2s ease;
         }
 
         .calendar-day:hover {
-            background: var(--app-bg-light);
-        }
-
-        .calendar-day:nth-child(7n) {
-            border-right: none;
+            background: var(--app-primary-lighter);
         }
 
         .calendar-day.other-month {
-            color: var(--text-light);
-            background: #fafafa;
+            background: var(--gray-100);
+            opacity: 0.5;
         }
 
         .calendar-day.today {
-            background: rgba(33, 150, 243, 0.1);
+            background: var(--app-primary-lighter);
             border: 2px solid var(--app-primary);
         }
 
         .day-number {
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-dark);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            margin-bottom: var(--space-xs);
+        }
+
+        .calendar-day.other-month .day-number {
+            color: var(--text-tertiary);
+        }
+
+        .calendar-day.today .day-number {
+            color: var(--app-primary);
         }
 
         .day-indicator {
             position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background: var(--app-primary);
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 10px;
-            font-size: 0.7rem;
-            font-weight: 600;
+            top: var(--space-xs);
+            right: var(--space-xs);
+            font-size: 0.625rem;
+            font-weight: 700;
+            color: var(--app-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .event {
             background: var(--app-primary);
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            margin-bottom: 0.25rem;
+            color: var(--white);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-xs);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all var(--transition-fast);
         }
 
         .event:hover {
@@ -459,128 +260,151 @@
         .event.kitchen { background: #2196f3; }
         .event.bathroom { background: #ff9800; }
         .event.basement { background: #4caf50; }
-        .event.deadline { background: #f44336; }
+        .event.deadline { 
+            background: var(--status-error);
+            font-weight: 600;
+        }
 
         .event-title {
             font-size: 0.75rem;
             font-weight: 500;
-            line-height: 1.2;
+            line-height: 1.3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
+        /* Calendar Sidebar */
         .calendar-sidebar {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: var(--space-xl);
         }
 
-        .upcoming-events, .calendar-legend, .calendar-stats {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.5rem;
+        .upcoming-events,
+        .calendar-legend,
+        .calendar-stats {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
             box-shadow: var(--shadow-sm);
         }
 
-        .upcoming-events h3, .calendar-legend h3, .calendar-stats h3 {
-            margin: 0 0 1rem 0;
-            color: var(--text-dark);
+        .upcoming-events h3,
+        .calendar-legend h3,
+        .calendar-stats h3 {
             font-size: 1rem;
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
+            font-weight: 600;
         }
 
         .event-list {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: var(--space-md);
         }
 
         .upcoming-event {
-            padding: 1rem;
-            border: 1px solid var(--border);
-            border-radius: 6px;
+            padding: var(--space-md);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all var(--transition-fast);
         }
 
         .upcoming-event:hover {
-            background: var(--app-bg-light);
+            background: var(--app-primary-lighter);
+            border-color: var(--app-primary-light);
             transform: translateY(-1px);
         }
 
         .upcoming-event.high-priority {
-            border-left: 4px solid var(--error);
+            border-left: 4px solid var(--status-error);
         }
 
         .upcoming-event.medium-priority {
-            border-left: 4px solid var(--warning);
+            border-left: 4px solid var(--status-warning);
         }
 
         .upcoming-event.low-priority {
-            border-left: 4px solid var(--success);
+            border-left: 4px solid var(--status-success);
         }
 
         .event-date {
-            font-size: 0.8rem;
-            color: var(--text-light);
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
             font-weight: 500;
+            margin-bottom: var(--space-xs);
         }
 
         .event-name {
             font-weight: 600;
-            color: var(--text-dark);
-            margin: 0.25rem 0;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+            font-size: 0.9375rem;
         }
 
         .event-project {
-            font-size: 0.8rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 10px;
+            font-size: 0.75rem;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-full);
             display: inline-block;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .event-project.kitchen {
-            background: rgba(33, 150, 243, 0.1);
+            background: rgba(33, 150, 243, 0.12);
             color: #2196f3;
         }
 
         .event-project.bathroom {
-            background: rgba(255, 152, 0, 0.1);
+            background: rgba(255, 152, 0, 0.12);
             color: #ff9800;
         }
 
         .event-project.basement {
-            background: rgba(76, 175, 80, 0.1);
+            background: rgba(76, 175, 80, 0.12);
             color: #4caf50;
         }
 
+        /* Legend */
         .legend-items {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: var(--space-md);
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: var(--space-md);
         }
 
         .legend-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 3px;
+            width: 20px;
+            height: 20px;
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
         }
 
         .legend-color.kitchen { background: #2196f3; }
         .legend-color.bathroom { background: #ff9800; }
         .legend-color.basement { background: #4caf50; }
-        .legend-color.deadline { background: #f44336; }
+        .legend-color.deadline { background: var(--status-error); }
 
+        .legend-label {
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+
+        /* Stats */
         .stat-item {
             display: flex;
             justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border-subtle);
+            padding: var(--space-sm) 0;
+            border-bottom: 1px solid var(--border-light);
         }
 
         .stat-item:last-child {
@@ -588,12 +412,21 @@
         }
 
         .stat-label {
-            color: var(--text-medium);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
         }
 
         .stat-value {
-            color: var(--text-dark);
-            font-weight: 600;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .calendar-container {
+                grid-template-columns: 1fr 300px;
+            }
         }
 
         @media (max-width: 1024px) {
@@ -603,61 +436,599 @@
 
             .calendar-sidebar {
                 order: -1;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                 display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             }
         }
 
         @media (max-width: 768px) {
+            .calendar-main {
+                padding: var(--space-lg);
+            }
+
             .calendar-header {
                 flex-direction: column;
                 align-items: stretch;
                 text-align: center;
             }
 
-            .view-controls {
+            .calendar-controls {
                 justify-content: center;
             }
 
+            .view-controls {
+                flex-direction: column;
+            }
+
+            .filter-select,
+            .view-toggle {
+                width: 100%;
+            }
+
             .calendar-day {
-                min-height: 80px;
-                font-size: 0.8rem;
+                min-height: 90px;
+                font-size: 0.8125rem;
             }
 
             .event-title {
-                font-size: 0.7rem;
+                font-size: 0.6875rem;
             }
 
             .calendar-sidebar {
                 grid-template-columns: 1fr;
             }
         }
-    </style>
 
+        @media (max-width: 480px) {
+            .calendar-main {
+                padding: var(--space-md);
+            }
+
+            .calendar-grid {
+                padding: var(--space-sm);
+            }
+
+            .calendar-day {
+                min-height: 80px;
+                padding: var(--space-xs);
+            }
+
+            .day-number {
+                font-size: 0.75rem;
+            }
+
+            .upcoming-events,
+            .calendar-legend,
+            .calendar-stats {
+                padding: var(--space-md);
+            }
+        }
+    </style>
+</head>
+<body class="app-page">
+    <!-- Skip to Main Content -->
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    
+    <!-- Application Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <!-- Logo -->
+            <div class="logo">
+                <h1>Project <span class="atlas-blue">ATLAS</span></h1>
+                <span class="tagline">Home Project Management</span>
+            </div>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" 
+                    onclick="toggleMobileMenu()" 
+                    aria-label="Toggle navigation menu"
+                    aria-expanded="false"
+                    aria-controls="mainNav">
+                <span aria-hidden="true">☰</span>
+            </button>
+            
+            <!-- Main Navigation -->
+            <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+                <ul>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="kanban.html">Kanban Board</a></li>
+                    <li><a href="budget.html">Budget Tracker</a></li>
+                    <li><a href="calendar.html" class="active" aria-current="page">Calendar</a></li>
+                    <li><a href="documents.html">Documents</a></li>
+                </ul>
+            </nav>
+            
+            <!-- User Menu -->
+            <div class="user-menu">
+                <button class="btn btn-secondary" 
+                        onclick="showAddEventModal()"
+                        aria-label="Schedule new task">
+                    <span aria-hidden="true">+</span> Schedule Task
+                </button>
+                <button class="user-avatar" 
+                        onclick="showUserMenu()" 
+                        aria-label="User menu"
+                        title="User Menu">
+                    AF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="calendar-main" id="main-content">
+        <!-- Calendar Header -->
+        <div class="calendar-header">
+            <div class="calendar-title">
+                <h2>Project Calendar</h2>
+                <time class="current-month" datetime="2024-11">November 2024</time>
+            </div>
+            
+            <!-- Navigation Controls -->
+            <div class="calendar-controls" role="group" aria-label="Calendar navigation">
+                <button class="nav-btn" 
+                        onclick="previousMonth()"
+                        aria-label="Previous month">
+                    <span aria-hidden="true">‹</span>
+                </button>
+                <button class="today-btn" 
+                        onclick="goToToday()"
+                        aria-label="Go to today">
+                    Today
+                </button>
+                <button class="nav-btn" 
+                        onclick="nextMonth()"
+                        aria-label="Next month">
+                    <span aria-hidden="true">›</span>
+                </button>
+            </div>
+            
+            <!-- View Controls -->
+            <div class="view-controls" role="group" aria-label="View options">
+                <label for="projectFilterCalendar" class="sr-only">Filter by project</label>
+                <select class="filter-select" 
+                        id="projectFilterCalendar"
+                        aria-label="Filter by project"
+                        onchange="handleProjectFilter(this.value)">
+                    <option value="all">All Projects</option>
+                    <option value="kitchen">Kitchen Renovation</option>
+                    <option value="basement">Basement Finishing</option>
+                    <option value="bathroom">Bathroom Update</option>
+                </select>
+                
+                <div class="view-toggle" role="radiogroup" aria-label="Calendar view">
+                    <button class="view-btn active" 
+                            role="radio" 
+                            aria-checked="true"
+                            onclick="changeView('month')">
+                        Month
+                    </button>
+                    <button class="view-btn" 
+                            role="radio" 
+                            aria-checked="false"
+                            onclick="showComingSoonAlert()">
+                        Week
+                    </button>
+                    <button class="view-btn" 
+                            role="radio" 
+                            aria-checked="false"
+                            onclick="showComingSoonAlert()">
+                        Day
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar Container -->
+        <div class="calendar-container">
+            <!-- Calendar Grid -->
+            <section class="calendar-grid" 
+                     role="grid" 
+                     aria-label="November 2024 calendar"
+                     aria-readonly="true">
+                <!-- Day Headers -->
+                <div class="calendar-header-row" role="row">
+                    <div class="day-header" role="columnheader">Sun</div>
+                    <div class="day-header" role="columnheader">Mon</div>
+                    <div class="day-header" role="columnheader">Tue</div>
+                    <div class="day-header" role="columnheader">Wed</div>
+                    <div class="day-header" role="columnheader">Thu</div>
+                    <div class="day-header" role="columnheader">Fri</div>
+                    <div class="day-header" role="columnheader">Sat</div>
+                </div>
+
+                <!-- Week 1 -->
+                <div class="calendar-day other-month" role="gridcell" aria-label="October 27">
+                    <div class="day-number">27</div>
+                </div>
+                <div class="calendar-day other-month" role="gridcell" aria-label="October 28">
+                    <div class="day-number">28</div>
+                </div>
+                <div class="calendar-day other-month" role="gridcell" aria-label="October 29">
+                    <div class="day-number">29</div>
+                </div>
+                <div class="calendar-day other-month" role="gridcell" aria-label="October 30">
+                    <div class="day-number">30</div>
+                </div>
+                <div class="calendar-day other-month" role="gridcell" aria-label="October 31">
+                    <div class="day-number">31</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 1" tabindex="0">
+                    <div class="day-number">1</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 2, Material delivery" tabindex="0">
+                    <div class="day-number">2</div>
+                    <div class="event kitchen" 
+                         role="button"
+                         tabindex="0"
+                         onclick="showEventDetails('evt-1')"
+                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-1')"
+                         data-event-id="evt-1">
+                        <div class="event-title">Material delivery</div>
+                    </div>
+                </div>
+
+                <!-- Week 2 -->
+                <div class="calendar-day" role="gridcell" aria-label="November 3" tabindex="0">
+                    <div class="day-number">3</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 4, Contractor meeting" tabindex="0">
+                    <div class="day-number">4</div>
+                    <div class="event basement" 
+                         role="button"
+                         tabindex="0"
+                         onclick="showEventDetails('evt-2')"
+                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-2')"
+                         data-event-id="evt-2">
+                        <div class="event-title">Contractor meeting</div>
+                    </div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 5" tabindex="0">
+                    <div class="day-number">5</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 6, Plumbing inspection" tabindex="0">
+                    <div class="day-number">6</div>
+                    <div class="event bathroom" 
+                         role="button"
+                         tabindex="0"
+                         onclick="showEventDetails('evt-3')"
+                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-3')"
+                         data-event-id="evt-3">
+                        <div class="event-title">Plumbing inspection</div>
+                    </div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 7" tabindex="0">
+                    <div class="day-number">7</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 8" tabindex="0">
+                    <div class="day-number">8</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 9, Backsplash work" tabindex="0">
+                    <div class="day-number">9</div>
+                    <div class="event kitchen" 
+                         role="button"
+                         tabindex="0"
+                         onclick="showEventDetails('evt-4')"
+                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-4')"
+                         data-event-id="evt-4">
+                        <div class="event-title">Backsplash work</div>
+                    </div>
+                </div>
+
+                <!-- Week 3 -->
+                <div class="calendar-day" role="gridcell" aria-label="November 10, Backsplash work" tabindex="0">
+                    <div class="day-number">10</div>
+                    <div class="event kitchen" 
+                         role="button"
+                         tabindex="0"
+                         onclick="showEventDetails('evt-4')"
+                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-4')"
+                         data-event-id="evt-4">
+                        <div class="event-title">Backsplash work</div>
+                    </div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 11" tabindex="0">
+                    <div class="day-number">11</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 12, Permit application" tabindex="0">
+                    <div class="day-number">12</div>
+                    <div class="event basement" 
+                         role="button"
+                         tabindex="0"
+                         onclick="showEventDetails('evt-5')"
+                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-5')"
+                         data-event-id="evt-5">
+                        <div class="event-title">Permit application</div>
+                    </div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 13" tabindex="0">
+                    <div class="day-number">13</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 14, Vanity installation" tabindex="0">
+                    <div class="day-number">14</div>
+                    <div class="event bathroom" 
+                         role="button"
+                         tabindex="0"
+                         onclick="showEventDetails('evt-6')"
+                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-6')"
+                         data-event-id="evt-6">
+                        <div class="event-title">Vanity installation</div>
+                    </div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 15" tabindex="0">
+                    <div class="day-number">15</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 16" tabindex="0">
+                    <div class="day-number">16</div>
+                </div>
+
+                <!-- Week 4 -->
+                <div class="calendar-day" role="gridcell" aria-label="November 17" tabindex="0">
+                    <div class="day-number">17</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 18, Final kitchen cleanup" tabindex="0">
+                    <div class="day-number">18</div>
+                    <div class="event kitchen" 
+                         role="button"
+                         tabindex="0"
+                         onclick="showEventDetails('evt-7')"
+                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-7')"
+                         data-event-id="evt-7">
+                        <div class="event-title">Final kitchen cleanup</div>
+                    </div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 19" tabindex="0">
+                    <div class="day-number">19</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 20" tabindex="0">
+                    <div class="day-number">20</div>
+                </div>
+                <div class="calendar-day today" role="gridcell" aria-label="November 21, Today" aria-current="date" tabindex="0">
+                    <div class="day-number">21</div>
+                    <div class="day-indicator">Today</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 22" tabindex="0">
+                    <div class="day-number">22</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 23, Material shopping" tabindex="0">
+                    <div class="day-number">23</div>
+                    <div class="event basement" 
+                         role="button"
+                         tabindex="0"
+                         onclick="showEventDetails('evt-8')"
+                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-8')"
+                         data-event-id="evt-8">
+                        <div class="event-title">Material shopping</div>
+                    </div>
+                </div>
+
+                <!-- Week 5 -->
+                <div class="calendar-day" role="gridcell" aria-label="November 24" tabindex="0">
+                    <div class="day-number">24</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 25, Kitchen project deadline" tabindex="0">
+                    <div class="day-number">25</div>
+                    <div class="event deadline" 
+                         role="button"
+                         tabindex="0"
+                         onclick="showEventDetails('evt-9')"
+                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-9')"
+                         data-event-id="evt-9">
+                        <div class="event-title">Kitchen project deadline</div>
+                    </div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 26" tabindex="0">
+                    <div class="day-number">26</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 27" tabindex="0">
+                    <div class="day-number">27</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 28" tabindex="0">
+                    <div class="day-number">28</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 29" tabindex="0">
+                    <div class="day-number">29</div>
+                </div>
+                <div class="calendar-day" role="gridcell" aria-label="November 30, Basement work begins" tabindex="0">
+                    <div class="day-number">30</div>
+                    <div class="event basement" 
+                         role="button"
+                         tabindex="0"
+                         onclick="showEventDetails('evt-10')"
+                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-10')"
+                         data-event-id="evt-10">
+                        <div class="event-title">Basement work begins</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calendar Sidebar -->
+            <aside class="calendar-sidebar" aria-label="Calendar information">
+                <!-- Upcoming Events -->
+                <section class="upcoming-events" aria-labelledby="upcoming-heading">
+                    <h3 id="upcoming-heading">Upcoming This Week</h3>
+                    
+                    <div class="event-list">
+                        <article class="upcoming-event high-priority"
+                                 role="button"
+                                 tabindex="0"
+                                 onclick="showEventDetails('evt-9')"
+                                 onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-9')">
+                            <time class="event-date" datetime="2024-11-25">Mon, Nov 25</time>
+                            <div class="event-name">Kitchen Project Deadline</div>
+                            <span class="event-project kitchen">Kitchen Renovation</span>
+                        </article>
+
+                        <article class="upcoming-event medium-priority"
+                                 role="button"
+                                 tabindex="0"
+                                 onclick="showEventDetails('evt-8')"
+                                 onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-8')">
+                            <time class="event-date" datetime="2024-11-23">Sat, Nov 23</time>
+                            <div class="event-name">Material Shopping Trip</div>
+                            <span class="event-project basement">Basement Finishing</span>
+                        </article>
+
+                        <article class="upcoming-event low-priority"
+                                 role="button"
+                                 tabindex="0"
+                                 onclick="showEventDetails('evt-4')"
+                                 onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-4')">
+                            <time class="event-date" datetime="2024-11-09">Sat, Nov 9-10</time>
+                            <div class="event-name">Backsplash Installation</div>
+                            <span class="event-project kitchen">Kitchen Renovation</span>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- Calendar Legend -->
+                <section class="calendar-legend" aria-labelledby="legend-heading">
+                    <h3 id="legend-heading">Project Color Key</h3>
+                    
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <div class="legend-color kitchen" aria-hidden="true"></div>
+                            <span class="legend-label">Kitchen Renovation</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color bathroom" aria-hidden="true"></div>
+                            <span class="legend-label">Bathroom Update</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color basement" aria-hidden="true"></div>
+                            <span class="legend-label">Basement Finishing</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color deadline" aria-hidden="true"></div>
+                            <span class="legend-label">Deadlines & Milestones</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Calendar Stats -->
+                <section class="calendar-stats" aria-labelledby="stats-heading">
+                    <h3 id="stats-heading">This Month</h3>
+                    
+                    <div class="stat-item">
+                        <span class="stat-label">Total Events</span>
+                        <span class="stat-value">12</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Inspections</span>
+                        <span class="stat-value">3</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Deadlines</span>
+                        <span class="stat-value">2</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Contractor Meetings</span>
+                        <span class="stat-value">4</span>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Scripts -->
     <script>
+        // Mobile menu toggle with accessibility
+        function toggleMobileMenu() {
+            const nav = document.getElementById('mainNav');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            const isExpanded = nav.classList.toggle('active');
+            
+            // Update ARIA attribute
+            toggle.setAttribute('aria-expanded', isExpanded);
+        }
+        
+        // Keyboard accessibility helper
+        function handleKeyPress(event, functionName, id) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                window[functionName](id);
+            }
+        }
+        
+        // Filter handler
+        function handleProjectFilter(value) {
+            console.log('Filter by project:', value);
+            if (window.atlas && typeof window.atlas.filterCalendarByProject === 'function') {
+                window.atlas.filterCalendarByProject(value);
+            }
+        }
+        
+        // Modal and navigation functions
         function showAddEventModal() {
-            alert('📅 Schedule New Task\n\nThis would open a scheduling form with:\n• Task/event title\n• Date and time selection\n• Project assignment\n• Duration estimate\n• Reminders and notifications\n• Recurring options\n\nComing soon!');
+            console.log('Show add event modal');
+            alert('📅 Schedule New Task\n\nForm fields:\n• Task/event title\n• Date and time\n• Project assignment\n• Duration estimate\n• Reminders\n• Recurring options\n\nComing soon!');
         }
 
-        function showEventDetails(eventName) {
-            alert('📋 Event Details: "' + eventName + '"\n\nThis would show:\n• Complete event information\n• Related tasks and dependencies\n• Attendees and contractors\n• Edit/reschedule options\n• Progress notes\n• Linked documents\n\nComing soon!');
+        function showEventDetails(eventId) {
+            console.log('Show event details:', eventId);
+            alert('📋 Event Details\n\nView:\n• Complete event information\n• Related tasks\n• Attendees/contractors\n• Edit/reschedule options\n• Progress notes\n\nComing soon!');
         }
 
         function previousMonth() {
-            alert('◀ Previous Month\n\nThis would navigate to October 2024 and load that month\'s events and tasks.\n\nComing soon!');
+            console.log('Navigate to previous month');
+            alert('◀ Previous Month\n\nNavigating to October 2024...\n\nComing soon!');
         }
 
         function nextMonth() {
-            alert('▶ Next Month\n\nThis would navigate to December 2024 and load that month\'s events and tasks.\n\nComing soon!');
+            console.log('Navigate to next month');
+            alert('▶ Next Month\n\nNavigating to December 2024...\n\nComing soon!');
         }
 
         function goToToday() {
-            alert('📅 Go to Today\n\nThis would jump back to the current date and highlight today\'s events.\n\nComing soon!');
+            console.log('Go to today');
+            alert('📅 Go to Today\n\nJumping to current date...\n\nComing soon!');
+        }
+
+        function changeView(view) {
+            console.log('Change view to:', view);
+            // Update active button state
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-checked', 'false');
+            });
+            event.target.classList.add('active');
+            event.target.setAttribute('aria-checked', 'true');
         }
 
         function showComingSoonAlert() {
-            alert('🚧 Coming Soon\n\nWeek and Day views are under development and will provide more detailed scheduling interfaces.\n\nComing soon!');
+            alert('🚧 Coming Soon\n\nWeek and Day views are under development.\n\nComing soon!');
         }
+        
+        function showUserMenu() {
+            console.log('Show user menu');
+            // Implementation in atlas-interactive.js
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const nav = document.getElementById('mainNav');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (nav.classList.contains('active') && 
+                !nav.contains(event.target) && 
+                !toggle.contains(event.target)) {
+                toggleMobileMenu();
+            }
+        });
+        
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const nav = document.getElementById('mainNav');
+                if (nav.classList.contains('active')) {
+                    toggleMobileMenu();
+                }
+            }
+        });
     </script>
+    
+    <!-- Main Interactive Script -->
+    <script src="atlas-interactive.js"></script>
 </body>
 </html>
