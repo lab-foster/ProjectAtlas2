@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Project Atlas Dashboard - View and manage all your home improvement projects in one place" />
     <meta name="robots" content="noindex, nofollow" />
-
     <title>Dashboard - Project Atlas</title>
 
     <!-- Favicon -->
@@ -53,12 +52,12 @@
             <!-- User Menu -->
             <div class="user-menu">
                 <button class="btn btn-secondary"
-                        onclick="if(window.atlas && window.atlas.showNewProjectModal){window.atlas.showNewProjectModal();}else{alert('Loading.');}"
+                        onclick="if(window.atlas && window.atlas.showNewProjectModal){window.atlas.showNewProjectModal();}else{openBasicNewProject();}"
                         aria-label="Create new project">
                     <span aria-hidden="true">+</span> New Project
                 </button>
                 <button class="user-avatar"
-                        onclick="if(window.atlas && window.atlas.showUserMenu){window.atlas.showUserMenu();}else{alert('Loading.');}"
+                        onclick="if(window.atlas && window.atlas.showUserMenu){window.atlas.showUserMenu();}"
                         aria-label="User menu"
                         title="User Menu">
                     AF
@@ -327,8 +326,6 @@
             const nav = document.getElementById('mainNav');
             const toggle = document.querySelector('.mobile-menu-toggle');
             const isExpanded = nav.classList.toggle('active');
-
-            // Update ARIA attribute
             toggle.setAttribute('aria-expanded', isExpanded);
         }
 
@@ -346,43 +343,145 @@
             }
         }
 
-        // View project function
         function viewProject(projectId) {
-            console.log('View project:', projectId);
             window.location.href = `kanban.html?project=${projectId}`;
         }
 
-        // View activity detail
-        function viewActivityDetail(activityId) {
-            console.log('View activity:', activityId);
-            if (window.atlas && typeof window.atlas.showActivityDetail === 'function') {
-                window.atlas.showActivityDetail(activityId);
-            } else {
-                // Fallback until atlas is loaded
-                alert('Loading activity details.');
-            }
+        // ---------- Lightweight modal (fallback when atlas isn't loaded) ----------
+        function openBasicModal(title, html) {
+            // Backdrop
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop show';
+            backdrop.id = 'basic-backdrop';
+
+            // Modal shell
+            const modal = document.createElement('div');
+            modal.className = 'modal open';
+            modal.id = 'basic-modal';
+
+            modal.innerHTML = `
+                <div class="modal-panel" role="dialog" aria-modal="true" aria-label="${title}">
+                    <div class="modal-header">
+                        <h3 class="modal-title">${title}</h3>
+                        <button class="modal-close" aria-label="Close" onclick="closeBasicModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">${html}</div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeBasicModal()">Close</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.classList.add('atlas-modal-open');
+            document.body.appendChild(backdrop);
+            document.body.appendChild(modal);
+
+            // Close on esc or outside click
+            function onEsc(e){ if(e.key==='Escape'){ closeBasicModal(); } }
+            backdrop.addEventListener('click', closeBasicModal);
+            document.addEventListener('keydown', onEsc);
+            modal._esc = onEsc;
         }
 
-        // View task detail (bridges to atlas task modal when available)
-        function viewTaskDetail(taskId) {
-            console.log('View task:', taskId);
-            if (window.atlas && window.atlas.tasks) {
-                const task = window.atlas.tasks.find(t => t.id === taskId);
-                if (task && typeof window.atlas.showTaskDetailModal === 'function') {
-                    window.atlas.showTaskDetailModal(task);
-                } else {
-                    alert('Task details loading.');
-                }
-            } else {
-                alert('Loading task details.');
+        function closeBasicModal() {
+            const modal = document.getElementById('basic-modal');
+            const backdrop = document.getElementById('basic-backdrop');
+            if (modal && modal._esc) document.removeEventListener('keydown', modal._esc);
+            if (modal) modal.remove();
+            if (backdrop) backdrop.remove();
+            document.body.classList.remove('atlas-modal-open');
+        }
+
+        // Simple inline "New Project" as a fallback if atlas isn't ready
+        function openBasicNewProject() {
+            openBasicModal('Create New Project', `
+                <div class="form-grid">
+                    <label for="bp_name">Project Name *</label>
+                    <input id="bp_name" class="input" placeholder="e.g. Deck Construction"/>
+
+                    <label for="bp_desc">Description</label>
+                    <textarea id="bp_desc" class="input" placeholder="Brief description of the project."></textarea>
+
+                    <div class="form-row">
+                        <div>
+                            <label for="bp_budget">Budget Allocation *</label>
+                            <input id="bp_budget" class="input" type="number" value="25000"/>
+                        </div>
+                        <div>
+                            <label for="bp_timeline">Estimated Timeline</label>
+                            <input id="bp_timeline" class="input" placeholder="e.g. 8 weeks, 3 months"/>
+                        </div>
+                    </div>
+
+                    <label for="bp_priority">Priority Level *</label>
+                    <select id="bp_priority" class="input">
+                        <option>Low Priority</option>
+                        <option selected>Medium Priority</option>
+                        <option>High Priority</option>
+                    </select>
+                </div>
+                <div class="divider"></div>
+                <div class="text-tertiary">This lightweight form is a fallback. The full-featured project creator is available when the Atlas app finishes loading.</div>
+            `);
+        }
+
+        // ---------- Dashboard interactions ----------
+        function viewActivityDetail(activityId) {
+            // Prefer the real app handler if available
+            if (window.atlas && typeof window.atlas.showActivityDetail === 'function') {
+                window.atlas.showActivityDetail(activityId);
+                return;
             }
+
+            // Fallback: open a clean modal instead of a blocking alert
+            let html = '';
+            if (activityId === '1') {
+                html = `
+                  <p><strong>Action:</strong> Task created</p>
+                  <p><strong>Task:</strong> Install backsplash</p>
+                  <p><strong>Project:</strong> Kitchen Renovation</p>
+                  <div class="divider"></div>
+                  <button class="btn" onclick="window.location.href='kanban.html?project=kitchen'">Open in Kanban</button>
+                `;
+            } else if (activityId === '2') {
+                html = `
+                  <p><strong>Action:</strong> Task marked Done</p>
+                  <p><strong>Task:</strong> Order tile</p>
+                  <p><strong>Project:</strong> Kitchen Renovation</p>
+                  <div class="divider"></div>
+                  <button class="btn" onclick="window.location.href='kanban.html?project=kitchen'">View Task</button>
+                `;
+            } else if (activityId === '3') {
+                html = `
+                  <p><strong>Action:</strong> Document uploaded</p>
+                  <p><strong>File:</strong> Electrical permit approval (PDF)</p>
+                  <div class="divider"></div>
+                  <button class="btn" onclick="window.location.href='documents.html'">Open Documents</button>
+                `;
+            } else {
+                html = `<p>Activity details not found.</p>`;
+            }
+            openBasicModal('Activity Details', html);
+        }
+
+        function viewTaskDetail(taskId) {
+            if (window.atlas && window.atlas.tasks && typeof window.atlas.showTaskDetailModal === 'function') {
+                const task = window.atlas.tasks.find(t => t.id === taskId);
+                if (task) { window.atlas.showTaskDetailModal(task); return; }
+            }
+            // Fallback modal (no alert)
+            openBasicModal('Task Details', `
+                <p>Task ID: ${taskId}</p>
+                <p>Details will appear once the Atlas app finishes loading.</p>
+                <div class="divider"></div>
+                <button class="btn" onclick="window.location.href='kanban.html'">Open Kanban</button>
+            `);
         }
 
         // Close mobile menu when clicking outside
         document.addEventListener('click', function (event) {
             const nav = document.getElementById('mainNav');
             const toggle = document.querySelector('.mobile-menu-toggle');
-
             if (nav.classList.contains('active') &&
                 !nav.contains(event.target) &&
                 !toggle.contains(event.target)) {
@@ -405,4 +504,3 @@
     <script src="atlas-interactive.js"></script>
 </body>
 </html>
-
