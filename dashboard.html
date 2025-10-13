@@ -1,24 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Project Atlas Dashboard - View and manage all your home improvement projects in one place">
-    <meta name="robots" content="noindex, nofollow">
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Project Atlas Dashboard - View and manage all your home improvement projects in one place" />
+    <meta name="robots" content="noindex, nofollow" />
+
     <title>Dashboard - Project Atlas</title>
-    
+
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗂️</text></svg>">
-    
+    <link rel="icon" type="image/svg+xml"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗂️</text></svg>"/>
+
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="atlas-interactive.css">
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="atlas-interactive.css" />
 </head>
 <body class="app-page">
     <!-- Skip to Main Content -->
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    
+
     <!-- Application Header -->
     <header class="app-header">
         <div class="header-container">
@@ -27,16 +28,16 @@
                 <h1>Project <span class="atlas-blue">ATLAS</span></h1>
                 <span class="tagline">Home Project Management</span>
             </div>
-            
+
             <!-- Mobile Menu Toggle -->
-            <button class="mobile-menu-toggle" 
-                    onclick="toggleMobileMenu()" 
+            <button class="mobile-menu-toggle"
+                    onclick="toggleMobileMenu()"
                     aria-label="Toggle navigation menu"
                     aria-expanded="false"
                     aria-controls="mainNav">
                 <span aria-hidden="true">☰</span>
             </button>
-            
+
             <!-- Main Navigation -->
             <nav class="main-nav" id="mainNav" aria-label="Main navigation">
                 <ul>
@@ -48,16 +49,16 @@
                     <li><a href="documents.html">Documents</a></li>
                 </ul>
             </nav>
-            
+
             <!-- User Menu -->
             <div class="user-menu">
-                <button class="btn btn-secondary" 
-                        onclick="if(window.atlas && window.atlas.showNewProjectModal) { window.atlas.showNewProjectModal(); } else { alert('Loading...'); }"
+                <button class="btn btn-secondary"
+                        onclick="if(window.atlas && window.atlas.showNewProjectModal){window.atlas.showNewProjectModal();}else{alert('Loading.');}"
                         aria-label="Create new project">
                     <span aria-hidden="true">+</span> New Project
                 </button>
-                <button class="user-avatar" 
-                        onclick="if(window.atlas && window.atlas.showUserMenu) { window.atlas.showUserMenu(); } else { alert('Loading...'); }" 
+                <button class="user-avatar"
+                        onclick="if(window.atlas && window.atlas.showUserMenu){window.atlas.showUserMenu();}else{alert('Loading.');}"
                         aria-label="User menu"
                         title="User Menu">
                     AF
@@ -80,7 +81,7 @@
                 <!-- Active Projects Section -->
                 <section class="project-overview" aria-labelledby="projects-heading">
                     <h3 id="projects-heading">Active Projects</h3>
-                    
+
                     <div class="project-cards" id="projectCardsContainer">
                         <!-- Kitchen Renovation Project -->
                         <article class="project-card status-in-progress" data-project-id="kitchen">
@@ -88,7 +89,7 @@
                                 <h4>Kitchen Renovation Epic</h4>
                                 <span class="status-badge in-progress" role="status">In Progress</span>
                             </div>
-                            
+
                             <div class="project-stats">
                                 <div class="stat">
                                     <span class="stat-label">Progress</span>
@@ -97,23 +98,23 @@
                                     </div>
                                     <span class="stat-value">65%</span>
                                 </div>
-                                
+
                                 <div class="stat">
                                     <span class="stat-label">Budget</span>
-                                    <span class="stat-value">$23,400 <span class="text-tertiary">/ $28,000</span></span>
+                                    <span class="stat-value">$21,500 <span class="text-tertiary">/ $28,000</span></span>
                                 </div>
-                                
+
                                 <div class="stat">
-                                    <span class="stat-label">Timeline</span>
-                                    <span class="stat-value">Week 6 of 10</span>
+                                    <span class="stat-label">Next</span>
+                                    <span class="stat-value">Countertop template</span>
                                 </div>
                             </div>
-                            
+
                             <div class="project-actions">
                                 <button class="btn-link" onclick="viewProject('kitchen')" aria-label="View Kitchen Renovation Epic board">
                                     View Epic Board
                                 </button>
-                                <button class="btn-link" onclick="if(window.atlas && window.atlas.showAddTaskModal) { window.atlas.showAddTaskModal('planning'); }" aria-label="Add tasks to Kitchen Renovation Epic">
+                                <button class="btn-link" onclick="if(window.atlas && window.atlas.showAddTaskModal){window.atlas.showAddTaskModal('planning');}" aria-label="Add tasks to Kitchen Renovation Epic">
                                     Add Tasks
                                 </button>
                             </div>
@@ -125,7 +126,7 @@
                                 <h4>Basement Finishing Epic</h4>
                                 <span class="status-badge planning" role="status">Planning</span>
                             </div>
-                            
+
                             <div class="project-stats">
                                 <div class="stat">
                                     <span class="stat-label">Progress</span>
@@ -134,23 +135,23 @@
                                     </div>
                                     <span class="stat-value">15%</span>
                                 </div>
-                                
+
                                 <div class="stat">
                                     <span class="stat-label">Budget</span>
                                     <span class="stat-value">$5,200 <span class="text-tertiary">/ $35,000</span></span>
                                 </div>
-                                
+
                                 <div class="stat">
                                     <span class="stat-label">Next</span>
                                     <span class="stat-value">Permit application</span>
                                 </div>
                             </div>
-                            
+
                             <div class="project-actions">
                                 <button class="btn-link" onclick="viewProject('basement')" aria-label="View Basement Finishing Epic board">
                                     View Epic Board
                                 </button>
-                                <button class="btn-link" onclick="if(window.atlas && window.atlas.showAddTaskModal) { window.atlas.showAddTaskModal('planning'); }" aria-label="Add tasks to Basement Finishing Epic">
+                                <button class="btn-link" onclick="if(window.atlas && window.atlas.showAddTaskModal){window.atlas.showAddTaskModal('planning');}" aria-label="Add tasks to Basement Finishing Epic">
                                     Add Tasks
                                 </button>
                             </div>
@@ -162,7 +163,7 @@
                                 <h4>Bathroom Update Epic</h4>
                                 <span class="status-badge blocked" role="status">Blocked</span>
                             </div>
-                            
+
                             <div class="project-stats">
                                 <div class="stat">
                                     <span class="stat-label">Progress</span>
@@ -171,23 +172,23 @@
                                     </div>
                                     <span class="stat-value">40%</span>
                                 </div>
-                                
+
                                 <div class="stat">
                                     <span class="stat-label">Budget</span>
                                     <span class="stat-value">$8,100 <span class="text-tertiary">/ $12,000</span></span>
                                 </div>
-                                
+
                                 <div class="stat">
                                     <span class="stat-label">Blocked by</span>
                                     <span class="stat-value">Inspection pending</span>
                                 </div>
                             </div>
-                            
+
                             <div class="project-actions">
                                 <button class="btn-link" onclick="viewProject('bathroom')" aria-label="View Bathroom Update Epic board">
                                     View Epic Board
                                 </button>
-                                <button class="btn-link" onclick="if(window.atlas && window.atlas.showAddTaskModal) { window.atlas.showAddTaskModal('planning'); }" aria-label="Add tasks to Bathroom Update Epic">
+                                <button class="btn-link" onclick="if(window.atlas && window.atlas.showAddTaskModal){window.atlas.showAddTaskModal('planning');}" aria-label="Add tasks to Bathroom Update Epic">
                                     Add Tasks
                                 </button>
                             </div>
@@ -200,45 +201,41 @@
                     <!-- Recent Activity Widget -->
                     <section class="widget recent-activity" aria-labelledby="activity-heading">
                         <h3 id="activity-heading">Recent Activity</h3>
-                        
+
                         <ul class="activity-list" id="activityListContainer">
-                            <li class="activity-item" role="button" tabindex="0" onclick="viewActivityDetail('1')" onkeypress="handleKeyPress(event, 'viewActivityDetail', '1')">
-                                <div class="activity-icon task-completed" aria-hidden="true">
-                                    <span>✓</span>
-                                </div>
-                                <div class="activity-content">
-                                    <p class="activity-text">Completed "Install cabinet doors" in Kitchen Epic</p>
-                                    <time class="activity-time" datetime="2025-10-12T20:00:00">2 hours ago</time>
-                                </div>
-                            </li>
-                            
-                            <li class="activity-item" role="button" tabindex="0" onclick="viewActivityDetail('2')" onkeypress="handleKeyPress(event, 'viewActivityDetail', '2')">
-                                <div class="activity-icon expense-added" aria-hidden="true">
-                                    <span>💰</span>
-                                </div>
-                                <div class="activity-content">
-                                    <p class="activity-text">Added expense: Tile grout - $127.43</p>
-                                    <time class="activity-time" datetime="2025-10-12T17:00:00">5 hours ago</time>
+                            <li class="activity-item"
+                                role="button"
+                                tabindex="0"
+                                onclick="viewActivityDetail('1')"
+                                onkeypress="handleKeyPress(event, 'viewActivityDetail', '1')">
+                                <span class="activity-icon" aria-hidden="true">🧰</span>
+                                <div class="activity-text">
+                                    <div class="activity-title">Added task “Install backsplash” to Kitchen</div>
+                                    <time class="activity-time" datetime="2025-10-12T14:00:00">2 hours ago</time>
                                 </div>
                             </li>
-                            
-                            <li class="activity-item" role="button" tabindex="0" onclick="viewActivityDetail('3')" onkeypress="handleKeyPress(event, 'viewActivityDetail', '3')">
-                                <div class="activity-icon photo-uploaded" aria-hidden="true">
-                                    <span>📷</span>
-                                </div>
-                                <div class="activity-content">
-                                    <p class="activity-text">Uploaded 3 progress photos to Bathroom Epic</p>
-                                    <time class="activity-time" datetime="2025-10-11">Yesterday</time>
+
+                            <li class="activity-item"
+                                role="button"
+                                tabindex="0"
+                                onclick="viewActivityDetail('2')"
+                                onkeypress="handleKeyPress(event, 'viewActivityDetail', '2')">
+                                <span class="activity-icon" aria-hidden="true">✅</span>
+                                <div class="activity-text">
+                                    <div class="activity-title">Marked “Order tile” as Done</div>
+                                    <time class="activity-time" datetime="2025-10-12T12:00:00">4 hours ago</time>
                                 </div>
                             </li>
-                            
-                            <li class="activity-item" role="button" tabindex="0" onclick="viewActivityDetail('4')" onkeypress="handleKeyPress(event, 'viewActivityDetail', '4')">
-                                <div class="activity-icon task-created" aria-hidden="true">
-                                    <span>+</span>
-                                </div>
-                                <div class="activity-content">
-                                    <p class="activity-text">Created task "Research basement waterproofing"</p>
-                                    <time class="activity-time" datetime="2025-10-10">2 days ago</time>
+
+                            <li class="activity-item"
+                                role="button"
+                                tabindex="0"
+                                onclick="viewActivityDetail('3')"
+                                onkeypress="handleKeyPress(event, 'viewActivityDetail', '3')">
+                                <span class="activity-icon" aria-hidden="true">📎</span>
+                                <div class="activity-text">
+                                    <div class="activity-title">Uploaded “Electrical permit approval”</div>
+                                    <time class="activity-time" datetime="2025-10-12T10:00:00">6 hours ago</time>
                                 </div>
                             </li>
                         </ul>
@@ -247,21 +244,33 @@
                     <!-- Upcoming Tasks Widget -->
                     <section class="widget upcoming-tasks" aria-labelledby="tasks-heading">
                         <h3 id="tasks-heading">Upcoming Tasks</h3>
-                        
+
                         <ul class="task-list" id="upcomingTasksContainer">
-                            <li class="task-item priority-high" role="button" tabindex="0" onclick="viewTaskDetail('t9')" onkeypress="handleKeyPress(event, 'viewTaskDetail', 't9')">
+                            <li class="task-item priority-high"
+                                role="button"
+                                tabindex="0"
+                                onclick="viewTaskDetail('t9')"
+                                onkeypress="handleKeyPress(event, 'viewTaskDetail', 't9')">
                                 <span class="task-priority high" aria-label="High priority">!</span>
                                 <span class="task-text">Schedule plumbing inspection</span>
                                 <time class="task-due" datetime="2025-10-13">Due tomorrow</time>
                             </li>
-                            
-                            <li class="task-item priority-medium" role="button" tabindex="0" onclick="viewTaskDetail('t11')" onkeypress="handleKeyPress(event, 'viewTaskDetail', 't11')">
+
+                            <li class="task-item priority-medium"
+                                role="button"
+                                tabindex="0"
+                                onclick="viewTaskDetail('t11')"
+                                onkeypress="handleKeyPress(event, 'viewTaskDetail', 't11')">
                                 <span class="task-priority medium" aria-label="Medium priority">•</span>
                                 <span class="task-text">Order bathroom vanity</span>
                                 <time class="task-due" datetime="2025-10-15">Due Friday</time>
                             </li>
-                            
-                            <li class="task-item priority-low" role="button" tabindex="0" onclick="viewTaskDetail('t8')" onkeypress="handleKeyPress(event, 'viewTaskDetail', 't8')">
+
+                            <li class="task-item priority-low"
+                                role="button"
+                                tabindex="0"
+                                onclick="viewTaskDetail('t8')"
+                                onkeypress="handleKeyPress(event, 'viewTaskDetail', 't8')">
                                 <span class="task-priority low" aria-label="Low priority">-</span>
                                 <span class="task-text">Research countertop materials</span>
                                 <time class="task-due" datetime="2025-10-18">Due next week</time>
@@ -272,31 +281,36 @@
                     <!-- Budget Summary Widget -->
                     <section class="widget budget-summary" aria-labelledby="budget-heading">
                         <h3 id="budget-heading">Budget Overview</h3>
-                        
+
                         <div class="budget-stats">
                             <div class="budget-item">
                                 <span class="budget-label">Total Allocated</span>
                                 <span class="budget-amount">$75,000</span>
                             </div>
-                            
+
                             <div class="budget-item">
                                 <span class="budget-label">Total Spent</span>
                                 <span class="budget-amount spent">$36,700</span>
                             </div>
-                            
+
                             <div class="budget-item">
                                 <span class="budget-label">Remaining</span>
                                 <span class="budget-amount remaining">$38,300</span>
                             </div>
                         </div>
-                        
+
                         <div class="budget-chart">
-                            <div class="chart-bar" role="progressbar" aria-valuenow="49" aria-valuemin="0" aria-valuemax="100" aria-label="Budget utilization: 49%">
+                            <div class="chart-bar"
+                                 role="progressbar"
+                                 aria-valuenow="49"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                                 aria-label="Budget utilization: 49%">
                                 <div class="chart-fill" style="width: 49%"></div>
                             </div>
                             <p class="chart-label">49% budget utilized</p>
                         </div>
-                        
+
                         <a href="budget.html" class="btn-link" style="margin-top: var(--space-md); display: inline-block;">
                             View Full Budget →
                         </a>
@@ -313,25 +327,31 @@
             const nav = document.getElementById('mainNav');
             const toggle = document.querySelector('.mobile-menu-toggle');
             const isExpanded = nav.classList.toggle('active');
-            
+
             // Update ARIA attribute
             toggle.setAttribute('aria-expanded', isExpanded);
         }
-        
+
         // Keyboard accessibility helper
         function handleKeyPress(event, functionName, id) {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-                window[functionName](id);
+                if (typeof window[functionName] === 'function') {
+                    if (typeof id !== 'undefined') {
+                        window[functionName](id);
+                    } else {
+                        window[functionName]();
+                    }
+                }
             }
         }
-        
+
         // View project function
         function viewProject(projectId) {
             console.log('View project:', projectId);
             window.location.href = `kanban.html?project=${projectId}`;
         }
-        
+
         // View activity detail
         function viewActivityDetail(activityId) {
             console.log('View activity:', activityId);
@@ -339,11 +359,11 @@
                 window.atlas.showActivityDetail(activityId);
             } else {
                 // Fallback until atlas is loaded
-                alert('Loading activity details...');
+                alert('Loading activity details.');
             }
         }
-        
-        // View task detail
+
+        // View task detail (bridges to atlas task modal when available)
         function viewTaskDetail(taskId) {
             console.log('View task:', taskId);
             if (window.atlas && window.atlas.tasks) {
@@ -351,27 +371,27 @@
                 if (task && typeof window.atlas.showTaskDetailModal === 'function') {
                     window.atlas.showTaskDetailModal(task);
                 } else {
-                    alert('Task details loading...');
+                    alert('Task details loading.');
                 }
             } else {
-                alert('Loading task details...');
+                alert('Loading task details.');
             }
         }
-        
+
         // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             const nav = document.getElementById('mainNav');
             const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            if (nav.classList.contains('active') && 
-                !nav.contains(event.target) && 
+
+            if (nav.classList.contains('active') &&
+                !nav.contains(event.target) &&
                 !toggle.contains(event.target)) {
                 toggleMobileMenu();
             }
         });
-        
+
         // Close mobile menu on escape key
-        document.addEventListener('keydown', function(event) {
+        document.addEventListener('keydown', function (event) {
             if (event.key === 'Escape') {
                 const nav = document.getElementById('mainNav');
                 if (nav.classList.contains('active')) {
@@ -380,8 +400,9 @@
             }
         });
     </script>
-    
+
     <!-- Main Interactive Script -->
     <script src="atlas-interactive.js"></script>
 </body>
 </html>
+
