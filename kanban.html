@@ -16,35 +16,47 @@
   <link rel="stylesheet" href="atlas-interactive.css"/>
 
   <style>
-    /* Make the board use full page height naturally (no inner scrolling panes) */
+    /* === Full-bleed app layout (no tiny center column) === */
     html, body { height: 100%; }
     body.app-page { min-height: 100%; }
+    .kanban-main {
+      width: 100%;
+      max-width: none;           /* remove 1200px cap */
+      padding: 1rem 1.25rem 2rem;
+      margin: 0 auto;
+    }
 
-    /* Kanban layout tweaks so the page scrolls (not an inner div) */
+    /* Header region spacing */
+    .board-head { margin-bottom: .75rem; }
+    .board-head h2 { margin: 0 0 .15rem 0; }
+    .board-head p { margin: 0 0 .75rem 0; }
+
+    /* Filters tighten up vertical space */
+    .filters { margin-top: .25rem; }
+
+    /* === Board without inner scrollers ===
+       - Auto-fit columns into rows (wrap) so no horizontal bar is needed
+       - The page itself scrolls vertically */
     .kanban {
       --col-gap: 16px;
       display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: minmax(260px, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: var(--col-gap);
       align-items: start;
-      /* allow horizontal scroll if too many columns, but keep it at page level */
-      overflow: visible;
+      overflow: visible; /* page handles scrolling; no inner scrollbars */
     }
 
-    /* Columns grow with content; no hard max-height */
+    /* Let columns grow with content; remove hard max-height */
     .kanban-column { max-height: none; }
 
-    /* Keep filters tight to reduce wasted vertical space */
-    .filters { margin-top: .5rem; }
+    /* Card micro-polish tweaks (optional) */
+    .kanban-card strong { line-height: 1.25; }
 
-    /* Optional: horizontal scroll helper on small screens */
-    .kanban-wrapper {
-      width: 100%;
-      overflow-x: auto;   /* only horizontal overflow (page still controls vertical) */
-      overflow-y: visible;
-      padding-bottom: .5rem;
-    }
+    /* Small utility helpers */
+    .flex { display:flex; }
+    .items-center { align-items:center; }
+    .justify-between { justify-content:space-between; }
+    .gap-sm { gap:.5rem; }
   </style>
 </head>
 <body class="app-page">
@@ -81,8 +93,8 @@
   </header>
 
   <!-- Main -->
-  <main id="main" class="dashboard-container" style="padding-top:1rem;">
-    <section class="dashboard-header" style="margin-bottom:.75rem;">
+  <main id="main" class="kanban-main" aria-label="Kanban">
+    <section class="board-head">
       <h2 id="boardTitle">Kanban Board</h2>
       <p class="text-tertiary">Drag cards between columns. Click a card to view & edit details.</p>
 
@@ -103,17 +115,18 @@
       </div>
     </section>
 
-    <!-- Board (full-page height; page scrolls, not an inner panel) -->
-    <div class="kanban-wrapper">
-      <section id="kanban" class="kanban" aria-label="Kanban board">
-        <!-- Columns injected by JS -->
-      </section>
-    </div>
+    <!-- Board (no inner scroll; columns wrap) -->
+    <section id="kanban" class="kanban" aria-label="Kanban board">
+      <!-- Columns injected by JS -->
+    </section>
   </main>
 
-  <!-- Reusable Backdrop & Modal Root (used for Task Details + Create + Columns) -->
+  <!-- Backdrop & Modal Root (Task Details / Create / Columns) -->
   <div id="backdrop" class="modal-backdrop"></div>
   <div id="modalRoot" class="modal" aria-hidden="true"></div>
+
+  <!-- Toast -->
+  <div id="toast" style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#111;color:#fff;padding:.6rem .8rem;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.25);opacity:0;pointer-events:none;z-index:1100;"></div>
 
   <!-- Scripts -->
   <script>
@@ -270,7 +283,7 @@
       renderBoard();
     }
 
-    // ---------- Modal Helpers ----------
+    // ---------- Modal System ----------
     function openModal(title, bodyHtml, footerHtml){
       const modalRoot = document.getElementById("modalRoot");
       const backdrop = document.getElementById("backdrop");
@@ -297,46 +310,44 @@
       document.body.classList.remove("atlas-modal-open");
     }
 
-    // ---------- Task: Create ----------
+    // ---------- Create Task ----------
     function openCreateTask(defaultStatus){
       const options = STATUSES.map(s=>`<option ${defaultStatus===s?"selected":""}>${s}</option>`).join("");
       openModal("Create Task", `
-        <div class="form-grid">
-          <label for="new_title">Title *</label>
-          <input id="new_title" class="input" placeholder="e.g. Schedule plumbing inspection"/>
+        <label for="new_title">Title *</label>
+        <input id="new_title" class="input" placeholder="e.g. Schedule plumbing inspection"/>
 
-          <label for="new_desc">Description</label>
-          <textarea id="new_desc" class="input" placeholder="Add helpful context"></textarea>
+        <label for="new_desc">Description</label>
+        <textarea id="new_desc" class="input" placeholder="Add helpful context"></textarea>
 
-          <div class="form-row">
-            <div>
-              <label for="new_status">Status</label>
-              <select id="new_status" class="input">${options}</select>
-            </div>
-            <div>
-              <label for="new_assignee">Assignee</label>
-              <select id="new_assignee" class="input">
-                <option>Andrew</option><option>Katie</option><option>Contractor</option>
-              </select>
-            </div>
+        <div class="form-row">
+          <div>
+            <label for="new_status">Status</label>
+            <select id="new_status" class="input">${options}</select>
           </div>
-
-          <div class="form-row">
-            <div>
-              <label for="new_priority">Priority</label>
-              <select id="new_priority" class="input">
-                <option>Low</option><option selected>Medium</option><option>High</option>
-              </select>
-            </div>
-            <div>
-              <label for="new_due">Due Date</label>
-              <input id="new_due" type="date" class="input"/>
-            </div>
+          <div>
+            <label for="new_assignee">Assignee</label>
+            <select id="new_assignee" class="input">
+              <option>Andrew</option><option>Katie</option><option>Contractor</option>
+            </select>
           </div>
-
-          <label for="new_deps">Dependencies (comma IDs)</label>
-          <input id="new_deps" class="input" placeholder="e.g. t4,t6"/>
         </div>
+
+        <div class="form-row">
+          <div>
+            <label for="new_priority">Priority</label>
+            <select id="new_priority" class="input">
+              <option>Low</option><option selected>Medium</option><option>High</option>
+            </select>
+          </div>
+          <div>
+            <label for="new_due">Due Date</label>
+            <input id="new_due" type="date" class="input"/>
+          </div>
+        </div>
+
+        <label for="new_deps">Dependencies (comma IDs)</label>
+        <input id="new_deps" class="input" placeholder="e.g. t4,t6"/>
       `, `
         <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
         <button class="btn" onclick="createTask()">Create Task</button>
@@ -362,87 +373,73 @@
       showToast("Task created.");
     }
 
-    // ---------- Task: View/Edit (POPUP MODAL) ----------
+    // ---------- View/Edit Task (Modal) ----------
     function openTaskModal(id){
       const t = tasks.find(x=>x.id===id);
       if(!t) return;
 
-      // Prefer full app modal if present
-      if(window.atlas && typeof window.atlas.showTaskDetailModal === "function"){
-        window.atlas.showTaskDetailModal(t);
-        return;
-      }
-
       const statusOptions = STATUSES.map(s=>`<option ${t.status===s?"selected":""}>${s}</option>`).join("");
-      const depsHtml = (t.deps||[]).map(d=>{
-        const dTask = tasks.find(x=>x.id===d);
-        const done = dTask && dTask.status==="Done";
-        return `<li>${done?"✅":"⏳"} ${escapeHtml(dTask?dTask.title:d)}</li>`;
-      }).join('');
+      openModal("Task Details", `
+        <label for="edt_title">Title *</label>
+        <input id="edt_title" class="input" value="${escapeHtml(t.title)}"/>
 
-      const body = `
-        <div class="form-grid">
-          <label for="task_title_${id}">Title *</label>
-          <input id="task_title_${id}" class="input" value="${escapeHtml(t.title)}"/>
+        <label for="edt_desc">Description</label>
+        <textarea id="edt_desc" class="input">${escapeHtml(t.desc)}</textarea>
 
-          <label for="task_desc_${id}">Description</label>
-          <textarea id="task_desc_${id}" class="input">${escapeHtml(t.desc)}</textarea>
-
-          <div class="form-row">
-            <div>
-              <label for="task_status_${id}">Status</label>
-              <select id="task_status_${id}" class="input">${statusOptions}</select>
-            </div>
-            <div>
-              <label for="task_assignee_${id}">Assignee</label>
-              <select id="task_assignee_${id}" class="input">
-                ${["Andrew","Katie","Contractor"].map(a=>`<option ${t.assignee===a?"selected":""}>${a}</option>`).join("")}
-              </select>
-            </div>
+        <div class="form-row">
+          <div>
+            <label for="edt_status">Status</label>
+            <select id="edt_status" class="input">${statusOptions}</select>
           </div>
-
-          <div class="form-row">
-            <div>
-              <label for="task_priority_${id}">Priority</label>
-              <select id="task_priority_${id}" class="input">
-                ${["Low","Medium","High"].map(p=>`<option ${t.priority===p?"selected":""}>${p}</option>`).join("")}
-              </select>
-            </div>
-            <div>
-              <label for="task_due_${id}">Due Date</label>
-              <input id="task_due_${id}" type="date" class="input" value="${t.due || ""}"/>
-            </div>
+          <div>
+            <label for="edt_assignee">Assignee</label>
+            <select id="edt_assignee" class="input">
+              <option ${t.assignee==="Andrew"?"selected":""}>Andrew</option>
+              <option ${t.assignee==="Katie"?"selected":""}>Katie</option>
+              <option ${t.assignee==="Contractor"?"selected":""}>Contractor</option>
+            </select>
           </div>
-
-          <label for="task_deps_${id}">Dependencies (comma IDs)</label>
-          <input id="task_deps_${id}" class="input" value="${(t.deps||[]).join(',')}"/>
-
-          ${t.deps && t.deps.length ? `<div class="divider"></div><div><strong>Dependency Status</strong><ul>${depsHtml}</ul></div>` : ""}
-
-          <div class="divider"></div>
-          <div class="text-tertiary">ID: ${t.id} • Project: ${t.project}</div>
         </div>
-      `;
-      const footer = `
-        <button class="btn btn-secondary" onclick="deleteTask('${id}')">Delete</button>
+
+        <div class="form-row">
+          <div>
+            <label for="edt_priority">Priority</label>
+            <select id="edt_priority" class="input">
+              <option ${t.priority==="Low"?"selected":""}>Low</option>
+              <option ${t.priority==="Medium"?"selected":""}>Medium</option>
+              <option ${t.priority==="High"?"selected":""}>High</option>
+            </select>
+          </div>
+          <div>
+            <label for="edt_due">Due Date</label>
+            <input id="edt_due" type="date" class="input" value="${t.due || ""}"/>
+          </div>
+        </div>
+
+        <label for="edt_deps">Dependencies (comma IDs)</label>
+        <input id="edt_deps" class="input" value="${(t.deps||[]).join(",")}"/>
+
+        <p class="text-tertiary" style="margin-top:.5rem;">ID: <code>${t.id}</code> · Project: <code>${t.project||"general"}</code></p>
+      `, `
+        <button class="btn btn-secondary" onclick="deleteTask('${t.id}')">Delete</button>
         <button class="btn btn-secondary" onclick="closeModal()">Close</button>
-        <button class="btn" onclick="saveTask('${id}')">Save Changes</button>
-      `;
-      openModal("Task Details", body, footer);
+        <button class="btn" onclick="saveTask('${t.id}')">Save Changes</button>
+      `);
     }
 
     function saveTask(id){
       const i = tasks.findIndex(x=>x.id===id);
       if(i<0) return;
-      const g = (sel)=>document.getElementById(sel).value;
-      tasks[i].title    = g(`task_title_${id}`).trim() || tasks[i].title;
-      tasks[i].desc     = g(`task_desc_${id}`).trim();
-      tasks[i].status   = g(`task_status_${id}`);
-      tasks[i].assignee = g(`task_assignee_${id}`);
-      tasks[i].priority = g(`task_priority_${id}`);
-      tasks[i].due      = g(`task_due_${id}`);
-      const deps        = g(`task_deps_${id}`).trim();
-      tasks[i].deps     = deps ? deps.split(",").map(s=>s.trim()).filter(Boolean) : [];
+      const title = document.getElementById("edt_title").value.trim();
+      if(!title){ showToast("Title is required."); return; }
+      const desc = document.getElementById("edt_desc").value.trim();
+      const status = document.getElementById("edt_status").value;
+      const assignee = document.getElementById("edt_assignee").value;
+      const priority = document.getElementById("edt_priority").value;
+      const due = document.getElementById("edt_due").value;
+      const depsVal = document.getElementById("edt_deps").value.trim();
+      tasks[i] = { ...tasks[i], title, desc, status, assignee, priority, due,
+        deps: depsVal ? depsVal.split(",").map(s=>s.trim()).filter(Boolean) : [] };
       storage.saveTasks(tasks);
       closeModal();
       renderBoard();
@@ -450,71 +447,53 @@
     }
 
     function deleteTask(id){
-      if(!confirm("Delete this task?")) return;
-      tasks = tasks.filter(t=>t.id!==id);
+      tasks = tasks.filter(t=>t.id !== id);
       storage.saveTasks(tasks);
       closeModal();
       renderBoard();
       showToast("Task deleted.");
     }
 
-    // ---------- Columns: Add / Edit / Delete / Reorder ----------
+    // ---------- Columns (Add/Rename/Delete) ----------
     function openColumnsDialog(){
-      const body = `
-        <div class="form-grid" id="columnsEditor">
-          ${STATUSES.map((s, idx)=>columnRowTemplate(s, idx)).join("")}
-          <button class="btn btn-secondary" onclick="addColumnRow()">+ Add Column</button>
-          <div class="divider"></div>
-          <div class="text-tertiary">Rename, reorder, or delete columns. Changes are saved to this device.</div>
+      const list = STATUSES.map((s,idx)=>`
+        <div class="form-row" style="align-items:center;">
+          <input class="input" id="col_${idx}" value="${escapeHtml(s)}" />
+          <button class="btn btn-secondary" onclick="removeColumn(${idx})">Remove</button>
         </div>
-      `;
-      const footer = `
+      `).join("");
+      openModal("Columns", `
+        <p class="text-tertiary" style="margin:.25rem 0 .75rem;">Edit workflow columns. Drag & drop keeps working automatically.</p>
+        <div id="colsWrap">${list}</div>
+        <button class="btn btn-secondary" style="margin-top:.75rem;" onclick="addColumn()">+ Add Column</button>
+      `, `
         <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
         <button class="btn" onclick="saveColumns()">Save Columns</button>
-      `;
-      openModal("Configure Columns", body, footer);
+      `);
     }
-
-    function columnRowTemplate(name, idx){
-      return `
-        <div class="flex items-center gap-sm" data-row="${idx}">
-          <input class="input" value="${escapeHtml(name)}" placeholder="Column name" style="flex:1"/>
-          <button class="btn btn-secondary" onclick="moveColumnRow(this,-1)" title="Move up">↑</button>
-          <button class="btn btn-secondary" onclick="moveColumnRow(this,1)" title="Move down">↓</button>
-          <button class="btn btn-secondary" onclick="deleteColumnRow(this)" title="Delete">✕</button>
-        </div>
-      `;
+    function addColumn(){
+      const wrap = document.getElementById("colsWrap");
+      const idx = wrap.children.length;
+      const row = document.createElement("div");
+      row.className = "form-row";
+      row.style.alignItems = "center";
+      row.innerHTML = `<input class="input" id="col_${idx}" placeholder="New column name"/><button class="btn btn-secondary" onclick="this.parentElement.remove()">Remove</button>`;
+      wrap.appendChild(row);
     }
-
-    function addColumnRow(){
-      const editor = document.getElementById("columnsEditor");
-      const div = document.createElement("div");
-      div.innerHTML = columnRowTemplate("", Date.now());
-      editor.insertBefore(div.firstElementChild, editor.querySelector("button.btn.btn-secondary"));
-    }
-    function deleteColumnRow(btn){
-      const row = btn.closest('[data-row]');
-      row.parentNode.removeChild(row);
-    }
-    function moveColumnRow(btn, dir){
-      const row = btn.closest('[data-row]');
-      const parent = row.parentNode;
-      if(dir<0 && row.previousElementSibling){ parent.insertBefore(row, row.previousElementSibling); }
-      if(dir>0 && row.nextElementSibling && !row.nextElementSibling.matches('button')) {
-        parent.insertBefore(row.nextElementSibling, row);
-      }
+    function removeColumn(idx){
+      const input = document.getElementById(`col_${idx}`);
+      if(input) input.parentElement.remove();
     }
     function saveColumns(){
-      const rows = Array.from(document.querySelectorAll('#columnsEditor [data-row]'));
-      const names = rows.map(r => r.querySelector('input').value.trim()).filter(Boolean);
+      const inputs = Array.from(document.querySelectorAll('#colsWrap input'));
+      const names = inputs.map(i=>i.value.trim()).filter(Boolean);
       if(!names.length){ showToast("At least one column is required."); return; }
+      // Remap any task statuses that no longer exist to the first column
+      const first = names[0];
+      tasks.forEach(t => { if(!names.includes(t.status)) t.status = first; });
       STATUSES = names;
       storage.saveStatuses(STATUSES);
-
-      // Normalize any task statuses that no longer exist -> first column
-      tasks = tasks.map(t => ({...t, status: STATUSES.includes(t.status) ? t.status : STATUSES[0]}));
       storage.saveTasks(tasks);
-
       closeModal();
       renderBoard();
       showToast("Columns updated.");
@@ -522,28 +501,16 @@
 
     // ---------- Toast ----------
     let toastTimer;
-    function showToast(msg, type="info"){
-      let el = document.getElementById("toast");
-      if(!el){
-        el = document.createElement("div");
-        el.id = "toast";
-        el.className = "toast info";
-        document.body.appendChild(el);
-      }
-      el.className = `toast ${type}`;
-      el.textContent = msg;
+    function showToast(msg){
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.style.opacity = "1";
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(()=> el.remove(), 2200);
+      toastTimer = setTimeout(()=>{ t.style.opacity = "0"; }, 1800);
     }
 
     // ---------- Init ----------
     renderBoard();
-
-    // Expose for console debugging if needed
-    window.AtlasKanban = { tasks, STATUSES, renderBoard };
   </script>
-
-  <!-- App script (if present, enhances with backend, etc.) -->
-  <script src="atlas-interactive.js"></script>
 </body>
 </html>
