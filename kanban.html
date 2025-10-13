@@ -16,24 +16,35 @@
   <link rel="stylesheet" href="atlas-interactive.css"/>
 
   <style>
-    /* Page-height board layout (no awkward page scroll) */
+    /* Make the board use full page height naturally (no inner scrolling panes) */
     html, body { height: 100%; }
-    body.app-page { display: grid; grid-template-rows: auto 1fr; }
-    main.page-main {
-      height: 100%; /* grid row 2 fills remaining viewport */
-      overflow: hidden; /* board manages its own scrolls */
-    }
-    .board-shell {
-      height: calc(100% - 120px); /* header area inside main (title + filters) */
-      min-height: 420px;
+    body.app-page { min-height: 100%; }
+
+    /* Kanban layout tweaks so the page scrolls (not an inner div) */
+    .kanban {
+      --col-gap: 16px;
       display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(260px, 1fr);
+      gap: var(--col-gap);
+      align-items: start;
+      /* allow horizontal scroll if too many columns, but keep it at page level */
+      overflow: visible;
     }
-    .board-scroll {
-      overflow: auto; /* smooth vertical scroll for long columns and horizontal if needed */
+
+    /* Columns grow with content; no hard max-height */
+    .kanban-column { max-height: none; }
+
+    /* Keep filters tight to reduce wasted vertical space */
+    .filters { margin-top: .5rem; }
+
+    /* Optional: horizontal scroll helper on small screens */
+    .kanban-wrapper {
+      width: 100%;
+      overflow-x: auto;   /* only horizontal overflow (page still controls vertical) */
+      overflow-y: visible;
       padding-bottom: .5rem;
     }
-    /* Columns can grow to full height of board area */
-    .kanban-column { max-height: none; }
   </style>
 </head>
 <body class="app-page">
@@ -70,11 +81,12 @@
   </header>
 
   <!-- Main -->
-  <main id="main" class="page-main dashboard-container" style="padding-top:1rem;">
-    <section class="dashboard-header" style="margin-bottom: .75rem;">
+  <main id="main" class="dashboard-container" style="padding-top:1rem;">
+    <section class="dashboard-header" style="margin-bottom:.75rem;">
       <h2 id="boardTitle">Kanban Board</h2>
-      <p id="boardSubtitle" class="text-tertiary">Drag cards between columns. Click a card to view & edit details.</p>
-      <div class="form-row" style="margin-top:.5rem;">
+      <p class="text-tertiary">Drag cards between columns. Click a card to view & edit details.</p>
+
+      <div class="form-row filters">
         <div>
           <label for="searchTasks">Search</label>
           <input id="searchTasks" class="input" placeholder="Search by title, description, or tags…" oninput="applyFilters()"/>
@@ -91,17 +103,15 @@
       </div>
     </section>
 
-    <!-- Board -->
-    <section class="board-shell">
-      <div id="kanbanScroll" class="board-scroll">
-        <div id="kanban" class="kanban" aria-label="Kanban board">
-          <!-- Columns injected by JS -->
-        </div>
-      </div>
-    </section>
+    <!-- Board (full-page height; page scrolls, not an inner panel) -->
+    <div class="kanban-wrapper">
+      <section id="kanban" class="kanban" aria-label="Kanban board">
+        <!-- Columns injected by JS -->
+      </section>
+    </div>
   </main>
 
-  <!-- Reusable Backdrop & Modal Root -->
+  <!-- Reusable Backdrop & Modal Root (used for Task Details + Create + Columns) -->
   <div id="backdrop" class="modal-backdrop"></div>
   <div id="modalRoot" class="modal" aria-hidden="true"></div>
 
@@ -121,13 +131,6 @@
         toggleMobileMenu();
       }
     });
-
-    // Maintain board-shell height on resize (in case header size changes)
-    function fitBoardHeight(){
-      // board-shell already fills main; nothing else required with CSS grid
-    }
-    window.addEventListener('resize', fitBoardHeight);
-    fitBoardHeight();
 
     // ---------- Storage & Model ----------
     const defaultStatuses = ["Someday","Planning","Ready","In Progress","Blocked","Done"];
@@ -359,7 +362,7 @@
       showToast("Task created.");
     }
 
-    // ---------- Task: View/Edit ----------
+    // ---------- Task: View/Edit (POPUP MODAL) ----------
     function openTaskModal(id){
       const t = tasks.find(x=>x.id===id);
       if(!t) return;
@@ -371,6 +374,12 @@
       }
 
       const statusOptions = STATUSES.map(s=>`<option ${t.status===s?"selected":""}>${s}</option>`).join("");
+      const depsHtml = (t.deps||[]).map(d=>{
+        const dTask = tasks.find(x=>x.id===d);
+        const done = dTask && dTask.status==="Done";
+        return `<li>${done?"✅":"⏳"} ${escapeHtml(dTask?dTask.title:d)}</li>`;
+      }).join('');
+
       const body = `
         <div class="form-grid">
           <label for="task_title_${id}">Title *</label>
@@ -407,6 +416,8 @@
 
           <label for="task_deps_${id}">Dependencies (comma IDs)</label>
           <input id="task_deps_${id}" class="input" value="${(t.deps||[]).join(',')}"/>
+
+          ${t.deps && t.deps.length ? `<div class="divider"></div><div><strong>Dependency Status</strong><ul>${depsHtml}</ul></div>` : ""}
 
           <div class="divider"></div>
           <div class="text-tertiary">ID: ${t.id} • Project: ${t.project}</div>
@@ -454,7 +465,7 @@
           ${STATUSES.map((s, idx)=>columnRowTemplate(s, idx)).join("")}
           <button class="btn btn-secondary" onclick="addColumnRow()">+ Add Column</button>
           <div class="divider"></div>
-          <div class="text-tertiary">Tip: Rename, reorder, or delete columns. Changes are saved to this device.</div>
+          <div class="text-tertiary">Rename, reorder, or delete columns. Changes are saved to this device.</div>
         </div>
       `;
       const footer = `
