@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Project Atlas – Kanban board with dependencies, drag & drop, and task detail sheet."/>
+  <meta name="description" content="Project Atlas – Kanban board with dependencies, drag & drop, editable task modal, and configurable columns."/>
   <meta name="robots" content="noindex, nofollow"/>
   <title>Kanban Board - Project Atlas</title>
 
@@ -14,6 +14,27 @@
   <!-- Styles -->
   <link rel="stylesheet" href="styles.css"/>
   <link rel="stylesheet" href="atlas-interactive.css"/>
+
+  <style>
+    /* Page-height board layout (no awkward page scroll) */
+    html, body { height: 100%; }
+    body.app-page { display: grid; grid-template-rows: auto 1fr; }
+    main.page-main {
+      height: 100%; /* grid row 2 fills remaining viewport */
+      overflow: hidden; /* board manages its own scrolls */
+    }
+    .board-shell {
+      height: calc(100% - 120px); /* header area inside main (title + filters) */
+      min-height: 420px;
+      display: grid;
+    }
+    .board-scroll {
+      overflow: auto; /* smooth vertical scroll for long columns and horizontal if needed */
+      padding-bottom: .5rem;
+    }
+    /* Columns can grow to full height of board area */
+    .kanban-column { max-height: none; }
+  </style>
 </head>
 <body class="app-page">
   <a href="#main" class="skip-to-main">Skip to main content</a>
@@ -42,17 +63,17 @@
 
       <div class="user-menu">
         <button class="btn btn-secondary" onclick="openCreateTask()" aria-label="Add task">+ Task</button>
-        <button class="btn btn-secondary" onclick="openColumnsDialog()" aria-label="Choose columns">Columns</button>
+        <button class="btn btn-secondary" onclick="openColumnsDialog()" aria-label="Configure columns">Columns</button>
         <button class="user-avatar" title="User Menu">AF</button>
       </div>
     </div>
   </header>
 
   <!-- Main -->
-  <main id="main" class="dashboard-container" style="padding-top:1rem;">
+  <main id="main" class="page-main dashboard-container" style="padding-top:1rem;">
     <section class="dashboard-header" style="margin-bottom: .75rem;">
       <h2 id="boardTitle">Kanban Board</h2>
-      <p id="boardSubtitle" class="text-tertiary">Drag cards between columns. Click a card to view details.</p>
+      <p id="boardSubtitle" class="text-tertiary">Drag cards between columns. Click a card to view & edit details.</p>
       <div class="form-row" style="margin-top:.5rem;">
         <div>
           <label for="searchTasks">Search</label>
@@ -71,23 +92,16 @@
     </section>
 
     <!-- Board -->
-    <section id="kanban" class="kanban" aria-label="Kanban board">
-      <!-- Columns injected by JS -->
+    <section class="board-shell">
+      <div id="kanbanScroll" class="board-scroll">
+        <div id="kanban" class="kanban" aria-label="Kanban board">
+          <!-- Columns injected by JS -->
+        </div>
+      </div>
     </section>
   </main>
 
-  <!-- Task Drawer (fallback if window.atlas not present) -->
-  <aside id="taskSheet" class="task-sheet" aria-label="Task details panel">
-    <header>
-      <strong id="sheetTitle">Task</strong>
-      <button class="modal-close" aria-label="Close" onclick="closeTaskSheet()">&times;</button>
-    </header>
-    <div class="sheet-body">
-      <div id="sheetContent"></div>
-    </div>
-  </aside>
-
-  <!-- Generic modal/backdrop for create task & columns config -->
+  <!-- Reusable Backdrop & Modal Root -->
   <div id="backdrop" class="modal-backdrop"></div>
   <div id="modalRoot" class="modal" aria-hidden="true"></div>
 
@@ -108,35 +122,41 @@
       }
     });
 
-    // ---------- Data Model ----------
-    const STATUSES = ["Someday","Planning","Ready","In Progress","Blocked","Done"];
-    const DEFAULT_VISIBLE = ["Someday","Planning","Ready","In Progress","Blocked","Done"];
+    // Maintain board-shell height on resize (in case header size changes)
+    function fitBoardHeight(){
+      // board-shell already fills main; nothing else required with CSS grid
+    }
+    window.addEventListener('resize', fitBoardHeight);
+    fitBoardHeight();
 
-    // Seed data (only used first load)
-    const seedTasks = [
-      {id:"t1", title:"Research countertop materials", desc:"Quartz vs granite. Look at Costco & local fabricators.", status:"Someday", project:"kitchen", assignee:"Andrew", priority:"Low", due:"", deps:[]},
-      {id:"t2", title:"Submit basement permit", desc:"City of Woodinville online portal", status:"Planning", project:"basement", assignee:"Andrew", priority:"High", due:"2025-10-18", deps:[]},
-      {id:"t3", title:"Order bathroom vanity", desc:"36” oak, matte black hardware – Home Depot", status:"Ready", project:"bathroom", assignee:"Katie", priority:"Medium", due:"2025-10-15", deps:[]},
-      {id:"t4", title:"Install backsplash", desc:"Subway tile herringbone. Use leveling clips.", status:"In Progress", project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-20", deps:["t6"]},
-      {id:"t5", title:"Seal grout", desc:"After 72 hours, apply two coats.", status:"Blocked", project:"kitchen", assignee:"Andrew", priority:"Low", due:"", deps:["t4"]},
-      {id:"t6", title:"Countertop template", desc:"Schedule template after cabinet alignment.", status:"Done", project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-10", deps:[]},
-    ];
+    // ---------- Storage & Model ----------
+    const defaultStatuses = ["Someday","Planning","Ready","In Progress","Blocked","Done"];
 
     const storage = {
-      keyBoard: "atlas.kanban.tasks",
-      keyColumns: "atlas.kanban.visibleColumns",
-      getTasks(){ try{ return JSON.parse(localStorage.getItem(this.keyBoard)) || seedTasks; }catch{ return seedTasks; } },
-      saveTasks(tasks){ localStorage.setItem(this.keyBoard, JSON.stringify(tasks)); },
-      getVisible(){ try{ return JSON.parse(localStorage.getItem(this.keyColumns)) || DEFAULT_VISIBLE; }catch{ return DEFAULT_VISIBLE; } },
-      saveVisible(cols){ localStorage.setItem(this.keyColumns, JSON.stringify(cols)); }
+      keyTasks: "atlas.kanban.tasks",
+      keyStatuses: "atlas.kanban.statuses",
+      getTasks(){ try{ return JSON.parse(localStorage.getItem(this.keyTasks)) || seedTasks; }catch{ return seedTasks; } },
+      saveTasks(v){ localStorage.setItem(this.keyTasks, JSON.stringify(v)); },
+      getStatuses(){ try{ return JSON.parse(localStorage.getItem(this.keyStatuses)) || defaultStatuses; }catch{ return defaultStatuses; } },
+      saveStatuses(v){ localStorage.setItem(this.keyStatuses, JSON.stringify(v)); }
     };
 
+    // Seed (first load only)
+    const seedTasks = [
+      {id:"t1", title:"Research countertop materials", desc:"Quartz vs granite. Look at Costco & local fabricators.", status:"Someday", project:"kitchen", assignee:"Andrew", priority:"Low",  due:"",          deps:[]},
+      {id:"t2", title:"Submit basement permit",       desc:"City of Woodinville online portal",                     status:"Planning", project:"basement", assignee:"Andrew", priority:"High", due:"2025-10-18", deps:[]},
+      {id:"t3", title:"Order bathroom vanity",        desc:"36” oak, matte black hardware – Home Depot",           status:"Ready",    project:"bathroom", assignee:"Katie",  priority:"Medium",due:"2025-10-15", deps:[]},
+      {id:"t4", title:"Install backsplash",           desc:"Subway tile herringbone. Use leveling clips.",         status:"In Progress", project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-20", deps:["t6"]},
+      {id:"t5", title:"Seal grout",                   desc:"After 72 hours, apply two coats.",                     status:"Blocked",  project:"kitchen", assignee:"Andrew", priority:"Low",  due:"",          deps:["t4"]},
+      {id:"t6", title:"Countertop template",          desc:"Schedule template after cabinet alignment.",           status:"Done",     project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-10", deps:[]},
+    ];
+
     let tasks = storage.getTasks();
-    let visibleColumns = storage.getVisible();
+    let STATUSES = storage.getStatuses();
     let filterText = "";
     let filterAssignee = "";
 
-    // If arriving with ?project= in URL, set title
+    // URL project param
     const params = new URLSearchParams(location.search);
     const projectParam = params.get("project");
     if(projectParam){
@@ -157,8 +177,6 @@
       });
 
       STATUSES.forEach(status => {
-        if(!visibleColumns.includes(status)) return;
-
         const col = document.createElement("section");
         col.className = "kanban-column";
         col.dataset.status = status;
@@ -166,20 +184,16 @@
           <header class="flex items-center justify-between">
             <span class="col-title">${status}</span>
             <div class="flex items-center gap-sm">
-              <span class="text-tertiary" id="count-${status.replace(/\s/g,'')}">0</span>
+              <span class="text-tertiary" id="count-${slug(status)}">0</span>
               <button class="btn btn-secondary" onclick="openCreateTask('${status}')" aria-label="Add task to ${status}">+ Task</button>
             </div>
           </header>
-          <div class="kanban-list" role="list" aria-labelledby="col-${status}">
-          </div>
+          <div class="kanban-list" role="list"></div>
         `;
         const list = col.querySelector(".kanban-list");
 
         // Allow drops
-        list.addEventListener("dragover", e => {
-          e.preventDefault();
-          list.classList.add("kanban-drop-target");
-        });
+        list.addEventListener("dragover", e => { e.preventDefault(); list.classList.add("kanban-drop-target"); });
         list.addEventListener("dragleave", () => list.classList.remove("kanban-drop-target"));
         list.addEventListener("drop", e => {
           e.preventDefault();
@@ -191,7 +205,7 @@
         // Cards
         const cards = filtered.filter(t => t.status === status);
         cards.forEach(t => list.appendChild(renderCard(t)));
-        col.querySelector(`#count-${status.replace(/\s/g,'')}`).textContent = cards.length;
+        col.querySelector(`#count-${slug(status)}`).textContent = cards.length;
 
         $board.appendChild(col);
       });
@@ -224,177 +238,107 @@
       });
       card.addEventListener("dragend", ()=> card.classList.remove("dragging"));
 
-      // Click to open details
-      card.addEventListener("click", ()=> openTask(t.id));
+      // Click to open details modal (edit)
+      card.addEventListener("click", ()=> openTaskModal(t.id));
       return card;
     }
 
+    function slug(s){ return s.replace(/\s/g,''); }
     function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[m])); }
 
-    // ---------- Actions ----------
-    function moveTaskToStatus(id, status){
-      const idx = tasks.findIndex(x=>x.id===id);
-      if(idx===-1) return;
-      // Dependency guard: cannot move to In Progress if has unmet deps
-      if(status==="In Progress" && tasks[idx].deps && tasks[idx].deps.length){
-        const unmet = tasks[idx].deps.filter(d => (tasks.find(x=>x.id===d)||{}).status !== "Done");
-        if(unmet.length){
-          showToast("Cannot start – dependencies not Done.");
-          return;
-        }
-      }
-      tasks[idx].status = status;
-      storage.saveTasks(tasks);
-      renderBoard();
-    }
-
+    // ---------- Filters ----------
     function applyFilters(){
       filterText = document.getElementById("searchTasks").value.trim().toLowerCase();
       filterAssignee = document.getElementById("assigneeFilter").value;
       renderBoard();
     }
 
-    // ---------- Task Details ----------
-    function openTask(id){
-      const t = tasks.find(x=>x.id===id);
-      if(!t) return;
-
-      // Prefer full app modal if available
-      if(window.atlas && typeof window.atlas.showTaskDetailModal === "function"){
-        window.atlas.showTaskDetailModal(t);
-        return;
+    // ---------- Move ----------
+    function moveTaskToStatus(id, status){
+      const idx = tasks.findIndex(x=>x.id===id);
+      if(idx===-1) return;
+      // Guard: cannot start if deps not done
+      if(status==="In Progress" && tasks[idx].deps && tasks[idx].deps.length){
+        const unmet = tasks[idx].deps.filter(d => (tasks.find(x=>x.id===d)||{}).status !== "Done");
+        if(unmet.length){ showToast("Cannot start – dependencies not Done."); return; }
       }
-
-      // Fallback sheet
-      const sheet = document.getElementById("taskSheet");
-      const content = document.getElementById("sheetContent");
-      document.getElementById("sheetTitle").textContent = t.title;
-
-      const depsHtml = (t.deps||[]).map(d=>{
-        const dTask = tasks.find(x=>x.id===d);
-        const done = dTask && dTask.status==="Done";
-        return `<li>${done?"✅":"⏳"} ${escapeHtml(dTask?dTask.title:d)}</li>`;
-      }).join('');
-
-      content.innerHTML = `
-        <div class="task-meta">
-          <div><strong>Status:</strong> ${t.status}</div>
-          <div><strong>Assignee:</strong> ${escapeHtml(t.assignee)}</div>
-          <div><strong>Priority:</strong> ${escapeHtml(t.priority)}</div>
-          <div><strong>Due:</strong> ${t.due || "—"}</div>
-        </div>
-        <div class="divider"></div>
-        <p>${escapeHtml(t.desc)}</p>
-        ${t.deps && t.deps.length ? `<div class="divider"></div><div><strong>Dependencies</strong><ul>${depsHtml}</ul></div>` : ""}
-        <div class="divider"></div>
-        <div class="flex gap-sm">
-          ${STATUSES.filter(s=>s!==t.status && visibleColumns.includes(s)).map(s=>`<button class="btn btn-secondary" onclick="moveTaskToStatus('${t.id}','${s}')">Move to ${s}</button>`).join('')}
-          <button class="btn" onclick="markDone('${t.id}')">Mark Done</button>
-        </div>
-      `;
-      sheet.classList.add("open");
+      tasks[idx].status = status;
+      storage.saveTasks(tasks);
+      renderBoard();
     }
 
-    function closeTaskSheet(){ document.getElementById("taskSheet").classList.remove("open"); }
-    function markDone(id){ moveTaskToStatus(id,"Done"); closeTaskSheet(); }
-
-    // ---------- Create Task / Columns Dialog ----------
-    function openCreateTask(defaultStatus){
+    // ---------- Modal Helpers ----------
+    function openModal(title, bodyHtml, footerHtml){
       const modalRoot = document.getElementById("modalRoot");
       const backdrop = document.getElementById("backdrop");
-      const title = "Create Task";
       modalRoot.innerHTML = `
         <div class="modal-panel" role="dialog" aria-modal="true" aria-label="${title}">
           <div class="modal-header">
             <h3 class="modal-title">${title}</h3>
             <button class="modal-close" aria-label="Close" onclick="closeModal()">&times;</button>
           </div>
-          <div class="modal-body">
-            <div class="form-grid">
-              <label for="new_title">Title *</label>
-              <input id="new_title" class="input" placeholder="e.g. Schedule plumbing inspection"/>
-              <label for="new_desc">Description</label>
-              <textarea id="new_desc" class="input" placeholder="Add helpful context"></textarea>
-              <div class="form-row">
-                <div>
-                  <label for="new_status">Status</label>
-                  <select id="new_status" class="input">
-                    ${STATUSES.map(s=>`<option ${defaultStatus===s?"selected":""}>${s}</option>`).join("")}
-                  </select>
-                </div>
-                <div>
-                  <label for="new_assignee">Assignee</label>
-                  <select id="new_assignee" class="input">
-                    <option>Andrew</option><option>Katie</option><option>Contractor</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-row">
-                <div>
-                  <label for="new_priority">Priority</label>
-                  <select id="new_priority" class="input">
-                    <option>Low</option><option selected>Medium</option><option>High</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="new_due">Due Date</label>
-                  <input id="new_due" type="date" class="input"/>
-                </div>
-              </div>
-              <label for="new_deps">Dependencies (comma IDs)</label>
-              <input id="new_deps" class="input" placeholder="e.g. t4,t6"/>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-            <button class="btn" onclick="createTask()">Create Task</button>
-          </div>
+          <div class="modal-body">${bodyHtml}</div>
+          <div class="modal-footer">${footerHtml || `<button class="btn" onclick="closeModal()">Close</button>`}</div>
         </div>
       `;
       backdrop.classList.add("show");
       modalRoot.classList.add("open");
       document.body.classList.add("atlas-modal-open");
     }
-
-    function openColumnsDialog(){
-      const modalRoot = document.getElementById("modalRoot");
-      const backdrop = document.getElementById("backdrop");
-      const title = "Choose Visible Columns";
-      modalRoot.innerHTML = `
-        <div class="modal-panel" role="dialog" aria-modal="true" aria-label="${title}">
-          <div class="modal-header">
-            <h3 class="modal-title">${title}</h3>
-            <button class="modal-close" aria-label="Close" onclick="closeModal()">&times;</button>
-          </div>
-          <div class="modal-body">
-            <div class="form-grid">
-              ${STATUSES.map(s=>`
-                <label style="display:flex;align-items:center;gap:.5rem;">
-                  <input type="checkbox" value="${s}" ${visibleColumns.includes(s)?"checked":""}
-                         onchange="toggleColumnVisibility(this.value,this.checked)"/>
-                  ${s}
-                </label>
-              `).join("")}
-              <div class="text-tertiary">Your selection is saved to this device.</div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button class="btn" onclick="closeModal()">Done</button>
-          </div>
-        </div>
-      `;
-      backdrop.classList.add("show");
-      modalRoot.classList.add("open");
-      document.body.classList.add("atlas-modal-open");
-    }
-
     function closeModal(){
-      document.getElementById("modalRoot").innerHTML = "";
-      document.getElementById("modalRoot").classList.remove("open");
-      document.getElementById("backdrop").classList.remove("show");
+      const modalRoot = document.getElementById("modalRoot");
+      const backdrop = document.getElementById("backdrop");
+      modalRoot.innerHTML = "";
+      modalRoot.classList.remove("open");
+      backdrop.classList.remove("show");
       document.body.classList.remove("atlas-modal-open");
     }
 
+    // ---------- Task: Create ----------
+    function openCreateTask(defaultStatus){
+      const options = STATUSES.map(s=>`<option ${defaultStatus===s?"selected":""}>${s}</option>`).join("");
+      openModal("Create Task", `
+        <div class="form-grid">
+          <label for="new_title">Title *</label>
+          <input id="new_title" class="input" placeholder="e.g. Schedule plumbing inspection"/>
+
+          <label for="new_desc">Description</label>
+          <textarea id="new_desc" class="input" placeholder="Add helpful context"></textarea>
+
+          <div class="form-row">
+            <div>
+              <label for="new_status">Status</label>
+              <select id="new_status" class="input">${options}</select>
+            </div>
+            <div>
+              <label for="new_assignee">Assignee</label>
+              <select id="new_assignee" class="input">
+                <option>Andrew</option><option>Katie</option><option>Contractor</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="new_priority">Priority</label>
+              <select id="new_priority" class="input">
+                <option>Low</option><option selected>Medium</option><option>High</option>
+              </select>
+            </div>
+            <div>
+              <label for="new_due">Due Date</label>
+              <input id="new_due" type="date" class="input"/>
+            </div>
+          </div>
+
+          <label for="new_deps">Dependencies (comma IDs)</label>
+          <input id="new_deps" class="input" placeholder="e.g. t4,t6"/>
+        </div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn" onclick="createTask()">Create Task</button>
+      `);
+    }
     function createTask(){
       const title = document.getElementById("new_title").value.trim();
       if(!title){ showToast("Title is required."); return; }
@@ -405,10 +349,7 @@
       const due = document.getElementById("new_due").value;
       const deps = document.getElementById("new_deps").value.trim();
       const id = "t" + Math.random().toString(36).slice(2,7);
-
-      tasks.push({
-        id, title, desc,
-        status, assignee, priority, due,
+      tasks.push({ id, title, desc, status, assignee, priority, due,
         deps: deps ? deps.split(",").map(s=>s.trim()).filter(Boolean) : [],
         project: projectParam || "general"
       });
@@ -418,12 +359,154 @@
       showToast("Task created.");
     }
 
-    function toggleColumnVisibility(col, on){
-      if(on && !visibleColumns.includes(col)) visibleColumns.push(col);
-      if(!on) visibleColumns = visibleColumns.filter(c=>c!==col);
-      if(!visibleColumns.length){ visibleColumns = DEFAULT_VISIBLE.slice(); }
-      storage.saveVisible(visibleColumns);
+    // ---------- Task: View/Edit ----------
+    function openTaskModal(id){
+      const t = tasks.find(x=>x.id===id);
+      if(!t) return;
+
+      // Prefer full app modal if present
+      if(window.atlas && typeof window.atlas.showTaskDetailModal === "function"){
+        window.atlas.showTaskDetailModal(t);
+        return;
+      }
+
+      const statusOptions = STATUSES.map(s=>`<option ${t.status===s?"selected":""}>${s}</option>`).join("");
+      const body = `
+        <div class="form-grid">
+          <label for="task_title_${id}">Title *</label>
+          <input id="task_title_${id}" class="input" value="${escapeHtml(t.title)}"/>
+
+          <label for="task_desc_${id}">Description</label>
+          <textarea id="task_desc_${id}" class="input">${escapeHtml(t.desc)}</textarea>
+
+          <div class="form-row">
+            <div>
+              <label for="task_status_${id}">Status</label>
+              <select id="task_status_${id}" class="input">${statusOptions}</select>
+            </div>
+            <div>
+              <label for="task_assignee_${id}">Assignee</label>
+              <select id="task_assignee_${id}" class="input">
+                ${["Andrew","Katie","Contractor"].map(a=>`<option ${t.assignee===a?"selected":""}>${a}</option>`).join("")}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="task_priority_${id}">Priority</label>
+              <select id="task_priority_${id}" class="input">
+                ${["Low","Medium","High"].map(p=>`<option ${t.priority===p?"selected":""}>${p}</option>`).join("")}
+              </select>
+            </div>
+            <div>
+              <label for="task_due_${id}">Due Date</label>
+              <input id="task_due_${id}" type="date" class="input" value="${t.due || ""}"/>
+            </div>
+          </div>
+
+          <label for="task_deps_${id}">Dependencies (comma IDs)</label>
+          <input id="task_deps_${id}" class="input" value="${(t.deps||[]).join(',')}"/>
+
+          <div class="divider"></div>
+          <div class="text-tertiary">ID: ${t.id} • Project: ${t.project}</div>
+        </div>
+      `;
+      const footer = `
+        <button class="btn btn-secondary" onclick="deleteTask('${id}')">Delete</button>
+        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        <button class="btn" onclick="saveTask('${id}')">Save Changes</button>
+      `;
+      openModal("Task Details", body, footer);
+    }
+
+    function saveTask(id){
+      const i = tasks.findIndex(x=>x.id===id);
+      if(i<0) return;
+      const g = (sel)=>document.getElementById(sel).value;
+      tasks[i].title    = g(`task_title_${id}`).trim() || tasks[i].title;
+      tasks[i].desc     = g(`task_desc_${id}`).trim();
+      tasks[i].status   = g(`task_status_${id}`);
+      tasks[i].assignee = g(`task_assignee_${id}`);
+      tasks[i].priority = g(`task_priority_${id}`);
+      tasks[i].due      = g(`task_due_${id}`);
+      const deps        = g(`task_deps_${id}`).trim();
+      tasks[i].deps     = deps ? deps.split(",").map(s=>s.trim()).filter(Boolean) : [];
+      storage.saveTasks(tasks);
+      closeModal();
       renderBoard();
+      showToast("Task updated.");
+    }
+
+    function deleteTask(id){
+      if(!confirm("Delete this task?")) return;
+      tasks = tasks.filter(t=>t.id!==id);
+      storage.saveTasks(tasks);
+      closeModal();
+      renderBoard();
+      showToast("Task deleted.");
+    }
+
+    // ---------- Columns: Add / Edit / Delete / Reorder ----------
+    function openColumnsDialog(){
+      const body = `
+        <div class="form-grid" id="columnsEditor">
+          ${STATUSES.map((s, idx)=>columnRowTemplate(s, idx)).join("")}
+          <button class="btn btn-secondary" onclick="addColumnRow()">+ Add Column</button>
+          <div class="divider"></div>
+          <div class="text-tertiary">Tip: Rename, reorder, or delete columns. Changes are saved to this device.</div>
+        </div>
+      `;
+      const footer = `
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn" onclick="saveColumns()">Save Columns</button>
+      `;
+      openModal("Configure Columns", body, footer);
+    }
+
+    function columnRowTemplate(name, idx){
+      return `
+        <div class="flex items-center gap-sm" data-row="${idx}">
+          <input class="input" value="${escapeHtml(name)}" placeholder="Column name" style="flex:1"/>
+          <button class="btn btn-secondary" onclick="moveColumnRow(this,-1)" title="Move up">↑</button>
+          <button class="btn btn-secondary" onclick="moveColumnRow(this,1)" title="Move down">↓</button>
+          <button class="btn btn-secondary" onclick="deleteColumnRow(this)" title="Delete">✕</button>
+        </div>
+      `;
+    }
+
+    function addColumnRow(){
+      const editor = document.getElementById("columnsEditor");
+      const div = document.createElement("div");
+      div.innerHTML = columnRowTemplate("", Date.now());
+      editor.insertBefore(div.firstElementChild, editor.querySelector("button.btn.btn-secondary"));
+    }
+    function deleteColumnRow(btn){
+      const row = btn.closest('[data-row]');
+      row.parentNode.removeChild(row);
+    }
+    function moveColumnRow(btn, dir){
+      const row = btn.closest('[data-row]');
+      const parent = row.parentNode;
+      if(dir<0 && row.previousElementSibling){ parent.insertBefore(row, row.previousElementSibling); }
+      if(dir>0 && row.nextElementSibling && !row.nextElementSibling.matches('button')) {
+        parent.insertBefore(row.nextElementSibling, row);
+      }
+    }
+    function saveColumns(){
+      const rows = Array.from(document.querySelectorAll('#columnsEditor [data-row]'));
+      const names = rows.map(r => r.querySelector('input').value.trim()).filter(Boolean);
+      if(!names.length){ showToast("At least one column is required."); return; }
+      STATUSES = names;
+      storage.saveStatuses(STATUSES);
+
+      // Normalize any task statuses that no longer exist -> first column
+      tasks = tasks.map(t => ({...t, status: STATUSES.includes(t.status) ? t.status : STATUSES[0]}));
+      storage.saveTasks(tasks);
+
+      closeModal();
+      renderBoard();
+      showToast("Columns updated.");
     }
 
     // ---------- Toast ----------
@@ -444,9 +527,12 @@
 
     // ---------- Init ----------
     renderBoard();
+
+    // Expose for console debugging if needed
+    window.AtlasKanban = { tasks, STATUSES, renderBoard };
   </script>
 
-  <!-- App script (if present, enhances task modals, persistence with backend, etc.) -->
+  <!-- App script (if present, enhances with backend, etc.) -->
   <script src="atlas-interactive.js"></script>
 </body>
 </html>
