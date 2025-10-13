@@ -113,7 +113,7 @@
                                 <button class="btn-link" onclick="viewProject('kitchen')" aria-label="View Kitchen Renovation Epic board">
                                     View Epic Board
                                 </button>
-                                <button class="btn-link" onclick="if(window.atlas && window.atlas.showAddTaskModal){window.atlas.showAddTaskModal('planning');}" aria-label="Add tasks to Kitchen Renovation Epic">
+                                <button class="btn-link" onclick="openAddTaskModal('kitchen','Planning')" aria-label="Add tasks to Kitchen Renovation Epic">
                                     Add Tasks
                                 </button>
                             </div>
@@ -150,7 +150,7 @@
                                 <button class="btn-link" onclick="viewProject('basement')" aria-label="View Basement Finishing Epic board">
                                     View Epic Board
                                 </button>
-                                <button class="btn-link" onclick="if(window.atlas && window.atlas.showAddTaskModal){window.atlas.showAddTaskModal('planning');}" aria-label="Add tasks to Basement Finishing Epic">
+                                <button class="btn-link" onclick="openAddTaskModal('basement','Planning')" aria-label="Add tasks to Basement Finishing Epic">
                                     Add Tasks
                                 </button>
                             </div>
@@ -187,7 +187,7 @@
                                 <button class="btn-link" onclick="viewProject('bathroom')" aria-label="View Bathroom Update Epic board">
                                     View Epic Board
                                 </button>
-                                <button class="btn-link" onclick="if(window.atlas && window.atlas.showAddTaskModal){window.atlas.showAddTaskModal('planning');}" aria-label="Add tasks to Bathroom Update Epic">
+                                <button class="btn-link" onclick="openAddTaskModal('bathroom','Planning')" aria-label="Add tasks to Bathroom Update Epic">
                                     Add Tasks
                                 </button>
                             </div>
@@ -319,9 +319,27 @@
         </div>
     </main>
 
+    <!-- Reusable Backdrop & Modal Root -->
+    <div id="backdrop" class="modal-backdrop"></div>
+    <div id="modalRoot" class="modal" aria-hidden="true"></div>
+
     <!-- Scripts -->
     <script>
-        // Mobile menu toggle with accessibility
+        // ---------- THEME UTIL ----------
+        function toast(msg){
+          let t = document.getElementById('atlas-toast');
+          if(!t){
+            t = document.createElement('div');
+            t.id='atlas-toast';
+            t.style.cssText='position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0b3a75;color:#fff;border-radius:10px;padding:10px 14px;box-shadow:0 8px 20px rgba(0,0,0,.2);z-index:1200;opacity:0;transition:opacity .15s ease';
+            document.body.appendChild(t);
+          }
+          t.textContent = msg;
+          t.style.opacity = '1';
+          setTimeout(()=>t.style.opacity='0', 1500);
+        }
+
+        // ---------- MOBILE NAV ----------
         function toggleMobileMenu() {
             const nav = document.getElementById('mainNav');
             const toggle = document.querySelector('.mobile-menu-toggle');
@@ -343,164 +361,345 @@
             }
         }
 
+        // ---------- STORAGE MODEL (aligned with kanban.html) ----------
+        const KanbanStore = {
+          keyTasks: 'atlas.kanban.tasks',
+          keyStatuses: 'atlas.kanban.statuses',
+          read(){ try { return JSON.parse(localStorage.getItem(this.keyTasks)) || []; } catch { return []; } },
+          write(list){ localStorage.setItem(this.keyTasks, JSON.stringify(list)); },
+          ensureSeed(){
+            // if kanban has no data, seed with defaults used in kanban.html
+            const existing = this.read();
+            if(existing.length) return;
+            const seed = [
+              {id:"t1", title:"Research countertop materials", desc:"Quartz vs granite. Look at Costco & local fabricators.", status:"Someday", project:"kitchen", assignee:"Andrew", priority:"Low",  due:"",          deps:[]},
+              {id:"t2", title:"Submit basement permit",       desc:"City of Woodinville online portal",                     status:"Planning", project:"basement", assignee:"Andrew", priority:"High", due:"2025-10-18", deps:[]},
+              {id:"t3", title:"Order bathroom vanity",        desc:"36” oak, matte black hardware – Home Depot",           status:"Ready",    project:"bathroom", assignee:"Katie",  priority:"Medium",due:"2025-10-15", deps:[]},
+              {id:"t4", title:"Install backsplash",           desc:"Subway tile herringbone. Use leveling clips.",         status:"In Progress", project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-20", deps:["t6"]},
+              {id:"t5", title:"Seal grout",                   desc:"After 72 hours, apply two coats.",                     status:"Blocked",  project:"kitchen", assignee:"Andrew", priority:"Low",  due:"",          deps:["t4"]},
+              {id:"t6", title:"Countertop template",          desc:"Schedule template after cabinet alignment.",           status:"Done",     project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-10", deps:[]},
+            ];
+            this.write(seed);
+          }
+        };
+        KanbanStore.ensureSeed();
+
+        function slugify(s){ return (s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+        function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[m])); }
+
+        // ---------- SIMPLE MODAL (fallback when global atlas modal not present) ----------
+        function openBasicModal(title, html, footerHtml){
+          const modalRoot = document.getElementById("modalRoot");
+          const backdrop  = document.getElementById("backdrop");
+          modalRoot.innerHTML = `
+            <div class="modal-panel" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
+              <div class="modal-header">
+                <h3 class="modal-title">${escapeHtml(title)}</h3>
+                <button class="modal-close" aria-label="Close" onclick="closeBasicModal()">&times;</button>
+              </div>
+              <div class="modal-body">${html}</div>
+              <div class="modal-footer">${footerHtml || '<button class="btn" onclick="closeBasicModal()">Close</button>'}</div>
+            </div>`;
+          backdrop.classList.add("show");
+          modalRoot.classList.add("open");
+          document.body.classList.add("atlas-modal-open");
+        }
+        function closeBasicModal(){
+          const modalRoot = document.getElementById("modalRoot");
+          const backdrop  = document.getElementById("backdrop");
+          modalRoot.classList.remove("open");
+          backdrop.classList.remove("show");
+          modalRoot.innerHTML = "";
+          document.body.classList.remove("atlas-modal-open");
+        }
+
+        // ---------- ROUTING ----------
         function viewProject(projectId) {
             window.location.href = `kanban.html?project=${projectId}`;
         }
 
-        // ---------- Lightweight modal (fallback when atlas isn't loaded) ----------
-        function openBasicModal(title, html) {
-            // Backdrop
-            const backdrop = document.createElement('div');
-            backdrop.className = 'modal-backdrop show';
-            backdrop.id = 'basic-backdrop';
+        // ---------- NEW PROJECT (fixes: + New Project button did nothing) ----------
+        function openBasicNewProject(){
+          openBasicModal("Create New Project", `
+            <div class="form-grid">
+              <label for="np_name">Project Name *</label>
+              <input id="np_name" class="input" placeholder="e.g., Kitchen Renovation"/>
 
-            // Modal shell
-            const modal = document.createElement('div');
-            modal.className = 'modal open';
-            modal.id = 'basic-modal';
+              <label for="np_budget">Budget (USD)</label>
+              <input id="np_budget" type="number" class="input" placeholder="e.g., 28000"/>
 
-            modal.innerHTML = `
-                <div class="modal-panel" role="dialog" aria-modal="true" aria-label="${title}">
-                    <div class="modal-header">
-                        <h3 class="modal-title">${title}</h3>
-                        <button class="modal-close" aria-label="Close" onclick="closeBasicModal()">&times;</button>
-                    </div>
-                    <div class="modal-body">${html}</div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" onclick="closeBasicModal()">Close</button>
-                    </div>
+              <div class="form-row">
+                <div>
+                  <label for="np_status">Initial Status</label>
+                  <select id="np_status" class="input">
+                    <option>Someday</option>
+                    <option>Planning</option>
+                    <option selected>Ready</option>
+                    <option>In Progress</option>
+                    <option>Blocked</option>
+                    <option>Done</option>
+                  </select>
                 </div>
-            `;
-
-            document.body.classList.add('atlas-modal-open');
-            document.body.appendChild(backdrop);
-            document.body.appendChild(modal);
-
-            // Close on esc or outside click
-            function onEsc(e){ if(e.key==='Escape'){ closeBasicModal(); } }
-            backdrop.addEventListener('click', closeBasicModal);
-            document.addEventListener('keydown', onEsc);
-            modal._esc = onEsc;
-        }
-
-        function closeBasicModal() {
-            const modal = document.getElementById('basic-modal');
-            const backdrop = document.getElementById('basic-backdrop');
-            if (modal && modal._esc) document.removeEventListener('keydown', modal._esc);
-            if (modal) modal.remove();
-            if (backdrop) backdrop.remove();
-            document.body.classList.remove('atlas-modal-open');
-        }
-
-        // Simple inline "New Project" as a fallback if atlas isn't ready
-        function openBasicNewProject() {
-            openBasicModal('Create New Project', `
-                <div class="form-grid">
-                    <label for="bp_name">Project Name *</label>
-                    <input id="bp_name" class="input" placeholder="e.g. Deck Construction"/>
-
-                    <label for="bp_desc">Description</label>
-                    <textarea id="bp_desc" class="input" placeholder="Brief description of the project."></textarea>
-
-                    <div class="form-row">
-                        <div>
-                            <label for="bp_budget">Budget Allocation *</label>
-                            <input id="bp_budget" class="input" type="number" value="25000"/>
-                        </div>
-                        <div>
-                            <label for="bp_timeline">Estimated Timeline</label>
-                            <input id="bp_timeline" class="input" placeholder="e.g. 8 weeks, 3 months"/>
-                        </div>
-                    </div>
-
-                    <label for="bp_priority">Priority Level *</label>
-                    <select id="bp_priority" class="input">
-                        <option>Low Priority</option>
-                        <option selected>Medium Priority</option>
-                        <option>High Priority</option>
-                    </select>
+                <div>
+                  <label for="np_seed">Seed a starter task?</label>
+                  <select id="np_seed" class="input">
+                    <option value="yes" selected>Yes</option>
+                    <option value="no">No</option>
+                  </select>
                 </div>
-                <div class="divider"></div>
-                <div class="text-tertiary">This lightweight form is a fallback. The full-featured project creator is available when the Atlas app finishes loading.</div>
-            `);
+              </div>
+            </div>
+          `, `
+            <button class="btn btn-secondary" onclick="closeBasicModal()">Cancel</button>
+            <button class="btn" onclick="createBasicProject()">Create Project</button>
+          `);
         }
 
-        // ---------- Dashboard interactions ----------
-        function viewActivityDetail(activityId) {
-            // Prefer the real app handler if available
-            if (window.atlas && typeof window.atlas.showActivityDetail === 'function') {
-                window.atlas.showActivityDetail(activityId);
-                return;
-            }
+        function createBasicProject(){
+          const name   = document.getElementById('np_name').value.trim();
+          const budget = document.getElementById('np_budget').value.trim();
+          const status = document.getElementById('np_status').value;
+          const seed   = document.getElementById('np_seed').value === 'yes';
 
-            // Fallback: open a clean modal instead of a blocking alert
-            let html = '';
-            if (activityId === '1') {
-                html = `
-                  <p><strong>Action:</strong> Task created</p>
-                  <p><strong>Task:</strong> Install backsplash</p>
-                  <p><strong>Project:</strong> Kitchen Renovation</p>
-                  <div class="divider"></div>
-                  <button class="btn" onclick="window.location.href='kanban.html?project=kitchen'">Open in Kanban</button>
-                `;
-            } else if (activityId === '2') {
-                html = `
-                  <p><strong>Action:</strong> Task marked Done</p>
-                  <p><strong>Task:</strong> Order tile</p>
-                  <p><strong>Project:</strong> Kitchen Renovation</p>
-                  <div class="divider"></div>
-                  <button class="btn" onclick="window.location.href='kanban.html?project=kitchen'">View Task</button>
-                `;
-            } else if (activityId === '3') {
-                html = `
-                  <p><strong>Action:</strong> Document uploaded</p>
-                  <p><strong>File:</strong> Electrical permit approval (PDF)</p>
-                  <div class="divider"></div>
-                  <button class="btn" onclick="window.location.href='documents.html'">Open Documents</button>
-                `;
-            } else {
-                html = `<p>Activity details not found.</p>`;
-            }
-            openBasicModal('Activity Details', html);
+          if(!name){ toast("Project name is required."); return; }
+
+          // Store lightweight project list (for future Projects page)
+          const key = 'atlas.projects';
+          const projects = JSON.parse(localStorage.getItem(key) || '[]');
+          const id = slugify(name);
+          if(projects.some(p=>p.id===id)){ toast("Project already exists."); return; }
+
+          projects.push({ id, name, budget: budget? Number(budget): null, createdAt: Date.now() });
+          localStorage.setItem(key, JSON.stringify(projects));
+
+          // optional seed task so board is not empty
+          if(seed){
+            const tasks = KanbanStore.read();
+            tasks.push({
+              id: 't' + Math.random().toString(36).slice(2,7),
+              title: 'Kickoff: outline scope',
+              desc: 'Define goals, rough budget, and timeline.',
+              status: status,
+              project: id,
+              assignee: 'Andrew',
+              priority: 'Medium',
+              due: '',
+              deps: []
+            });
+            KanbanStore.write(tasks);
+          }
+
+          closeBasicModal();
+          toast("Project created.");
+          // Navigate straight to the new Kanban board
+          viewProject(id);
         }
 
-        function viewTaskDetail(taskId) {
-            if (window.atlas && window.atlas.tasks && typeof window.atlas.showTaskDetailModal === 'function') {
-                const task = window.atlas.tasks.find(t => t.id === taskId);
-                if (task) { window.atlas.showTaskDetailModal(task); return; }
-            }
-            // Fallback modal (no alert)
-            openBasicModal('Task Details', `
-                <p>Task ID: ${taskId}</p>
-                <p>Details will appear once the Atlas app finishes loading.</p>
-                <div class="divider"></div>
-                <button class="btn" onclick="window.location.href='kanban.html'">Open Kanban</button>
-            `);
+        // ---------- ADD TASK (fixes: “Add Tasks” buttons did nothing) ----------
+        function openAddTaskModal(projectId, defaultStatus){
+          // Prefer app-level modal if present
+          if(window.atlas && typeof window.atlas.showAddTaskModal === 'function'){
+            window.atlas.showAddTaskModal(defaultStatus || 'Planning', projectId);
+            return;
+          }
+
+          openBasicModal("Add Task", `
+            <label for="at_title">Title *</label>
+            <input id="at_title" class="input" placeholder="e.g., Schedule plumbing inspection"/>
+
+            <label for="at_desc">Description</label>
+            <textarea id="at_desc" class="input" placeholder="Add context"></textarea>
+
+            <div class="form-row">
+              <div>
+                <label for="at_status">Status</label>
+                <select id="at_status" class="input">
+                  <option ${defaultStatus==='Someday'?'selected':''}>Someday</option>
+                  <option ${defaultStatus==='Planning'?'selected':''}>Planning</option>
+                  <option ${defaultStatus==='Ready'?'selected':''}>Ready</option>
+                  <option ${defaultStatus==='In Progress'?'selected':''}>In Progress</option>
+                  <option ${defaultStatus==='Blocked'?'selected':''}>Blocked</option>
+                  <option ${defaultStatus==='Done'?'selected':''}>Done</option>
+                </select>
+              </div>
+              <div>
+                <label for="at_assignee">Assignee</label>
+                <select id="at_assignee" class="input">
+                  <option>Andrew</option>
+                  <option>Katie</option>
+                  <option>Contractor</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label for="at_priority">Priority</label>
+                <select id="at_priority" class="input">
+                  <option>Low</option><option selected>Medium</option><option>High</option>
+                </select>
+              </div>
+              <div>
+                <label for="at_due">Due Date</label>
+                <input id="at_due" type="date" class="input"/>
+              </div>
+            </div>
+          `, `
+            <button class="btn btn-secondary" onclick="closeBasicModal()">Cancel</button>
+            <button class="btn" onclick="createTaskFromDashboard('${projectId || ''}')">Create Task</button>
+          `);
         }
 
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function (event) {
-            const nav = document.getElementById('mainNav');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            if (nav.classList.contains('active') &&
-                !nav.contains(event.target) &&
-                !toggle.contains(event.target)) {
-                toggleMobileMenu();
-            }
-        });
+        function createTaskFromDashboard(projectId){
+          const title    = document.getElementById('at_title').value.trim();
+          if(!title){ toast("Title is required."); return; }
+          const desc     = document.getElementById('at_desc').value.trim();
+          const status   = document.getElementById('at_status').value;
+          const assignee = document.getElementById('at_assignee').value;
+          const priority = document.getElementById('at_priority').value;
+          const due      = document.getElementById('at_due').value;
 
-        // Close mobile menu on escape key
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') {
-                const nav = document.getElementById('mainNav');
-                if (nav.classList.contains('active')) {
-                    toggleMobileMenu();
-                }
+          const tasks = KanbanStore.read();
+          tasks.push({
+            id: 't' + Math.random().toString(36).slice(2,7),
+            title, desc, status, assignee, priority, due,
+            deps: [],
+            project: projectId || 'general'
+          });
+          KanbanStore.write(tasks);
+          closeBasicModal();
+          toast("Task created.");
+        }
+
+        // ---------- UPCOMING TASKS CLICK (fixes: Upcoming list did nothing) ----------
+        function viewTaskDetail(taskId){
+          const listEl = [...document.querySelectorAll('#upcomingTasksContainer .task-item')].find(li =>
+            li.getAttribute('onclick')?.includes(`'${taskId}'`));
+
+          const titleFromDom = listEl ? listEl.querySelector('.task-text')?.textContent.trim() : '';
+
+          // Resolve to a task by id OR by title (back-compat)
+          const tasks = KanbanStore.read();
+          let task = tasks.find(t => t.id === taskId);
+          if(!task && titleFromDom){
+            task = tasks.find(t => t.title.toLowerCase() === titleFromDom.toLowerCase());
+          }
+
+          // If still not found, create a placeholder so the user can immediately edit/save it.
+          if(!task){
+            task = {
+              id: taskId,
+              title: titleFromDom || 'Untitled Task',
+              desc: '',
+              status: 'Ready',
+              project: 'kitchen',
+              assignee: 'Andrew',
+              priority: 'Medium',
+              due: (listEl?.querySelector('time')?.getAttribute('datetime')) || '',
+              deps: []
+            };
+            tasks.push(task);
+            KanbanStore.write(tasks);
+          }
+
+          // Prefer global atlas editor if present
+          if(window.atlas && typeof window.atlas.showTaskDetailModal === 'function'){
+            window.atlas.showTaskDetailModal(task);
+            return;
+          }
+
+          // Fallback editor
+          openBasicModal("Task Details", `
+            <label>Title</label>
+            <input id="td_title" class="input" value="${escapeHtml(task.title)}"/>
+
+            <label>Description</label>
+            <textarea id="td_desc" class="input">${escapeHtml(task.desc)}</textarea>
+
+            <div class="form-row">
+              <div>
+                <label>Status</label>
+                <select id="td_status" class="input">
+                  ${['Someday','Planning','Ready','In Progress','Blocked','Done'].map(s=>`<option ${task.status===s?'selected':''}>${s}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label>Assignee</label>
+                <select id="td_assignee" class="input">
+                  ${['Andrew','Katie','Contractor'].map(a=>`<option ${task.assignee===a?'selected':''}>${a}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label>Priority</label>
+                <select id="td_priority" class="input">
+                  ${['Low','Medium','High'].map(p=>`<option ${task.priority===p?'selected':''}>${p}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label>Due</label>
+                <input id="td_due" type="date" class="input" value="${escapeHtml(task.due)}"/>
+              </div>
+            </div>
+          `, `
+            <button class="btn btn-secondary" onclick="closeBasicModal()">Close</button>
+            <button class="btn btn-secondary" onclick="openTaskOnBoard('${task.project||'general'}')">Open on Board</button>
+            <button class="btn" onclick="saveTaskEdits('${task.id}')">Save Changes</button>
+          `);
+        }
+
+        function saveTaskEdits(id){
+          const tasks = KanbanStore.read();
+          const idx = tasks.findIndex(t => t.id === id);
+          if(idx === -1){ toast("Task not found."); return; }
+          tasks[idx].title    = document.getElementById('td_title').value.trim() || tasks[idx].title;
+          tasks[idx].desc     = document.getElementById('td_desc').value.trim();
+          tasks[idx].status   = document.getElementById('td_status').value;
+          tasks[idx].assignee = document.getElementById('td_assignee').value;
+          tasks[idx].priority = document.getElementById('td_priority').value;
+          tasks[idx].due      = document.getElementById('td_due').value;
+          KanbanStore.write(tasks);
+          toast("Task updated.");
+          closeBasicModal();
+        }
+
+        function openTaskOnBoard(projectId){
+          // Navigate to Kanban board filtered by project
+          closeBasicModal();
+          viewProject(projectId || 'general');
+        }
+
+        // ---------- ACTIVITY (simple preview) ----------
+        function viewActivityDetail(id){
+          const items = {
+            "1": { title:"Install backsplash", project:"kitchen", status:"In Progress" },
+            "2": { title:"Order tile", project:"kitchen", status:"Done" },
+            "3": { title:"Electrical permit approval", project:"kitchen", status:"Done" }
+          };
+          const a = items[id] || {title:"Activity", project:"general", status:""};
+          openBasicModal("Activity", `
+            <p><strong>${escapeHtml(a.title)}</strong></p>
+            <p>Project: ${escapeHtml(a.project)}</p>
+            <p>Status: ${escapeHtml(a.status)}</p>
+          `, `
+            <button class="btn btn-secondary" onclick="closeBasicModal()">Close</button>
+            <button class="btn" onclick="viewProject('${a.project}')">Open Project Board</button>
+          `);
+        }
+
+        // ---------- INIT: Upgrade "Add Tasks" buttons to call our modal if atlas not loaded ----------
+        (function initWiring(){
+          // Replace any legacy onclick that expected atlas.showAddTaskModal
+          document.querySelectorAll('.project-card .project-actions .btn-link').forEach(btn=>{
+            if(btn.textContent.trim() === 'Add Tasks' && !btn.getAttribute('onclick')?.includes('openAddTaskModal')){
+              const article = btn.closest('.project-card');
+              const projectId = article?.getAttribute('data-project-id') || 'general';
+              btn.setAttribute('onclick', `openAddTaskModal('${projectId}','Planning')`);
             }
-        });
+          });
+        })();
     </script>
-
-    <!-- Main Interactive Script -->
-    <script src="atlas-interactive.js"></script>
 </body>
 </html>
