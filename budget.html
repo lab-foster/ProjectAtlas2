@@ -3,967 +3,867 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Budget Tracker - Track expenses and manage budgets for your home improvement projects">
-    <meta name="robots" content="noindex, nofollow">
-    
-    <title>Budget Tracker - Project Atlas</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
-    
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="atlas-interactive.css">
-    
+    <title>Project Atlas - Budget Tracker (Fully Functional)</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Budget page specific styles */
-        .budget-main {
-            padding: var(--space-xl);
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .budget-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-xl);
-            padding-bottom: var(--space-md);
-            border-bottom: 1px solid var(--border-default);
-            gap: var(--space-lg);
-        }
-
-        .budget-header h2 {
-            margin-bottom: 0;
-        }
-
-        .budget-controls {
-            display: flex;
-            gap: var(--space-md);
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .filter-select {
-            padding: var(--space-sm) var(--space-md);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-md);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            font-size: 0.9375rem;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .filter-select:hover {
-            border-color: var(--border-medium);
-        }
-
-        .filter-select:focus {
-            outline: none;
-            border-color: var(--app-primary);
-            box-shadow: 0 0 0 3px var(--app-primary-light);
-        }
-
-        /* Budget Overview Cards */
-        .budget-overview {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: var(--space-lg);
-            margin-bottom: var(--space-2xl);
-        }
-
-        .budget-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            box-shadow: var(--shadow-sm);
-            transition: all var(--transition-base);
-        }
-
-        .budget-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .budget-card h3 {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-md);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .budget-amount {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: var(--space-sm);
-        }
-
-        .budget-card.total .budget-amount {
-            color: var(--app-primary);
-        }
-
-        .budget-card.spent .budget-amount {
-            color: var(--status-warning);
-        }
-
-        .budget-card.remaining .budget-amount {
-            color: var(--status-success);
-        }
-
-        .budget-card.projected .budget-amount {
-            color: var(--status-info);
-        }
-
-        .budget-detail {
-            font-size: 0.8125rem;
-            color: var(--text-tertiary);
-        }
-
-        /* Budget Content Grid */
-        .budget-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: var(--space-2xl);
-        }
-
-        .budget-projects,
-        .recent-expenses {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-lg);
-            padding: var(--space-xl);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .budget-projects h3,
-        .recent-expenses h3 {
-            font-size: 1.125rem;
-            margin-bottom: var(--space-lg);
-            color: var(--text-primary);
-        }
-
-        /* Project Budget Cards */
-        .project-budget-card {
-            padding: var(--space-lg);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            margin-bottom: var(--space-lg);
-            background: var(--gray-50);
-            transition: all var(--transition-fast);
-        }
-
-        .project-budget-card:last-child {
-            margin-bottom: 0;
-        }
-
-        .project-budget-card:hover {
-            border-color: var(--app-primary-light);
-            background: var(--white);
-        }
-
-        .project-budget-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-md);
-        }
-
-        .project-budget-header h4 {
+        body {
             margin: 0;
-            color: var(--text-primary);
-            font-size: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
         }
-
-        .budget-status {
-            padding: var(--space-xs) var(--space-md);
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .budget-status.over {
-            background: var(--status-error-bg);
-            color: var(--status-error);
-        }
-
-        .budget-status.on-track {
-            background: var(--status-success-bg);
-            color: var(--status-success);
-        }
-
-        .budget-status.warning {
-            background: var(--status-warning-bg);
-            color: var(--status-warning);
-        }
-
-        .project-budget-info {
-            margin-bottom: var(--space-md);
-        }
-
-        .budget-bar {
-            height: 32px;
-            background: var(--gray-200);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            margin-bottom: var(--space-sm);
-            display: flex;
-        }
-
-        .budget-used {
-            height: 100%;
-            background: linear-gradient(90deg, var(--app-primary), var(--brand-accent));
-            transition: width var(--transition-slow);
-        }
-
-        .budget-projected {
-            height: 100%;
-            background: rgba(33, 150, 243, 0.25);
-        }
-
-        .budget-numbers {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.875rem;
-        }
-
-        .budget-numbers .spent {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .budget-numbers .total {
-            color: var(--text-tertiary);
-        }
-
-        /* Project Expenses */
-        .project-expenses {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-sm);
-            padding-top: var(--space-md);
-            border-top: 1px solid var(--border-light);
-        }
-
-        .expense-item {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.875rem;
-            padding: var(--space-xs) 0;
-        }
-
-        .expense-category {
-            color: var(--text-secondary);
-        }
-
-        .expense-amount {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        /* Recent Expenses List */
-        .expenses-list {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-md);
-        }
-
-        .expense-entry {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-            padding: var(--space-md);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .expense-entry:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-            border-color: var(--app-primary-light);
-        }
-
-        .expense-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-full);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .expense-icon.materials {
-            background: rgba(33, 150, 243, 0.12);
-        }
-
-        .expense-icon.labor {
-            background: rgba(255, 152, 0, 0.12);
-        }
-
-        .expense-icon.permits {
-            background: rgba(76, 175, 80, 0.12);
-        }
-
-        .expense-details {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .expense-name {
-            font-weight: 500;
-            color: var(--text-primary);
-            margin-bottom: var(--space-xs);
-            font-size: 0.9375rem;
-        }
-
-        .expense-info {
-            display: flex;
-            gap: var(--space-md);
-            font-size: 0.8125rem;
-            color: var(--text-tertiary);
-        }
-
-        .expense-project {
-            color: var(--app-primary);
-            font-weight: 500;
-        }
-
-        .expense-cost {
-            font-size: 1.0625rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            flex-shrink: 0;
-        }
-
-        .load-more {
-            text-align: center;
-            margin-top: var(--space-md);
-            padding: var(--space-md);
-            color: var(--app-primary);
-            font-weight: 500;
-            cursor: pointer;
-            border-radius: var(--radius-md);
-            transition: all var(--transition-fast);
-        }
-
-        .load-more:hover {
-            background: var(--app-primary-lighter);
-        }
-
-        /* Budget Insights */
-        .budget-insights {
-            margin-top: var(--space-2xl);
-        }
-
-        .budget-insights h3 {
-            font-size: 1.125rem;
-            margin-bottom: var(--space-lg);
-            color: var(--text-primary);
-        }
-
-        .insights-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: var(--space-lg);
-        }
-
-        .insight-card {
-            display: flex;
-            gap: var(--space-md);
-            padding: var(--space-lg);
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            transition: all var(--transition-fast);
-        }
-
-        .insight-card:hover {
-            box-shadow: var(--shadow-md);
-            border-color: var(--app-primary-light);
-        }
-
-        .insight-icon {
-            font-size: 1.75rem;
-            flex-shrink: 0;
-        }
-
-        .insight-content {
-            flex: 1;
-        }
-
-        .insight-content h4 {
-            margin: 0 0 var(--space-sm) 0;
-            color: var(--text-primary);
-            font-size: 1rem;
-        }
-
-        .insight-content p {
-            margin: 0;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.5;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .budget-content {
-                grid-template-columns: 1fr;
-            }
-
-            .budget-overview {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .budget-main {
-                padding: var(--space-lg);
-            }
-
-            .budget-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .budget-controls {
-                flex-direction: column;
-            }
-
-            .filter-select,
-            .btn-primary {
-                width: 100%;
-            }
-
-            .budget-overview {
-                grid-template-columns: repeat(2, 1fr);
-                gap: var(--space-md);
-            }
-
-            .insights-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .expense-entry {
-                flex-wrap: wrap;
-            }
-
-            .expense-cost {
-                width: 100%;
-                text-align: right;
-                margin-top: var(--space-xs);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .budget-main {
-                padding: var(--space-md);
-            }
-
-            .budget-overview {
-                grid-template-columns: 1fr;
-            }
-
-            .budget-amount {
-                font-size: 1.75rem;
-            }
-
-            .budget-projects,
-            .recent-expenses {
-                padding: var(--space-lg);
-            }
-
-            .project-budget-card {
-                padding: var(--space-md);
-            }
-
-            .project-budget-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-sm);
-            }
-        }
+        .animate-slide-in { animation: slideIn 0.2s ease-out; }
     </style>
 </head>
-<body class="app-page">
-    <!-- Skip to Main Content -->
-    <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    
-    <!-- Application Header -->
-    <header class="app-header">
-        <div class="header-container">
-            <!-- Logo -->
-            <div class="logo">
-                <h1>Project <span class="atlas-blue">ATLAS</span></h1>
-                <span class="tagline">Home Project Management</span>
-            </div>
-            
-            <!-- Mobile Menu Toggle -->
-            <button class="mobile-menu-toggle" 
-                    onclick="toggleMobileMenu()" 
-                    aria-label="Toggle navigation menu"
-                    aria-expanded="false"
-                    aria-controls="mainNav">
-                <span aria-hidden="true">☰</span>
-            </button>
-            
-            <!-- Main Navigation -->
-            <nav class="main-nav" id="mainNav" aria-label="Main navigation">
-                <ul>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="kanban.html">Kanban Board</a></li>
-                    <li><a href="budget.html" class="active" aria-current="page">Budget Tracker</a></li>
-                    <li><a href="calendar.html">Calendar</a></li>
-                    <li><a href="documents.html">Documents</a></li>
-                </ul>
-            </nav>
-            
-            <!-- User Menu -->
-            <div class="user-menu">
-                <button class="btn btn-secondary" 
-                        onclick="showAddExpenseModal()"
-                        aria-label="Add new expense">
-                    <span aria-hidden="true">+</span> Add Expense
-                </button>
-                <button class="user-avatar" 
-                        onclick="showUserMenu()" 
-                        aria-label="User menu"
-                        title="User Menu">
-                    AF
-                </button>
-            </div>
-        </div>
-    </header>
+<body>
+    <div id="root"></div>
 
-    <!-- Main Content -->
-    <main class="budget-main" id="main-content">
-        <!-- Budget Header -->
-        <div class="budget-header">
-            <h2>Budget Tracker</h2>
-            
-            <!-- Budget Controls -->
-            <div class="budget-controls" role="group" aria-label="Budget controls">
-                <label for="projectFilterBudget" class="sr-only">Filter by project</label>
-                <select class="filter-select" 
-                        id="projectFilterBudget"
-                        aria-label="Filter by project"
-                        onchange="handleProjectFilter(this.value)">
-                    <option value="all">All Projects</option>
-                    <option value="kitchen">Kitchen Renovation</option>
-                    <option value="basement">Basement Finishing</option>
-                    <option value="bathroom">Bathroom Update</option>
-                </select>
-                
-                <label for="timeFilterBudget" class="sr-only">Filter by time period</label>
-                <select class="filter-select" 
-                        id="timeFilterBudget"
-                        aria-label="Filter by time period"
-                        onchange="handleTimeFilter(this.value)">
-                    <option value="month">This Month</option>
-                    <option value="quarter">Last 3 Months</option>
-                    <option value="year">This Year</option>
-                    <option value="all">All Time</option>
-                </select>
-                
-                <button class="btn btn-primary" 
-                        onclick="showBudgetReportModal()"
-                        aria-label="Generate budget report">
-                    Generate Report
-                </button>
-            </div>
-        </div>
+    <script type="text/babel">
+        const { useState, useMemo } = React;
 
-        <!-- Budget Overview -->
-        <section class="budget-overview" aria-label="Budget summary">
-            <article class="budget-card total">
-                <h3>Total Budget</h3>
-                <div class="budget-amount" aria-label="Total budget: $75,000">$75,000</div>
-                <div class="budget-detail">Across all projects</div>
-            </article>
-            
-            <article class="budget-card spent">
-                <h3>Total Spent</h3>
-                <div class="budget-amount" aria-label="Total spent: $36,700">$36,700</div>
-                <div class="budget-detail">49% of budget used</div>
-            </article>
-            
-            <article class="budget-card remaining">
-                <h3>Remaining</h3>
-                <div class="budget-amount" aria-label="Remaining budget: $38,300">$38,300</div>
-                <div class="budget-detail">51% available</div>
-            </article>
-            
-            <article class="budget-card projected">
-                <h3>Projected Total</h3>
-                <div class="budget-amount" aria-label="Projected total: $71,200">$71,200</div>
-                <div class="budget-detail">Based on current rate</div>
-            </article>
-        </section>
+        // Icons
+        const DollarSign = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
 
-        <!-- Budget Content Grid -->
-        <div class="budget-content">
-            <!-- Project Budgets -->
-            <section class="budget-projects" aria-labelledby="project-budgets-heading">
-                <h3 id="project-budgets-heading">Project Budgets</h3>
-                
-                <!-- Kitchen Renovation -->
-                <article class="project-budget-card" data-project-id="1">
-                    <header class="project-budget-header">
-                        <h4>Kitchen Renovation Epic</h4>
-                        <span class="budget-status over" role="status">$600 over</span>
-                    </header>
-                    
-                    <div class="project-budget-info">
-                        <div class="budget-bar" 
-                             role="meter" 
-                             aria-label="Budget usage: 84% used, 4% projected"
-                             aria-valuemin="0" 
-                             aria-valuemax="100" 
-                             aria-valuenow="88">
-                            <div class="budget-used" style="width: 84%"></div>
-                            <div class="budget-projected" style="width: 4%"></div>
-                        </div>
-                        <div class="budget-numbers">
-                            <span class="spent">$23,400 spent</span>
-                            <span class="total">/ $28,000 budget</span>
-                        </div>
-                    </div>
-                    
-                    <div class="project-expenses">
-                        <div class="expense-item">
-                            <span class="expense-category">Materials</span>
-                            <span class="expense-amount">$18,200</span>
-                        </div>
-                        <div class="expense-item">
-                            <span class="expense-category">Labor</span>
-                            <span class="expense-amount">$4,800</span>
-                        </div>
-                        <div class="expense-item">
-                            <span class="expense-category">Permits</span>
-                            <span class="expense-amount">$400</span>
-                        </div>
-                    </div>
-                </article>
+        const TrendingUp = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+        );
 
-                <!-- Basement Finishing -->
-                <article class="project-budget-card" data-project-id="2">
-                    <header class="project-budget-header">
-                        <h4>Basement Finishing Epic</h4>
-                        <span class="budget-status on-track" role="status">On track</span>
-                    </header>
-                    
-                    <div class="project-budget-info">
-                        <div class="budget-bar" 
-                             role="meter" 
-                             aria-label="Budget usage: 15% used, 75% projected"
-                             aria-valuemin="0" 
-                             aria-valuemax="100" 
-                             aria-valuenow="90">
-                            <div class="budget-used" style="width: 15%"></div>
-                            <div class="budget-projected" style="width: 75%"></div>
-                        </div>
-                        <div class="budget-numbers">
-                            <span class="spent">$5,200 spent</span>
-                            <span class="total">/ $35,000 budget</span>
-                        </div>
-                    </div>
-                    
-                    <div class="project-expenses">
-                        <div class="expense-item">
-                            <span class="expense-category">Planning & Permits</span>
-                            <span class="expense-amount">$1,200</span>
-                        </div>
-                        <div class="expense-item">
-                            <span class="expense-category">Materials (partial)</span>
-                            <span class="expense-amount">$4,000</span>
-                        </div>
-                    </div>
-                </article>
+        const AlertTriangle = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+        );
 
-                <!-- Bathroom Update -->
-                <article class="project-budget-card" data-project-id="3">
-                    <header class="project-budget-header">
-                        <h4>Bathroom Update Epic</h4>
-                        <span class="budget-status on-track" role="status">On track</span>
-                    </header>
-                    
-                    <div class="project-budget-info">
-                        <div class="budget-bar" 
-                             role="meter" 
-                             aria-label="Budget usage: 68% used, 22% projected"
-                             aria-valuemin="0" 
-                             aria-valuemax="100" 
-                             aria-valuenow="90">
-                            <div class="budget-used" style="width: 68%"></div>
-                            <div class="budget-projected" style="width: 22%"></div>
-                        </div>
-                        <div class="budget-numbers">
-                            <span class="spent">$8,100 spent</span>
-                            <span class="total">/ $12,000 budget</span>
-                        </div>
-                    </div>
-                    
-                    <div class="project-expenses">
-                        <div class="expense-item">
-                            <span class="expense-category">Fixtures</span>
-                            <span class="expense-amount">$3,200</span>
-                        </div>
-                        <div class="expense-item">
-                            <span class="expense-category">Plumbing</span>
-                            <span class="expense-amount">$2,800</span>
-                        </div>
-                        <div class="expense-item">
-                            <span class="expense-category">Materials</span>
-                            <span class="expense-amount">$2,100</span>
-                        </div>
-                    </div>
-                </article>
-            </section>
+        const BarChart3 = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+        );
 
-            <!-- Recent Expenses -->
-            <aside class="recent-expenses" aria-labelledby="recent-expenses-heading">
-                <h3 id="recent-expenses-heading">Recent Expenses</h3>
-                
-                <div class="expenses-list">
-                    <article class="expense-entry" 
-                             role="button" 
-                             tabindex="0"
-                             onclick="showExpenseDetail('exp-1')"
-                             onkeypress="handleKeyPress(event, 'showExpenseDetail', 'exp-1')"
-                             data-expense-id="exp-1">
-                        <div class="expense-icon materials" aria-hidden="true">
-                            <span>🧱</span>
-                        </div>
-                        <div class="expense-details">
-                            <div class="expense-name">Tile grout and spacers</div>
-                            <div class="expense-info">
-                                <span class="expense-project">Kitchen Renovation</span>
-                                <time class="expense-date" datetime="2025-10-12T20:00:00">2 hours ago</time>
-                            </div>
-                        </div>
-                        <div class="expense-cost">$127.43</div>
-                    </article>
+        const Plus = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+        );
 
-                    <article class="expense-entry" 
-                             role="button" 
-                             tabindex="0"
-                             onclick="showExpenseDetail('exp-2')"
-                             onkeypress="handleKeyPress(event, 'showExpenseDetail', 'exp-2')"
-                             data-expense-id="exp-2">
-                        <div class="expense-icon materials" aria-hidden="true">
-                            <span>🔧</span>
-                        </div>
-                        <div class="expense-details">
-                            <div class="expense-name">Cabinet hardware and hinges</div>
-                            <div class="expense-info">
-                                <span class="expense-project">Kitchen Renovation</span>
-                                <time class="expense-date" datetime="2025-10-11">Yesterday</time>
-                            </div>
-                        </div>
-                        <div class="expense-cost">$324.67</div>
-                    </article>
+        const Download = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+        );
 
-                    <article class="expense-entry" 
-                             role="button" 
-                             tabindex="0"
-                             onclick="showExpenseDetail('exp-3')"
-                             onkeypress="handleKeyPress(event, 'showExpenseDetail', 'exp-3')"
-                             data-expense-id="exp-3">
-                        <div class="expense-icon labor" aria-hidden="true">
-                            <span>👷</span>
-                        </div>
-                        <div class="expense-details">
-                            <div class="expense-name">Electrician - rough-in work</div>
-                            <div class="expense-info">
-                                <span class="expense-project">Basement Finishing</span>
-                                <time class="expense-date" datetime="2025-10-09">3 days ago</time>
-                            </div>
-                        </div>
-                        <div class="expense-cost">$1,200.00</div>
-                    </article>
+        const Upload = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+        );
 
-                    <article class="expense-entry" 
-                             role="button" 
-                             tabindex="0"
-                             onclick="showExpenseDetail('exp-4')"
-                             onkeypress="handleKeyPress(event, 'showExpenseDetail', 'exp-4')"
-                             data-expense-id="exp-4">
-                        <div class="expense-icon labor" aria-hidden="true">
-                            <span>🏗️</span>
-                        </div>
-                        <div class="expense-details">
-                            <div class="expense-name">Countertop installation</div>
-                            <div class="expense-info">
-                                <span class="expense-project">Kitchen Renovation</span>
-                                <time class="expense-date" datetime="2025-10-07">5 days ago</time>
-                            </div>
-                        </div>
-                        <div class="expense-cost">$3,800.00</div>
-                    </article>
+        const X = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        );
 
-                    <article class="expense-entry" 
-                             role="button" 
-                             tabindex="0"
-                             onclick="showExpenseDetail('exp-5')"
-                             onkeypress="handleKeyPress(event, 'showExpenseDetail', 'exp-5')"
-                             data-expense-id="exp-5">
-                        <div class="expense-icon permits" aria-hidden="true">
-                            <span>📋</span>
-                        </div>
-                        <div class="expense-details">
-                            <div class="expense-name">Building permit renewal</div>
-                            <div class="expense-info">
-                                <span class="expense-project">Bathroom Update</span>
-                                <time class="expense-date" datetime="2025-10-05">1 week ago</time>
-                            </div>
-                        </div>
-                        <div class="expense-cost">$200.00</div>
-                    </article>
-                </div>
-                
-                <div class="load-more" 
-                     role="button" 
-                     tabindex="0"
-                     onclick="showLoadMore()"
-                     onkeypress="handleKeyPress(event, 'showLoadMore')">
-                    Load More Expenses
-                </div>
-            </aside>
-        </div>
+        const FileText = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+        );
 
-        <!-- Budget Insights -->
-        <section class="budget-insights" aria-labelledby="insights-heading">
-            <h3 id="insights-heading">Budget Insights</h3>
-            
-            <div class="insights-grid">
-                <article class="insight-card">
-                    <div class="insight-icon" aria-hidden="true">💡</div>
-                    <div class="insight-content">
-                        <h4>Spending Trend</h4>
-                        <p>Your spending has increased 15% this month compared to last month. Consider reviewing high-cost items.</p>
-                    </div>
-                </article>
+        const Calendar = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+        );
 
-                <article class="insight-card">
-                    <div class="insight-icon" aria-hidden="true">⚠️</div>
-                    <div class="insight-content">
-                        <h4>Budget Alert</h4>
-                        <p>Kitchen Renovation is $600 over budget. You may want to adjust remaining expenses or increase the budget.</p>
-                    </div>
-                </article>
+        const Tag = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+        );
 
-                <article class="insight-card">
-                    <div class="insight-icon" aria-hidden="true">📊</div>
-                    <div class="insight-content">
-                        <h4>Forecast</h4>
-                        <p>At your current spending rate, you'll finish under budget by approximately $3,800 across all projects.</p>
-                    </div>
-                </article>
-            </div>
-        </section>
-    </main>
+        const Receipt = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+        );
 
-    <!-- Scripts -->
-    <script>
-        // Mobile menu toggle with accessibility
-        function toggleMobileMenu() {
-            const nav = document.getElementById('mainNav');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            const isExpanded = nav.classList.toggle('active');
-            
-            // Update ARIA attribute
-            toggle.setAttribute('aria-expanded', isExpanded);
-        }
-        
-        // Keyboard accessibility helper
-        function handleKeyPress(event, functionName, id) {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                if (id) {
-                    window[functionName](id);
-                } else {
-                    window[functionName]();
+        const CheckCircle = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        // Main Budget Tracker Component
+        const BudgetTracker = () => {
+            const [showLoadExpensesModal, setShowLoadExpensesModal] = useState(false);
+            const [showExpenseDetailsModal, setShowExpenseDetailsModal] = useState(false);
+            const [showReportModal, setShowReportModal] = useState(false);
+            const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
+            const [selectedExpense, setSelectedExpense] = useState(null);
+            const [visibleExpenses, setVisibleExpenses] = useState(5);
+            const [successMessage, setSuccessMessage] = useState('');
+
+            const [newExpense, setNewExpense] = useState({
+                description: '',
+                amount: '',
+                date: new Date().toISOString().split('T')[0],
+                project: '',
+                category: '',
+                receipt: null,
+                notes: ''
+            });
+
+            const [projectsData, setProjectsData] = useState([
+                {
+                    id: 1,
+                    name: 'Kitchen Renovation Epic',
+                    budget: 20000,
+                    spent: 23400,
+                    status: '$600 OVER',
+                    statusType: 'over',
+                    categories: [
+                        { name: 'Materials', amount: 18200 },
+                        { name: 'Labor', amount: 4800 },
+                        { name: 'Permits', amount: 400 }
+                    ]
+                },
+                {
+                    id: 2,
+                    name: 'Basement Finishing Epic',
+                    budget: 35000,
+                    spent: 5200,
+                    status: 'ON TRACK',
+                    statusType: 'on-track',
+                    categories: [
+                        { name: 'Planning & Permits', amount: 1200 },
+                        { name: 'Materials (partial)', amount: 4000 }
+                    ]
+                },
+                {
+                    id: 3,
+                    name: 'Bathroom Update Epic',
+                    budget: 12000,
+                    spent: 8100,
+                    status: 'ON TRACK',
+                    statusType: 'on-track',
+                    categories: [
+                        { name: 'Fixtures', amount: 3200 },
+                        { name: 'Plumbing', amount: 2800 },
+                        { name: 'Materials', amount: 2100 }
+                    ]
                 }
-            }
-        }
-        
-        // Filter handlers
-        function handleProjectFilter(value) {
-            console.log('Filter by project:', value);
-            if (window.atlas && typeof window.atlas.filterBudgetByProject === 'function') {
-                window.atlas.filterBudgetByProject(value);
-            }
-        }
-        
-        function handleTimeFilter(value) {
-            console.log('Filter by time:', value);
-            if (window.atlas && typeof window.atlas.filterBudgetByTime === 'function') {
-                window.atlas.filterBudgetByTime(value);
-            }
-        }
-        
-        // Modal functions
-        function showAddExpenseModal() {
-            console.log('Show add expense modal');
-            alert('💰 Add New Expense\n\nForm fields:\n• Description\n• Amount and date\n• Project\n• Category (materials/labor/permits)\n• Receipt upload\n• Notes\n\nComing soon!');
-        }
+            ]);
 
-        function showBudgetReportModal() {
-            console.log('Show budget report modal');
-            alert('📊 Generate Budget Report\n\nReport options:\n• Expense breakdown by project\n• Cost comparisons\n• Spending trends\n• Budget forecasting\n• Export to PDF/Excel\n\nComing soon!');
-        }
-
-        function showExpenseDetail(expenseId) {
-            console.log('Show expense detail:', expenseId);
-            alert('📋 Expense Details\n\nView:\n• Full expense information\n• Receipt/invoice images\n• Project assignment\n• Edit/delete options\n• Related expenses\n\nComing soon!');
-        }
-
-        function showLoadMore() {
-            console.log('Load more expenses');
-            alert('📄 Load More Expenses\n\nThis will load additional expense entries.\n\nComing soon!');
-        }
-        
-        function showUserMenu() {
-            console.log('Show user menu');
-            // Implementation in atlas-interactive.js
-        }
-        
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const nav = document.getElementById('mainNav');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            if (nav.classList.contains('active') && 
-                !nav.contains(event.target) && 
-                !toggle.contains(event.target)) {
-                toggleMobileMenu();
-            }
-        });
-        
-        // Close mobile menu on escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const nav = document.getElementById('mainNav');
-                if (nav.classList.contains('active')) {
-                    toggleMobileMenu();
+            const [allExpenses, setAllExpenses] = useState([
+                {
+                    id: 1,
+                    title: 'Tile grout and spacers',
+                    project: 'Kitchen Renovation',
+                    projectId: 1,
+                    projectColor: 'red',
+                    time: '2 hours ago',
+                    amount: 127.43,
+                    category: 'Materials',
+                    date: '2025-10-18'
+                },
+                {
+                    id: 2,
+                    title: 'Cabinet hardware and hinges',
+                    project: 'Kitchen Renovation',
+                    projectId: 1,
+                    projectColor: 'blue',
+                    time: 'Yesterday',
+                    amount: 324.67,
+                    category: 'Materials',
+                    date: '2025-10-17'
+                },
+                {
+                    id: 3,
+                    title: 'Electrician - rough-in work',
+                    project: 'Basement Finishing',
+                    projectId: 2,
+                    projectColor: 'orange',
+                    time: '3 days ago',
+                    amount: 1200.00,
+                    category: 'Labor',
+                    date: '2025-10-15'
+                },
+                {
+                    id: 4,
+                    title: 'Countertop installation',
+                    project: 'Kitchen Renovation',
+                    projectId: 1,
+                    projectColor: 'brown',
+                    time: '5 days ago',
+                    amount: 3800.00,
+                    category: 'Materials',
+                    date: '2025-10-13'
+                },
+                {
+                    id: 5,
+                    title: 'Building permit renewal',
+                    project: 'Bathroom Update',
+                    projectId: 3,
+                    projectColor: 'purple',
+                    time: '1 week ago',
+                    amount: 200.00,
+                    category: 'Permits',
+                    date: '2025-10-11'
+                },
+                {
+                    id: 6,
+                    title: 'Drywall materials',
+                    project: 'Basement Finishing',
+                    projectId: 2,
+                    projectColor: 'orange',
+                    time: '1 week ago',
+                    amount: 850.00,
+                    category: 'Materials',
+                    date: '2025-10-11'
+                },
+                {
+                    id: 7,
+                    title: 'Paint and primer supplies',
+                    project: 'Kitchen Renovation',
+                    projectId: 1,
+                    projectColor: 'red',
+                    time: '2 weeks ago',
+                    amount: 289.50,
+                    category: 'Materials',
+                    date: '2025-10-04'
+                },
+                {
+                    id: 8,
+                    title: 'HVAC ductwork',
+                    project: 'Basement Finishing',
+                    projectId: 2,
+                    projectColor: 'orange',
+                    time: '2 weeks ago',
+                    amount: 1650.00,
+                    category: 'Materials',
+                    date: '2025-10-04'
                 }
-            }
-        });
+            ]);
+
+            const summaryMetrics = useMemo(() => {
+                const totalBudget = projectsData.reduce((sum, p) => sum + p.budget, 0);
+                const totalSpent = projectsData.reduce((sum, p) => sum + p.spent, 0);
+                const remaining = totalBudget - totalSpent;
+                const percentUsed = (totalSpent / totalBudget) * 100;
+                const projectedTotal = totalSpent * 1.94;
+                
+                return { totalBudget, totalSpent, remaining, percentUsed, projectedTotal };
+            }, [projectsData]);
+
+            const handleViewExpense = (expense) => {
+                setSelectedExpense(expense);
+                setShowExpenseDetailsModal(true);
+            };
+
+            const handleLoadMoreExpenses = () => {
+                if (visibleExpenses < allExpenses.length) {
+                    setVisibleExpenses(prev => Math.min(prev + 5, allExpenses.length));
+                    showSuccess(`Loaded ${Math.min(5, allExpenses.length - visibleExpenses)} more expenses`);
+                }
+            };
+
+            const handleAddExpense = () => {
+                setShowAddExpenseModal(true);
+            };
+
+            const handleExpenseInputChange = (field, value) => {
+                setNewExpense(prev => ({ ...prev, [field]: value }));
+            };
+
+            const handleFileUpload = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    setNewExpense(prev => ({ ...prev, receipt: file }));
+                }
+            };
+
+            const submitNewExpense = () => {
+                if (!newExpense.description || !newExpense.amount || !newExpense.project) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+
+                const projectId = projectsData.find(p => p.name === newExpense.project)?.id;
+                
+                const newExp = {
+                    id: allExpenses.length + 1,
+                    title: newExpense.description,
+                    project: newExpense.project,
+                    projectId: projectId,
+                    projectColor: 'blue',
+                    time: 'Just now',
+                    amount: parseFloat(newExpense.amount),
+                    category: newExpense.category,
+                    date: newExpense.date,
+                    notes: newExpense.notes
+                };
+
+                setAllExpenses(prev => [newExp, ...prev]);
+                
+                // Update project spent amount
+                setProjectsData(prev => prev.map(proj => {
+                    if (proj.id === projectId) {
+                        const newSpent = proj.spent + parseFloat(newExpense.amount);
+                        return {
+                            ...proj,
+                            spent: newSpent,
+                            status: newSpent > proj.budget ? `$${(newSpent - proj.budget).toFixed(2)} OVER` : 'ON TRACK',
+                            statusType: newSpent > proj.budget ? 'over' : 'on-track'
+                        };
+                    }
+                    return proj;
+                }));
+
+                setNewExpense({
+                    description: '',
+                    amount: '',
+                    date: new Date().toISOString().split('T')[0],
+                    project: '',
+                    category: '',
+                    receipt: null,
+                    notes: ''
+                });
+                
+                setShowAddExpenseModal(false);
+                showSuccess('Expense added successfully!');
+            };
+
+            const handleGenerateReport = () => {
+                // Generate CSV report
+                const csvContent = generateCSVReport();
+                downloadFile(csvContent, 'budget-report.csv', 'text/csv');
+                showSuccess('Budget report downloaded!');
+            };
+
+            const generateCSVReport = () => {
+                let csv = 'Date,Project,Category,Description,Amount\n';
+                allExpenses.forEach(exp => {
+                    csv += `${exp.date},"${exp.project}","${exp.category}","${exp.title}",${exp.amount}\n`;
+                });
+                return csv;
+            };
+
+            const downloadFile = (content, filename, type) => {
+                const blob = new Blob([content], { type });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            };
+
+            const showSuccess = (message) => {
+                setSuccessMessage(message);
+                setTimeout(() => setSuccessMessage(''), 3000);
+            };
+
+            const getProjectIconColor = (color) => {
+                const colors = {
+                    red: 'bg-red-100 text-red-600',
+                    blue: 'bg-blue-100 text-blue-600',
+                    orange: 'bg-orange-100 text-orange-600',
+                    brown: 'bg-amber-100 text-amber-700',
+                    purple: 'bg-purple-100 text-purple-600'
+                };
+                return colors[color] || colors.blue;
+            };
+
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    {/* Success Message */}
+                    {successMessage && (
+                        <div className="fixed top-4 right-4 z-50 animate-slide-in">
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center space-x-3 shadow-lg">
+                                <CheckCircle className="w-5 h-5 text-green-600" />
+                                <span className="text-sm font-medium text-green-900">{successMessage}</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Header */}
+                    <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex items-center justify-between h-16">
+                                <div>
+                                    <h1 className="text-2xl font-light text-gray-900">
+                                        Project <span className="text-blue-600 font-medium">ATLAS</span>
+                                    </h1>
+                                    <p className="text-xs text-gray-500 uppercase tracking-wide">Home Project Management</p>
+                                </div>
+                                
+                                <nav className="flex items-center space-x-8">
+                                    <a href="#" className="text-gray-600 hover:text-gray-900 text-sm">Dashboard</a>
+                                    <a href="#" className="text-gray-600 hover:text-gray-900 text-sm">Projects</a>
+                                    <a href="#" className="text-blue-600 font-medium text-sm border-b-2 border-blue-600 pb-4">Budget</a>
+                                    <a href="#" className="text-gray-600 hover:text-gray-900 text-sm">Calendar</a>
+                                    <a href="#" className="text-gray-600 hover:text-gray-900 text-sm">Documents</a>
+                                    
+                                    <button
+                                        onClick={handleAddExpense}
+                                        className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                        <span>Add Expense</span>
+                                    </button>
+                                    
+                                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium">
+                                        AF
+                                    </div>
+                                </nav>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Content */}
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <h2 className="text-3xl font-light text-gray-900">Budget Tracker</h2>
+                            </div>
+                            
+                            <button
+                                onClick={handleGenerateReport}
+                                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                            >
+                                <Download className="w-4 h-4" />
+                                <span>Download Report</span>
+                            </button>
+                        </div>
+
+                        {/* Summary Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                                <span className="text-sm text-gray-500 uppercase tracking-wide">Total Budget</span>
+                                <div className="text-3xl font-light text-blue-600 mt-2 mb-1">
+                                    ${summaryMetrics.totalBudget.toLocaleString()}
+                                </div>
+                                <p className="text-xs text-gray-500">Across all projects</p>
+                            </div>
+
+                            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                                <span className="text-sm text-gray-500 uppercase tracking-wide">Total Spent</span>
+                                <div className="text-3xl font-light text-orange-600 mt-2 mb-1">
+                                    ${summaryMetrics.totalSpent.toLocaleString()}
+                                </div>
+                                <p className="text-xs text-gray-500">{summaryMetrics.percentUsed.toFixed(0)}% of budget used</p>
+                            </div>
+
+                            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                                <span className="text-sm text-gray-500 uppercase tracking-wide">Remaining</span>
+                                <div className="text-3xl font-light text-green-600 mt-2 mb-1">
+                                    ${summaryMetrics.remaining.toLocaleString()}
+                                </div>
+                                <p className="text-xs text-gray-500">{(100 - summaryMetrics.percentUsed).toFixed(0)}% available</p>
+                            </div>
+
+                            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                                <span className="text-sm text-gray-500 uppercase tracking-wide">Projected Total</span>
+                                <div className="text-3xl font-light text-blue-700 mt-2 mb-1">
+                                    ${summaryMetrics.projectedTotal.toLocaleString()}
+                                </div>
+                                <p className="text-xs text-gray-500">Based on current rate</p>
+                            </div>
+                        </div>
+
+                        {/* Two Column Layout */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Project Budgets */}
+                            <div className="lg:col-span-2">
+                                <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                                    <div className="p-6 border-b border-gray-200">
+                                        <h3 className="text-lg font-medium text-gray-900">Project Budgets</h3>
+                                    </div>
+                                    
+                                    <div className="p-6 space-y-6">
+                                        {projectsData.map((project) => {
+                                            const percentage = (project.spent / project.budget) * 100;
+                                            const isOverBudget = project.spent > project.budget;
+                                            
+                                            return (
+                                                <div key={project.id} className="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
+                                                    <div className="flex items-center justify-between mb-3">
+                                                        <h4 className="text-base font-medium text-gray-900">{project.name}</h4>
+                                                        <span className={`text-xs font-medium px-2 py-1 rounded ${
+                                                            project.statusType === 'over' 
+                                                                ? 'bg-red-100 text-red-700' 
+                                                                : 'bg-green-100 text-green-700'
+                                                        }`}>
+                                                            {project.status}
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    <div className="mb-3">
+                                                        <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                                                            <span className="font-medium">${project.spent.toLocaleString()} spent</span>
+                                                            <span className="text-gray-500">/ ${project.budget.toLocaleString()} budget</span>
+                                                        </div>
+                                                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                                            <div
+                                                                className={`h-full transition-all duration-500 ${
+                                                                    isOverBudget ? 'bg-red-500' : 'bg-blue-600'
+                                                                }`}
+                                                                style={{ width: `${Math.min(percentage, 100)}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="space-y-2 mt-4">
+                                                        {project.categories.map((category, idx) => (
+                                                            <div key={idx} className="flex items-center justify-between text-sm">
+                                                                <span className="text-gray-600">{category.name}</span>
+                                                                <span className="font-medium text-gray-900">
+                                                                    ${category.amount.toLocaleString()}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Recent Expenses */}
+                            <div className="lg:col-span-1">
+                                <div className="bg-white rounded-lg shadow-sm border border-gray-200 sticky top-24">
+                                    <div className="p-6 border-b border-gray-200">
+                                        <h3 className="text-lg font-medium text-gray-900">Recent Expenses</h3>
+                                    </div>
+                                    
+                                    <div className="divide-y divide-gray-100 max-h-[600px] overflow-y-auto">
+                                        {allExpenses.slice(0, visibleExpenses).map((expense) => (
+                                            <button
+                                                key={expense.id}
+                                                onClick={() => handleViewExpense(expense)}
+                                                className="w-full p-4 hover:bg-gray-50 transition-colors text-left"
+                                            >
+                                                <div className="flex items-start space-x-3">
+                                                    <div className={`w-10 h-10 rounded flex items-center justify-center flex-shrink-0 ${getProjectIconColor(expense.projectColor)}`}>
+                                                        <Receipt className="w-5 h-5" />
+                                                    </div>
+                                                    
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-medium text-gray-900 mb-1">
+                                                            {expense.title}
+                                                        </p>
+                                                        <div className="flex items-center space-x-2 text-xs text-gray-500">
+                                                            <span className="text-blue-600">{expense.project}</span>
+                                                            <span>•</span>
+                                                            <span>{expense.time}</span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="text-right">
+                                                        <p className="text-sm font-semibold text-gray-900">
+                                                            ${expense.amount.toLocaleString()}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    
+                                    {visibleExpenses < allExpenses.length && (
+                                        <div className="p-4 border-t border-gray-200">
+                                            <button
+                                                onClick={handleLoadMoreExpenses}
+                                                className="w-full py-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                                            >
+                                                Load More Expenses ({allExpenses.length - visibleExpenses} remaining)
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Budget Insights */}
+                        <div className="mt-8">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4">Budget Insights</h3>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                                    <div className="flex items-center space-x-3 mb-3">
+                                        <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                                            <TrendingUp className="w-5 h-5 text-yellow-600" />
+                                        </div>
+                                        <h4 className="font-medium text-gray-900">Spending Trend</h4>
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                        Your spending has increased 15% this month compared to last month. Consider reviewing high-cost items.
+                                    </p>
+                                </div>
+
+                                <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                                    <div className="flex items-center space-x-3 mb-3">
+                                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                                            <AlertTriangle className="w-5 h-5 text-red-600" />
+                                        </div>
+                                        <h4 className="font-medium text-gray-900">Budget Alert</h4>
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                        Kitchen Renovation is $600 over budget. You may want to adjust remaining expenses or increase the budget.
+                                    </p>
+                                </div>
+
+                                <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                                    <div className="flex items-center space-x-3 mb-3">
+                                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                            <BarChart3 className="w-5 h-5 text-blue-600" />
+                                        </div>
+                                        <h4 className="font-medium text-gray-900">Forecast</h4>
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                        At your current spending rate, you'll finish under budget by approximately $3,800 across all projects.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+
+                    {/* Modal: Expense Details */}
+                    {showExpenseDetailsModal && selectedExpense && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                            <div className="bg-white rounded-lg max-w-2xl w-full p-6 shadow-xl animate-slide-in">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-lg font-medium text-gray-900">Expense Details</h3>
+                                    <button
+                                        onClick={() => setShowExpenseDetailsModal(false)}
+                                        className="text-gray-400 hover:text-gray-600"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+                                
+                                <div className="bg-gray-50 rounded p-4 mb-4">
+                                    <h4 className="font-medium text-gray-900 mb-4">{selectedExpense.title}</h4>
+                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span className="text-gray-600">Amount:</span>
+                                            <p className="font-semibold text-gray-900 mt-1">${selectedExpense.amount.toLocaleString()}</p>
+                                        </div>
+                                        <div>
+                                            <span className="text-gray-600">Date:</span>
+                                            <p className="text-gray-900 mt-1">{selectedExpense.date}</p>
+                                        </div>
+                                        <div>
+                                            <span className="text-gray-600">Project:</span>
+                                            <p className="text-blue-600 mt-1">{selectedExpense.project}</p>
+                                        </div>
+                                        <div>
+                                            <span className="text-gray-600">Category:</span>
+                                            <p className="text-gray-900 mt-1">{selectedExpense.category}</p>
+                                        </div>
+                                        {selectedExpense.notes && (
+                                            <div className="col-span-2">
+                                                <span className="text-gray-600">Notes:</span>
+                                                <p className="text-gray-900 mt-1">{selectedExpense.notes}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                                
+                                <div className="flex justify-end space-x-3">
+                                    <button
+                                        onClick={() => setShowExpenseDetailsModal(false)}
+                                        className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 border border-gray-300 rounded"
+                                    >
+                                        Close
+                                    </button>
+                                    <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+                                        Edit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal: Add New Expense */}
+                    {showAddExpenseModal && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                            <div className="bg-white rounded-lg max-w-2xl w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto animate-slide-in">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-lg font-medium text-gray-900">Add New Expense</h3>
+                                    <button
+                                        onClick={() => setShowAddExpenseModal(false)}
+                                        className="text-gray-400 hover:text-gray-600"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+                                
+                                <div className="space-y-4 mb-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <FileText className="w-4 h-4 inline mr-1" />
+                                            Description *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={newExpense.description}
+                                            onChange={(e) => handleExpenseInputChange('description', e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="e.g., Cabinet hardware purchase"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <DollarSign className="w-4 h-4 inline mr-1" />
+                                                Amount *
+                                            </label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={newExpense.amount}
+                                                onChange={(e) => handleExpenseInputChange('amount', e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="0.00"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <Calendar className="w-4 h-4 inline mr-1" />
+                                                Date *
+                                            </label>
+                                            <input
+                                                type="date"
+                                                value={newExpense.date}
+                                                onChange={(e) => handleExpenseInputChange('date', e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Project *
+                                        </label>
+                                        <select
+                                            value={newExpense.project}
+                                            onChange={(e) => handleExpenseInputChange('project', e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            required
+                                        >
+                                            <option value="">Select a project...</option>
+                                            {projectsData.map((project) => (
+                                                <option key={project.id} value={project.name}>
+                                                    {project.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <Tag className="w-4 h-4 inline mr-1" />
+                                            Category
+                                        </label>
+                                        <select
+                                            value={newExpense.category}
+                                            onChange={(e) => handleExpenseInputChange('category', e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            <option value="">Select category...</option>
+                                            <option value="Materials">Materials</option>
+                                            <option value="Labor">Labor</option>
+                                            <option value="Permits">Permits</option>
+                                            <option value="Equipment">Equipment</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <Receipt className="w-4 h-4 inline mr-1" />
+                                            Receipt Upload
+                                        </label>
+                                        <label className="flex-1 cursor-pointer">
+                                            <div className="w-full px-3 py-2 border-2 border-dashed border-gray-300 rounded hover:border-blue-500 transition-colors text-center">
+                                                <Upload className="w-5 h-5 mx-auto mb-1 text-gray-400" />
+                                                <span className="text-sm text-gray-600">
+                                                    {newExpense.receipt ? newExpense.receipt.name : 'Click to upload receipt'}
+                                                </span>
+                                            </div>
+                                            <input
+                                                type="file"
+                                                accept="image/*,.pdf"
+                                                onChange={handleFileUpload}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Notes
+                                        </label>
+                                        <textarea
+                                            value={newExpense.notes}
+                                            onChange={(e) => handleExpenseInputChange('notes', e.target.value)}
+                                            rows={3}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Additional details..."
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div className="flex justify-end space-x-3">
+                                    <button
+                                        onClick={() => setShowAddExpenseModal(false)}
+                                        className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 border border-gray-300 rounded"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={submitNewExpense}
+                                        className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-medium"
+                                    >
+                                        Add Expense
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<BudgetTracker />);
     </script>
-    
-    <!-- Main Interactive Script -->
-    <script src="atlas-interactive.js"></script>
 </body>
 </html>
