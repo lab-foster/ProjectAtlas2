@@ -8,43 +8,27 @@
   <meta name="robots" content="noindex, nofollow"/>
   <title>Documents - Project Atlas</title>
 
-  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📁</text></svg>">
-
-  <!-- Global Styles (shared) -->
   <link rel="stylesheet" href="styles.css"/>
   <link rel="stylesheet" href="atlas-interactive.css"/>
 
   <style>
-    /* ====== Documents page styles (keeps existing palette & rounding) ====== */
     .page-wrap{padding:var(--space-xl);max-width:1600px;margin:0 auto}
 
     .docs-header{display:flex;flex-wrap:wrap;gap:var(--space-lg);align-items:center;justify-content:space-between;margin-bottom:var(--space-xl);padding-bottom:var(--space-md);border-bottom:1px solid var(--border-default)}
     .docs-title h2{margin-bottom:6px}
 
-    /* Compact toolbar + expandable filters */
-    .toolbar{
-      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-      background:var(--bg-elevated);border:1px solid var(--border-light);
-      border-radius:var(--radius-lg);padding:10px 12px;width:100%;
-    }
+    /* Compact toolbar + expandable filters (unchanged) */
+    .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg-elevated);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:10px 12px;width:100%}
     .toolbar .search{position:relative;flex:1;min-width:220px}
     .toolbar .search input{min-width:0;width:100%;padding:8px 34px 8px 10px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:var(--radius-md)}
     .toolbar .search .icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);opacity:.6}
-    .toolbar .summary-btn{
-      display:inline-flex;align-items:center;gap:8px;padding:8px 10px;
-      border:1px solid var(--border-default);border-radius:var(--radius-md);
-      background:var(--bg-secondary);cursor:pointer;white-space:nowrap;color:var(--text-primary);
-    }
+    .toolbar .summary-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-secondary);cursor:pointer;white-space:nowrap;color:var(--text-primary)}
     .toolbar .summary-btn:hover{border-color:var(--app-primary);color:var(--app-primary)}
     .toolbar .badge{display:inline-block;min-width:1.25rem;height:1.25rem;line-height:1.25rem;text-align:center;border-radius:999px;font-size:.75rem;background:var(--app-primary-lighter);color:var(--app-primary)}
     .filters-wrap{overflow:hidden;transition:max-height .2s ease,opacity .2s ease,margin-top .2s ease;max-height:0;opacity:0;margin-top:0}
     .filters-wrap.open{max-height:320px;opacity:1;margin-top:10px}
-    .filters-grid{
-      display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:10px;
-      background:var(--bg-secondary);border:1px solid var(--border-light);
-      border-radius:var(--radius-lg);padding:12px
-    }
+    .filters-grid{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:10px;background:var(--bg-secondary);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:12px}
 
     .btn-icon{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:var(--radius-md);cursor:pointer;transition:all var(--transition-fast)}
     .btn-icon:hover{border-color:var(--app-primary);background:var(--app-primary-lighter);color:var(--app-primary)}
@@ -61,30 +45,14 @@
     .card-header{padding:12px 16px;border-bottom:1px solid var(--border-light);font-weight:600}
     .card-body{padding:12px 16px}
 
-    /* === Collapsible sidebar cards (Folders / Quick Tags) === */
-    .card.collapsible .card-header{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;
-      padding:10px 12px;
-    }
-    .card.collapsible .card-header button{
-      all:unset;display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text-primary)
-    }
-    .card.collapsible .chev{
-      display:inline-block;transition:transform .18s ease;transform:rotate(-90deg);
-      font-size:.95rem;opacity:.85
-    }
-    .card.collapsible.open .chev{ transform:rotate(0deg) }
-    .card.collapsible .count-pill{
-      margin-left:auto;font-size:.75rem;padding:2px 8px;border-radius:999px;border:1px solid var(--border-light);
-      background:var(--bg-elevated);color:var(--text-secondary)
-    }
-    .card.collapsible .card-body{
-      overflow:hidden;max-height:0;opacity:.0;transition:max-height .22s ease, opacity .22s ease, padding-top .22s ease, padding-bottom .22s ease;
-      padding-top:0;padding-bottom:0
-    }
-    .card.collapsible.open .card-body{
-      max-height:460px;opacity:1;padding-top:12px;padding-bottom:12px
-    }
+    /* Collapsible sidebar cards */
+    .card.collapsible .card-header{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;padding:10px 12px}
+    .card.collapsible .card-header button{all:unset;display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text-primary)}
+    .card.collapsible .chev{display:inline-block;transition:transform .18s ease;transform:rotate(-90deg);font-size:.95rem;opacity:.85}
+    .card.collapsible.open .chev{transform:rotate(0deg)}
+    .card.collapsible .count-pill{margin-left:auto;font-size:.75rem;padding:2px 8px;border-radius:999px;border:1px solid var(--border-light);background:var(--bg-elevated);color:var(--text-secondary)}
+    .card.collapsible .card-body{overflow:hidden;max-height:0;opacity:.0;transition:max-height .22s ease,opacity .22s ease,padding-top .22s ease,padding-bottom .22s ease;padding-top:0;padding-bottom:0}
+    .card.collapsible.open .card-body{max-height:460px;opacity:1;padding-top:12px;padding-bottom:12px}
 
     .folder-list{display:flex;flex-direction:column;gap:10px}
     .folder{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border-light);border-radius:var(--radius-md);cursor:pointer;transition:all var(--transition-fast)}
@@ -99,9 +67,61 @@
     .stat{display:flex;justify-content:space-between;border-bottom:1px solid var(--border-light);padding:6px 0}
     .stat:last-child{border-bottom:0}
 
-    /* Grid/List Area */
+    /* ---------- LIST VIEW: premium table styling ---------- */
     .content{display:flex;flex-direction:column;gap:var(--space-lg)}
     .crumbs{font-size:.9rem;color:var(--text-secondary)}
+
+    .list{
+      display:grid;
+      grid-template-columns: 1.6fr 1fr 0.9fr 1.1fr 0.7fr 64px;
+      border:1px solid var(--border-default);
+      border-radius:var(--radius-lg);
+      overflow:hidden;
+      background:var(--bg-secondary);
+    }
+    .list .row{display:contents}
+    /* crucial fix: make body participate in the grid so columns align */
+    #listBody{display:contents}
+
+    .list .cell{
+      padding:10px 14px;
+      border-bottom:1px solid var(--border-light);
+      display:flex; align-items:center; gap:10px;
+      min-height:44px;
+      background:var(--bg-secondary);
+    }
+    .list .head .cell{
+      position:sticky; top:0; z-index:1;
+      background:var(--bg-elevated);
+      font-weight:700; color:var(--text-primary);
+    }
+    .list .row:hover .cell{background:var(--bg-elevated)}
+    /* zebra */
+    .list .row:nth-child(odd) .cell{background:var(--bg-secondary)}
+    .list .row:nth-child(even) .cell{background:var(--bg-secondary)}
+
+    .list .cell.name{gap:12px}
+    .list .file-icon{
+      width:28px;height:28px;border-radius:8px;background:var(--bg-elevated);
+      border:1px solid var(--border-light);display:flex;align-items:center;justify-content:center;
+      font-weight:800; flex:0 0 28px;
+    }
+    .btn-link{
+      all:unset; color:var(--app-primary); cursor:pointer; font-weight:600; max-width:100%;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .type-pill{
+      font-size:.815rem; padding:2px 8px; border-radius:999px; border:1px solid var(--border-light);
+      background:var(--bg-elevated); color:var(--text-secondary);
+    }
+    .muted{color:var(--text-secondary); font-variant-numeric:tabular-nums}
+    .mono{font-variant-numeric:tabular-nums}
+
+    .list .cell.actions{justify-content:flex-start; gap:6px}
+    .icon-btn{width:30px;height:30px;border-radius:999px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer}
+    .icon-btn:hover{color:var(--app-primary);border-color:var(--app-primary)}
+
+    /* Grid view (unchanged) */
     .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-lg)}
     .doc{position:relative;display:flex;flex-direction:column;gap:10px;background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:14px;box-shadow:var(--shadow-xs);transition:transform .12s ease, box-shadow .12s ease}
     .doc:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
@@ -112,28 +132,16 @@
     .doc .sub{color:var(--text-secondary);font-size:.85rem}
     .doc .tags{margin-top:8px}
     .doc .actions{position:absolute;top:10px;right:10px;display:flex;gap:8px}
-    .icon-btn{width:32px;height:32px;border-radius:999px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer}
-    .icon-btn:hover{color:var(--app-primary);border-color:var(--app-primary)}
-
-    .list{display:grid;grid-template-columns:1fr 120px 140px 140px 100px 60px;gap:0;border:1px solid var(--border-default);border-radius:var(--radius-lg);overflow:hidden}
-    .list .row{display:contents}
-    .list .cell{padding:12px 14px;border-bottom:1px solid var(--border-light);background:var(--bg-secondary)}
-    .list .head .cell{background:var(--bg-elevated);font-weight:700}
-    .list .cell.actions{display:flex;gap:8px;align-items:center}
-    .list .cell.name{display:flex;gap:10px;align-items:center}
-    .list .file-icon{width:28px;height:28px;border-radius:6px;background:var(--bg-elevated);border:1px solid var(--border-light);display:flex;align-items:center;justify-content:center;font-weight:800}
 
     .pagination{display:flex;gap:8px;align-items:center;justify-content:flex-end}
     .pagination button{padding:8px 12px;border:1px solid var(--border-default);background:var(--bg-secondary);border-radius:var(--radius-md)}
     .pagination .info{color:var(--text-secondary);margin-right:auto}
 
-    /* Project color pills */
     .pill{display:inline-flex;align-items:center;gap:8px;padding:3px 10px;border-radius:999px;border:1px solid var(--border-light);font-size:.8rem}
     .pill.kitchen{background:rgba(33,150,243,.12);color:#2196f3}
     .pill.bathroom{background:rgba(255,152,0,.12);color:#ff9800}
     .pill.basement{background:rgba(76,175,80,.12);color:#4caf50}
 
-    /* Modal & toast (reuse calendar styles) */
     .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .15s ease;z-index:1000}
     .modal-backdrop.show{opacity:1;pointer-events:auto}
     .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .15s ease;z-index:1001}
@@ -150,24 +158,32 @@
     .preview .pane .placeholder{height:260px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary)}
     .preview .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .preview .meta .field{display:flex;flex-direction:column;gap:4px}
-    .input, .textarea, select.input{width:100%;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:8px;padding:10px}
+    .input,.textarea,select.input{width:100%;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:8px;padding:10px}
     .textarea{min-height:90px}
 
     @media (max-width:1200px){ .grid{grid-template-columns:repeat(3,1fr)} }
-    @media (max-width:992px){.layout{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}}
-    @media (max-width:880px){ .filters-grid{grid-template-columns:repeat(2,minmax(140px,1fr))} }
+    @media (max-width:992px){
+      .layout{grid-template-columns:1fr}
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .list{grid-template-columns:1.6fr 1fr 0.9fr 1.1fr 0.7fr 56px}
+    }
+    @media (max-width:720px){
+      .list{grid-template-columns:1.8fr 1.2fr 0.9fr}
+      .list .head .cell:nth-child(n+4),
+      #listBody .cell:nth-child(4),
+      #listBody .cell:nth-child(5),
+      #listBody .cell:nth-child(6){display:none} /* hide Updated/Size/Actions on narrow screens */
+    }
     @media (max-width:640px){
       .toolbar{padding:10px}
       .grid{grid-template-columns:1fr}
       .preview{grid-template-columns:1fr}
-      .list{grid-template-columns:1.2fr .9fr .9fr .9fr .7fr .5fr}
     }
   </style>
 </head>
 <body class="app-page">
   <a href="#main" class="skip-to-main">Skip to content</a>
 
-  <!-- Header (kept consistent) -->
   <header class="app-header">
     <div class="header-container">
       <div class="logo">
@@ -191,9 +207,7 @@
       </nav>
 
       <div class="user-menu">
-        <label class="btn-icon" for="fileInput">
-          <span aria-hidden="true">⬆️</span> Upload
-        </label>
+        <label class="btn-icon" for="fileInput"><span aria-hidden="true">⬆️</span> Upload</label>
         <input id="fileInput" class="visually-hidden" type="file" multiple />
         <button class="btn-icon" onclick="openNewDocModal()"><span aria-hidden="true">＋</span> New Doc</button>
         <button class="user-avatar" onclick="showUserMenu()" aria-label="User menu" title="User Menu">AF</button>
@@ -208,25 +222,22 @@
         <div class="crumbs" id="crumbs">All Files</div>
       </div>
 
-      <!-- COMPACT TOOLBAR -->
+      <!-- Compact toolbar -->
       <div class="docs-actions" style="width:100%">
         <div class="toolbar" role="region" aria-label="Document search">
           <div class="search">
             <input id="searchInput" type="search" placeholder="Search by name, tag, or note…" />
             <span class="icon">🔎</span>
           </div>
-
           <button id="filtersToggle" class="summary-btn" aria-expanded="false" aria-controls="filtersPanel">
             Filters <span id="filtersBadge" class="badge" aria-hidden="true" style="display:none">0</span>
           </button>
-
           <div class="toggle" role="group" aria-label="View mode" style="margin-left:auto">
             <button id="gridBtn" class="active" onclick="setView('grid')">Grid</button>
             <button id="listBtn" onclick="setView('list')">List</button>
           </div>
         </div>
 
-        <!-- EXPANDABLE FILTERS -->
         <div id="filtersPanel" class="filters-wrap" aria-hidden="true">
           <div class="filters-grid">
             <select id="projectFilter" class="filter-select" aria-label="Filter by project">
@@ -235,7 +246,6 @@
               <option value="basement">Basement Finishing</option>
               <option value="bathroom">Bathroom Update</option>
             </select>
-
             <select id="typeFilter" class="filter-select" aria-label="Filter by type">
               <option value="all">All Types</option>
               <option value="image">Images</option>
@@ -244,7 +254,6 @@
               <option value="sheet">Spreadsheets</option>
               <option value="link">Links</option>
             </select>
-
             <select id="sortSelect" class="sort-select" aria-label="Sort by">
               <option value="updated_desc">Updated ▾</option>
               <option value="updated_asc">Updated ▴</option>
@@ -253,24 +262,19 @@
               <option value="size_desc">Size ▾</option>
               <option value="size_asc">Size ▴</option>
             </select>
-
             <div></div>
           </div>
         </div>
       </div>
-      <!-- /COMPACT TOOLBAR -->
     </div>
 
     <div class="layout">
-      <!-- Sidebar -->
+      <!-- Sidebar (collapsible as before) -->
       <aside class="sidebar">
-        <!-- Collapsible Folders -->
         <section class="card collapsible collapsed" id="foldersCard" data-key="folders">
           <div class="card-header">
             <button id="foldersToggle" aria-expanded="false" aria-controls="foldersBody">
-              <span class="chev">▾</span>
-              <span>Folders</span>
-              <span id="foldersCount" class="count-pill" aria-hidden="true">0</span>
+              <span class="chev">▾</span><span>Folders</span><span id="foldersCount" class="count-pill" aria-hidden="true">0</span>
             </button>
           </div>
           <div class="card-body" id="foldersBody">
@@ -278,13 +282,10 @@
           </div>
         </section>
 
-        <!-- Collapsible Quick Tags -->
         <section class="card collapsible collapsed" id="tagsCard" data-key="tags">
           <div class="card-header">
             <button id="tagsToggle" aria-expanded="false" aria-controls="tagsBody">
-              <span class="chev">▾</span>
-              <span>Quick Tags</span>
-              <span id="tagsCount" class="count-pill" aria-hidden="true">0</span>
+              <span class="chev">▾</span><span>Quick Tags</span><span id="tagsCount" class="count-pill" aria-hidden="true">0</span>
             </button>
           </div>
           <div class="card-body" id="tagsBody">
@@ -292,7 +293,6 @@
           </div>
         </section>
 
-        <!-- Stats (non-collapsible) -->
         <section class="card">
           <div class="card-header">This Month</div>
           <div class="card-body">
@@ -316,8 +316,10 @@
           <button onclick="nextPage()" id="nextBtn" aria-label="Next page">›</button>
         </div>
 
+        <!-- Grid view -->
         <div id="grid" class="grid" aria-label="Document grid"></div>
 
+        <!-- List view -->
         <div id="list" class="list" style="display:none" aria-label="Document list">
           <div class="row head">
             <div class="cell name">Name</div>
@@ -325,7 +327,7 @@
             <div class="cell">Type</div>
             <div class="cell">Updated</div>
             <div class="cell">Size</div>
-            <div class="cell">★</div>
+            <div class="cell">Actions</div>
           </div>
           <div id="listBody"></div>
         </div>
@@ -333,12 +335,10 @@
     </div>
   </main>
 
-  <!-- Modal / Backdrop -->
   <div id="backdrop" class="modal-backdrop"></div>
   <div id="modalRoot" class="modal" aria-hidden="true"></div>
 
   <script>
-    /* ===== Shared header controls ===== */
     function toggleMobileMenu(){
       const nav = document.getElementById('mainNav');
       const toggle = document.querySelector('.mobile-menu-toggle');
@@ -349,7 +349,6 @@
       if(window.atlas && typeof window.atlas.showUserMenu === 'function'){ window.atlas.showUserMenu(); }
     }
 
-    /* ===== Utilities ===== */
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Los_Angeles';
     const fmtDate = (d)=> new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:tz}).format(new Date(d));
     const toKB = (b)=> Math.max(1, Math.round((b||0)/1024));
@@ -365,7 +364,6 @@
       t.textContent = msg; t.style.opacity = '1'; setTimeout(()=>t.style.opacity='0', 1600);
     }
 
-    /* ===== Modal helpers ===== */
     function openModal(title, html, footerHtml){
       const modalRoot = document.getElementById("modalRoot");
       const backdrop  = document.getElementById("backdrop");
@@ -389,7 +387,6 @@
       document.body.classList.remove("atlas-modal-open");
     }
 
-    /* ===== Data store ===== */
     const DocStore = {
       key: 'atlas.docs.v1',
       read(){ try{ return JSON.parse(localStorage.getItem(this.key))||[] } catch { return [] } },
@@ -414,23 +411,10 @@
     };
     DocStore.ensureSeed();
 
-    /* ===== State ===== */
-    const state = {
-      query: '',
-      project: 'all',
-      type: 'all',
-      sort: 'updated_desc',
-      view: 'grid',
-      folder: 'All',
-      tag: null,
-      page: 1,
-      pageSize: 12,
-      favoritesKey: 'atlas.docs.favs'
-    };
+    const state = { query:'', project:'all', type:'all', sort:'updated_desc', view:'grid', folder:'All', tag:null, page:1, pageSize:12, favoritesKey:'atlas.docs.favs' };
     function favsRead(){ try{ return JSON.parse(localStorage.getItem(state.favoritesKey))||{} }catch{ return {} } }
     function favsWrite(m){ localStorage.setItem(state.favoritesKey, JSON.stringify(m)) }
 
-    /* ===== Elements ===== */
     const elGrid = document.getElementById('grid');
     const elList = document.getElementById('list');
     const elListBody = document.getElementById('listBody');
@@ -442,14 +426,12 @@
     const elFolderList = document.getElementById('folderList');
     const elCrumbs = document.getElementById('crumbs');
 
-    /* ===== Filters wiring ===== */
     document.getElementById('searchInput').addEventListener('input', (e)=>{ state.query = e.target.value.trim(); state.page=1; render() });
     document.getElementById('projectFilter').addEventListener('change', (e)=>{ state.project = e.target.value; state.page=1; render(); updateFiltersBadge(); });
     document.getElementById('typeFilter').addEventListener('change', (e)=>{ state.type = e.target.value; state.page=1; render(); updateFiltersBadge(); });
     document.getElementById('sortSelect').addEventListener('change', (e)=>{ state.sort = e.target.value; state.page=1; render(); updateFiltersBadge(); });
     document.getElementById('fileInput').addEventListener('change', handleUploads);
 
-    /* ===== Compact/Expandable toolbar ===== */
     const filtersToggle = document.getElementById('filtersToggle');
     const filtersPanel  = document.getElementById('filtersPanel');
     const filtersBadge  = document.getElementById('filtersBadge');
@@ -472,38 +454,27 @@
     }
     filtersToggle.addEventListener('click', toggleFilters);
 
-    /* ===== Collapsible sidebar (Folders / Tags) ===== */
     const COLLAPSE_KEY = 'atlas.docs.sidebar.v1';
-    function readCollapseState(){
-      try{ return JSON.parse(localStorage.getItem(COLLAPSE_KEY)) || {}; }catch{ return {}; }
-    }
+    function readCollapseState(){ try{ return JSON.parse(localStorage.getItem(COLLAPSE_KEY)) || {}; }catch{ return {}; } }
     function writeCollapseState(m){ localStorage.setItem(COLLAPSE_KEY, JSON.stringify(m)); }
-
     function wireCollapsible(cardId, btnId, bodyId, key){
       const card = document.getElementById(cardId);
       const btn  = document.getElementById(btnId);
-      const body = document.getElementById(bodyId);
       const state = readCollapseState();
-      const open = state[key] !== false; // default open? we want collapsed by default => set false unless stored
-      // For your request: default collapsed -> treat missing as false
-      const isOpen = (key in state) ? state[key] : false;
+      const isOpen = (key in state) ? state[key] : false; // default collapsed
       setOpen(isOpen);
-
       function setOpen(v){
         card.classList.toggle('open', v);
         card.classList.toggle('collapsed', !v);
         btn.setAttribute('aria-expanded', String(v));
-        // body visibility is handled by CSS; nothing else to do
       }
       function toggle(){
         const next = !card.classList.contains('open');
-        setOpen(next);
-        const m = readCollapseState(); m[key] = next; writeCollapseState(m);
+        setOpen(next); const m = readCollapseState(); m[key] = next; writeCollapseState(m);
       }
       btn.addEventListener('click', toggle);
-      btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggle(); } });
+      btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
     }
-
     wireCollapsible('foldersCard','foldersToggle','foldersBody','folders');
     wireCollapsible('tagsCard','tagsToggle','tagsBody','tags');
 
@@ -516,7 +487,6 @@
       render();
     }
 
-    /* ===== Derivations ===== */
     function filtered(){
       const q = state.query.toLowerCase();
       let rows = DocStore.read();
@@ -551,7 +521,6 @@
     function prevPage(){ state.page = Math.max(1, state.page-1); render() }
     function nextPage(){ const rows = filtered(); const pages = Math.max(1, Math.ceil(rows.length/state.pageSize)); state.page = Math.min(pages, state.page+1); render() }
 
-    /* ===== Rendering ===== */
     function render(){
       const rows = filtered();
       const {slice, totalPages, total} = paginated(rows);
@@ -604,12 +573,12 @@
           <div class="row">
             <div class="cell name">
               <div class="file-icon">${iconFor(r.type)}</div>
-              <button class="btn-link" onclick="openPreview('${r.id}')">${r.name}</button>
+              <button class="btn-link" onclick="openPreview('${r.id}')" title="${r.name}">${r.name}</button>
             </div>
             <div class="cell"><span class="pill ${r.project}">${titleCase(r.project)}</span></div>
-            <div class="cell">${titleCase(r.type)}</div>
-            <div class="cell">${fmtDate(r.updated)}</div>
-            <div class="cell">${toKB(r.size)} KB</div>
+            <div class="cell"><span class="type-pill">${titleCase(r.type)}</span></div>
+            <div class="cell muted">${fmtDate(r.updated)}</div>
+            <div class="cell mono">${toKB(r.size)} KB</div>
             <div class="cell actions">
               <button class="icon-btn" title="Favorite" aria-label="Favorite" onclick="toggleFav('${r.id}', event)">${favs[r.id]?'★':'☆'}</button>
               <button class="icon-btn" title="More" aria-label="More" onclick="openDocMenu('${r.id}', event)">⋮</button>
@@ -643,10 +612,7 @@
 
     function renderFoldersAndTags(){
       const rows = DocStore.read();
-
-      // Folders
-      const folders = new Map(); // name -> count
-      rows.forEach(r=> folders.set(r.folder || 'Misc', (folders.get(r.folder||'Misc')||0)+1));
+      const folders = new Map(); rows.forEach(r=> folders.set(r.folder || 'Misc', (folders.get(r.folder||'Misc')||0)+1));
       const entries = Array.from(folders.entries()).sort((a,b)=> a[0].localeCompare(b[0]));
       const allCount = rows.length;
       elFolderList.innerHTML = `
@@ -655,9 +621,7 @@
       `;
       document.getElementById('foldersCount').textContent = String(allCount);
 
-      // Tags
-      const tags = new Map();
-      rows.forEach(r=> (r.tags||[]).forEach(t=> tags.set(t, (tags.get(t)||0)+1)));
+      const tags = new Map(); rows.forEach(r=> (r.tags||[]).forEach(t=> tags.set(t, (tags.get(t)||0)+1)));
       const tagEntries = Array.from(tags.entries()).sort((a,b)=> b[1]-a[1]).slice(0,24);
       elTagCloud.innerHTML = tagEntries.map(([t,count])=>`<span class="tag ${state.tag===t?'active':''}" onclick="filterTag('${t.replace(/'/g,"\\'")}')">#${t} (${count})</span>`).join('');
       document.getElementById('tagsCount').textContent = String(tagEntries.length);
@@ -666,7 +630,6 @@
     function setFolder(name){ state.folder = name; state.page=1; render() }
     function filterTag(t){ state.tag = (state.tag===t) ? null : t; state.page=1; render() }
 
-    /* ===== Context menu (lightweight) ===== */
     function openDocMenu(id, ev){
       ev.preventDefault();
       const menu = document.createElement('div');
@@ -684,7 +647,6 @@
       setTimeout(()=> document.addEventListener('click', closer), 0);
     }
 
-    /* ===== Favorites ===== */
     function toggleFav(id, ev){
       const m = favsRead();
       if(m[id]) delete m[id]; else m[id] = true;
@@ -693,7 +655,6 @@
       render();
     }
 
-    /* ===== Upload & New doc ===== */
     async function handleUploads(e){
       const files = Array.from(e.target.files||[]);
       if(!files.length) return;
@@ -703,13 +664,9 @@
         const type = guessTypeFromName(f.name);
         const id = cryptoRandomId();
         let src = '';
-        if(type==='image'){
-          src = await fileToDataUrl(f);
-        }
-        list.unshift({
-          id, name:f.name, type, project: state.project==='all' ? inferProjectFromContext() : state.project,
-          folder: state.folder==='All' ? 'Uploads' : state.folder, size:f.size, tags:[], updated: now, notes:'', src
-        });
+        if(type==='image'){ src = await fileToDataUrl(f); }
+        list.unshift({ id, name:f.name, type, project: state.project==='all' ? inferProjectFromContext() : state.project,
+          folder: state.folder==='All' ? 'Uploads' : state.folder, size:f.size, tags:[], updated: now, notes:'', src });
       }
       DocStore.write(list);
       e.target.value = '';
@@ -720,128 +677,64 @@
     function openNewDocModal(){
       openModal('Create Document', `
         <div class="preview">
-          <div class="pane">
-            <div class="placeholder" id="newPreview">Select a type to see icon</div>
-          </div>
+          <div class="pane"><div class="placeholder" id="newPreview">Select a type to see icon</div></div>
           <div class="pane" style="padding:12px;background:transparent;border:none">
             <div class="meta">
-              <div class="field">
-                <label for="nd_name">Name</label>
-                <input id="nd_name" class="input" placeholder="e.g., Punch List.md"/>
-              </div>
-              <div class="field">
-                <label for="nd_type">Type</label>
-                <select id="nd_type" class="input">
-                  <option value="doc">Doc (md/txt)</option>
-                  <option value="link">Link</option>
-                  <option value="sheet">Spreadsheet</option>
-                  <option value="pdf">PDF</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="nd_project">Project</label>
-                <select id="nd_project" class="input">
-                  <option value="kitchen">Kitchen Renovation</option>
-                  <option value="basement">Basement Finishing</option>
-                  <option value="bathroom">Bathroom Update</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="nd_folder">Folder</label>
-                <input id="nd_folder" class="input" placeholder="e.g., Plans"/>
-              </div>
-              <div class="field" style="grid-column:1/3">
-                <label for="nd_notes">Notes</label>
-                <textarea id="nd_notes" class="textarea" placeholder="Optional notes"></textarea>
-              </div>
+              <div class="field"><label for="nd_name">Name</label><input id="nd_name" class="input" placeholder="e.g., Punch List.md"/></div>
+              <div class="field"><label for="nd_type">Type</label><select id="nd_type" class="input">
+                <option value="doc">Doc (md/txt)</option><option value="link">Link</option>
+                <option value="sheet">Spreadsheet</option><option value="pdf">PDF</option></select></div>
+              <div class="field"><label for="nd_project">Project</label><select id="nd_project" class="input">
+                <option value="kitchen">Kitchen Renovation</option><option value="basement">Basement Finishing</option><option value="bathroom">Bathroom Update</option></select></div>
+              <div class="field"><label for="nd_folder">Folder</label><input id="nd_folder" class="input" placeholder="e.g., Plans"/></div>
+              <div class="field" style="grid-column:1/3"><label for="nd_notes">Notes</label><textarea id="nd_notes" class="textarea" placeholder="Optional notes"></textarea></div>
             </div>
           </div>
         </div>
-      `, `
-        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-        <button class="btn" onclick="createDoc()">Create</button>
-      `);
+      `, `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn" onclick="createDoc()">Create</button>`);
 
-      // dynamic type preview
-      const sel = document.getElementById('nd_type');
-      const pv = document.getElementById('newPreview');
+      const sel = document.getElementById('nd_type'); const pv = document.getElementById('newPreview');
       sel.addEventListener('change', ()=>{ pv.textContent = iconFor(sel.value)+' '+titleCase(sel.value) });
       pv.textContent = iconFor(sel.value)+' '+titleCase(sel.value);
     }
 
     function createDoc(){
-      const name = (document.getElementById('nd_name').value || '').trim();
-      if(!name){ toast('Name is required.'); return; }
+      const name = (document.getElementById('nd_name').value || '').trim(); if(!name){ toast('Name is required.'); return; }
       const type = document.getElementById('nd_type').value;
       const project = document.getElementById('nd_project').value;
       const folder = (document.getElementById('nd_folder').value || 'General').trim();
       const notes = document.getElementById('nd_notes').value;
-
       const list = DocStore.read();
-      list.unshift({
-        id: cryptoRandomId(), name, type, project, folder, size: 0, tags:[], updated: Date.now(), notes, src:''
-      });
-      DocStore.write(list);
-      closeModal();
-      toast('Document created.');
-      render();
+      list.unshift({ id: cryptoRandomId(), name, type, project, folder, size:0, tags:[], updated: Date.now(), notes, src:'' });
+      DocStore.write(list); closeModal(); toast('Document created.'); render();
     }
 
-    /* ===== Preview / Edit ===== */
     function openPreview(id){
       const list = DocStore.read();
       const r = list.find(x=> x.id===id);
       if(!r){ toast('File not found'); return; }
-
-      // Thumbnail / preview pane content
       let previewHTML = '';
-      if(r.type==='image' && r.src){
-        previewHTML = `<img alt="" src="${r.src}" style="display:block;max-width:100%;max-height:400px;margin:auto">`;
-      } else if(r.type==='pdf'){
-        previewHTML = `<div class="placeholder" style="height:400px">📄 PDF preview not embedded. <br/>Use “Open” to view.</div>`;
-      } else if(r.type==='link'){
-        previewHTML = `<div class="placeholder" style="height:400px">🔗 <a href="${r.href||'#'}" target="_blank" rel="noopener">Open Link</a></div>`;
-      } else {
-        previewHTML = `<div class="placeholder" style="height:400px">${iconFor(r.type)} No inline preview.</div>`;
-      }
+      if(r.type==='image' && r.src){ previewHTML = `<img alt="" src="${r.src}" style="display:block;max-width:100%;max-height:400px;margin:auto">`; }
+      else if(r.type==='pdf'){ previewHTML = `<div class="placeholder" style="height:400px">📄 PDF preview not embedded. <br/>Use “Open” to view.</div>`; }
+      else if(r.type==='link'){ previewHTML = `<div class="placeholder" style="height:400px">🔗 <a href="${r.href||'#'}" target="_blank" rel="noopener">Open Link</a></div>`; }
+      else { previewHTML = `<div class="placeholder" style="height:400px">${iconFor(r.type)} No inline preview.</div>`; }
 
       openModal(r.name, `
         <div class="preview">
           <div class="pane" style="display:flex;align-items:center;justify-content:center">${previewHTML}</div>
           <div class="pane" style="padding:12px;background:transparent;border:none">
             <div class="meta">
-              <div class="field">
-                <label for="ed_name">Name</label>
-                <input id="ed_name" class="input" value="${(r.name||'').replace(/"/g,'&quot;')}"/>
-              </div>
-              <div class="field">
-                <label for="ed_type">Type</label>
-                <select id="ed_type" class="input">
-                  ${['image','pdf','doc','sheet','link'].map(t=>`<option value="${t}" ${t===r.type?'selected':''}>${titleCase(t)}</option>`).join('')}
-                </select>
-              </div>
-              <div class="field">
-                <label for="ed_project">Project</label>
-                <select id="ed_project" class="input">
-                  ${['kitchen','basement','bathroom'].map(p=>`<option value="${p}" ${p===r.project?'selected':''}>${titleCase(p)}</option>`).join('')}
-                </select>
-              </div>
-              <div class="field">
-                <label for="ed_folder">Folder</label>
-                <input id="ed_folder" class="input" value="${(r.folder||'').replace(/"/g,'&quot;')}"/>
-              </div>
-              <div class="field">
-                <label for="ed_tags">Tags (comma)</label>
-                <input id="ed_tags" class="input" value="${(r.tags||[]).join(', ')}"/>
-              </div>
-              <div class="field">
-                <label for="ed_size">Size (KB)</label>
-                <input id="ed_size" class="input" type="number" value="${toKB(r.size)}"/>
-              </div>
-              <div class="field" style="grid-column:1/3">
-                <label for="ed_notes">Notes</label>
-                <textarea id="ed_notes" class="textarea">${(r.notes||'')}</textarea>
-              </div>
+              <div class="field"><label for="ed_name">Name</label><input id="ed_name" class="input" value="${(r.name||'').replace(/"/g,'&quot;')}"/></div>
+              <div class="field"><label for="ed_type">Type</label><select id="ed_type" class="input">
+                ${['image','pdf','doc','sheet','link'].map(t=>`<option value="${t}" ${t===r.type?'selected':''}>${titleCase(t)}</option>`).join('')}
+              </select></div>
+              <div class="field"><label for="ed_project">Project</label><select id="ed_project" class="input">
+                ${['kitchen','basement','bathroom'].map(p=>`<option value="${p}" ${p===r.project?'selected':''}>${titleCase(p)}</option>`).join('')}
+              </select></div>
+              <div class="field"><label for="ed_folder">Folder</label><input id="ed_folder" class="input" value="${(r.folder||'').replace(/"/g,'&quot;')}"/></div>
+              <div class="field"><label for="ed_tags">Tags (comma)</label><input id="ed_tags" class="input" value="${(r.tags||[]).join(', ')}"/></div>
+              <div class="field"><label for="ed_size">Size (KB)</label><input id="ed_size" class="input" type="number" value="${toKB(r.size)}"/></div>
+              <div class="field" style="grid-column:1/3"><label for="ed_notes">Notes</label><textarea id="ed_notes" class="textarea">${(r.notes||'')}</textarea></div>
             </div>
           </div>
         </div>
@@ -854,9 +747,7 @@
     }
 
     function saveDoc(id){
-      const list = DocStore.read();
-      const i = list.findIndex(x=> x.id===id);
-      if(i<0){ toast('Not found'); return; }
+      const list = DocStore.read(); const i = list.findIndex(x=> x.id===id); if(i<0){ toast('Not found'); return; }
       list[i].name = document.getElementById('ed_name').value || list[i].name;
       list[i].type = document.getElementById('ed_type').value;
       list[i].project = document.getElementById('ed_project').value;
@@ -865,48 +756,26 @@
       list[i].size = Math.max(0, (parseInt(document.getElementById('ed_size').value||'0',10))*1024);
       list[i].notes = document.getElementById('ed_notes').value;
       list[i].updated = Date.now();
-      DocStore.write(list);
-      closeModal();
-      toast('Saved.');
-      render();
+      DocStore.write(list); closeModal(); toast('Saved.'); render();
     }
 
     function renameDoc(id){
-      const list = DocStore.read();
-      const i = list.findIndex(x=> x.id===id);
-      if(i<0){ toast('Not found'); return; }
-      const n = prompt('Rename to:', list[i].name);
-      if(!n) return;
-      list[i].name = n;
-      list[i].updated = Date.now();
-      DocStore.write(list);
-      toast('Renamed.');
-      render();
+      const list = DocStore.read(); const i = list.findIndex(x=> x.id===id); if(i<0){ toast('Not found'); return; }
+      const n = prompt('Rename to:', list[i].name); if(!n) return;
+      list[i].name = n; list[i].updated = Date.now(); DocStore.write(list); toast('Renamed.'); render();
     }
 
     function moveDoc(id){
-      const list = DocStore.read();
-      const i = list.findIndex(x=> x.id===id);
-      if(i<0){ toast('Not found'); return; }
-      const f = prompt('Move to folder:', list[i].folder || 'General');
-      if(!f) return;
-      list[i].folder = f;
-      list[i].updated = Date.now();
-      DocStore.write(list);
-      toast('Moved.');
-      render();
+      const list = DocStore.read(); const i = list.findIndex(x=> x.id===id); if(i<0){ toast('Not found'); return; }
+      const f = prompt('Move to folder:', list[i].folder || 'General'); if(!f) return;
+      list[i].folder = f; list[i].updated = Date.now(); DocStore.write(list); toast('Moved.'); render();
     }
 
     function deleteDoc(id){
-      const list = DocStore.read();
-      const next = list.filter(x=> x.id!==id);
-      DocStore.write(next);
-      closeModal();
-      toast('Deleted.');
-      render();
+      const list = DocStore.read(); const next = list.filter(x=> x.id!==id);
+      DocStore.write(next); closeModal(); toast('Deleted.'); render();
     }
 
-    /* ===== Helpers ===== */
     function cryptoRandomId(){ return 'd' + Math.random().toString(36).slice(2,9) }
     function guessTypeFromName(name){
       const s = (name||'').toLowerCase();
@@ -917,23 +786,11 @@
       return 'doc';
     }
     function inferProjectFromContext(){ return 'kitchen' }
-    function fileToDataUrl(file){
-      return new Promise(res=>{
-        const fr = new FileReader();
-        fr.onload = ()=> res(fr.result);
-        fr.readAsDataURL(file);
-      });
-    }
+    function fileToDataUrl(file){ return new Promise(res=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.readAsDataURL(file); }); }
 
-    /* ===== Init ===== */
-    (function init(){
-      setView('grid'); // default
-      updateFiltersBadge();
-      render();
-    })();
+    (function init(){ setView('grid'); updateFiltersBadge(); render(); })();
   </script>
 
-  <!-- Optional main script if present -->
   <script src="atlas-interactive.js"></script>
 </body>
 </html>
