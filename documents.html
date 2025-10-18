@@ -21,15 +21,35 @@
 
     .docs-header{display:flex;flex-wrap:wrap;gap:var(--space-lg);align-items:center;justify-content:space-between;margin-bottom:var(--space-xl);padding-bottom:var(--space-md);border-bottom:1px solid var(--border-default)}
     .docs-title h2{margin-bottom:6px}
-    .docs-actions{display:flex;gap:var(--space-sm);align-items:center;flex-wrap:wrap}
+
+    /* NEW: compact toolbar + expandable filters */
+    .toolbar{
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+      background:var(--bg-elevated);border:1px solid var(--border-light);
+      border-radius:var(--radius-lg);padding:10px 12px;width:100%;
+    }
+    .toolbar .search{position:relative;flex:1;min-width:220px}
+    .toolbar .search input{min-width:0;width:100%;padding:8px 34px 8px 10px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:var(--radius-md)}
+    .toolbar .search .icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);opacity:.6}
+    .toolbar .summary-btn{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 10px;
+      border:1px solid var(--border-default);border-radius:var(--radius-md);
+      background:var(--bg-secondary);cursor:pointer;white-space:nowrap;color:var(--text-primary);
+    }
+    .toolbar .summary-btn:hover{border-color:var(--app-primary);color:var(--app-primary)}
+    .toolbar .badge{display:inline-block;min-width:1.25rem;height:1.25rem;line-height:1.25rem;text-align:center;border-radius:999px;font-size:.75rem;background:var(--app-primary-lighter);color:var(--app-primary)}
+    .filters-wrap{overflow:hidden;transition:max-height .2s ease,opacity .2s ease,margin-top .2s ease;max-height:0;opacity:0;margin-top:0}
+    .filters-wrap.open{max-height:320px;opacity:1;margin-top:10px}
+    .filters-grid{
+      display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:10px;
+      background:var(--bg-secondary);border:1px solid var(--border-light);
+      border-radius:var(--radius-lg);padding:12px
+    }
+
     .btn-icon{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:var(--radius-md);cursor:pointer;transition:all var(--transition-fast)}
     .btn-icon:hover{border-color:var(--app-primary);background:var(--app-primary-lighter);color:var(--app-primary)}
     .visually-hidden{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
 
-    .controls-bar{display:flex;gap:var(--space-md);align-items:center;flex-wrap:wrap}
-    .search{position:relative}
-    .search input{padding:10px 36px 10px 12px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:var(--radius-md);min-width:260px}
-    .search .icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);opacity:.6}
     .filter-select,.sort-select{padding:10px 12px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:var(--radius-md)}
     .toggle{display:inline-flex;border:1px solid var(--border-default);border-radius:var(--radius-md);overflow:hidden}
     .toggle button{padding:10px 12px;border:0;background:var(--bg-secondary);color:var(--text-secondary);cursor:pointer}
@@ -110,10 +130,9 @@
 
     @media (max-width:1200px){ .grid{grid-template-columns:repeat(3,1fr)} }
     @media (max-width:992px){.layout{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:880px){ .filters-grid{grid-template-columns:repeat(2,minmax(140px,1fr))} }
     @media (max-width:640px){
-      .docs-actions{width:100%}
-      .controls-bar{gap:10px}
-      .search input{min-width:0;width:100%}
+      .toolbar{padding:10px}
       .grid{grid-template-columns:1fr}
       .preview{grid-template-columns:1fr}
       .list{grid-template-columns:1.2fr .9fr .9fr .9fr .7fr .5fr}
@@ -164,44 +183,57 @@
         <div class="crumbs" id="crumbs">All Files</div>
       </div>
 
-      <div class="docs-actions">
-        <div class="controls-bar">
+      <!-- COMPACT TOOLBAR -->
+      <div class="docs-actions" style="width:100%">
+        <div class="toolbar" role="region" aria-label="Document search">
           <div class="search">
             <input id="searchInput" type="search" placeholder="Search by name, tag, or note…" />
             <span class="icon">🔎</span>
           </div>
 
-          <select id="projectFilter" class="filter-select" aria-label="Filter by project">
-            <option value="all">All Projects</option>
-            <option value="kitchen">Kitchen Renovation</option>
-            <option value="basement">Basement Finishing</option>
-            <option value="bathroom">Bathroom Update</option>
-          </select>
+          <button id="filtersToggle" class="summary-btn" aria-expanded="false" aria-controls="filtersPanel">
+            Filters <span id="filtersBadge" class="badge" aria-hidden="true" style="display:none">0</span>
+          </button>
 
-          <select id="typeFilter" class="filter-select" aria-label="Filter by type">
-            <option value="all">All Types</option>
-            <option value="image">Images</option>
-            <option value="pdf">PDF</option>
-            <option value="doc">Docs (md/txt/docx)</option>
-            <option value="sheet">Spreadsheets</option>
-            <option value="link">Links</option>
-          </select>
-
-          <select id="sortSelect" class="sort-select" aria-label="Sort by">
-            <option value="updated_desc">Updated ▾</option>
-            <option value="updated_asc">Updated ▴</option>
-            <option value="name_asc">Name A→Z</option>
-            <option value="name_desc">Name Z→A</option>
-            <option value="size_desc">Size ▾</option>
-            <option value="size_asc">Size ▴</option>
-          </select>
-
-          <div class="toggle" role="group" aria-label="View mode">
+          <div class="toggle" role="group" aria-label="View mode" style="margin-left:auto">
             <button id="gridBtn" class="active" onclick="setView('grid')">Grid</button>
             <button id="listBtn" onclick="setView('list')">List</button>
           </div>
         </div>
+
+        <!-- EXPANDABLE FILTERS -->
+        <div id="filtersPanel" class="filters-wrap" aria-hidden="true">
+          <div class="filters-grid">
+            <select id="projectFilter" class="filter-select" aria-label="Filter by project">
+              <option value="all">All Projects</option>
+              <option value="kitchen">Kitchen Renovation</option>
+              <option value="basement">Basement Finishing</option>
+              <option value="bathroom">Bathroom Update</option>
+            </select>
+
+            <select id="typeFilter" class="filter-select" aria-label="Filter by type">
+              <option value="all">All Types</option>
+              <option value="image">Images</option>
+              <option value="pdf">PDF</option>
+              <option value="doc">Docs (md/txt/docx)</option>
+              <option value="sheet">Spreadsheets</option>
+              <option value="link">Links</option>
+            </select>
+
+            <select id="sortSelect" class="sort-select" aria-label="Sort by">
+              <option value="updated_desc">Updated ▾</option>
+              <option value="updated_asc">Updated ▴</option>
+              <option value="name_asc">Name A→Z</option>
+              <option value="name_desc">Name Z→A</option>
+              <option value="size_desc">Size ▾</option>
+              <option value="size_asc">Size ▴</option>
+            </select>
+
+            <div></div>
+          </div>
+        </div>
       </div>
+      <!-- /COMPACT TOOLBAR -->
     </div>
 
     <div class="layout">
@@ -330,7 +362,7 @@
           {id:'d2', name:'Backsplash inspiration.jpg', type:'image', project:'kitchen', folder:'Inspiration', size:1_204_000, tags:['tile','mood'], updated: now-86400000*2, notes:'Herringbone matte white', src:'https://images.unsplash.com/photo-1556910096-6f5e72db6809?w=1200'},
           {id:'d3', name:'Basement Framing Checklist.md', type:'doc', project:'basement', folder:'Plans', size:18_000, tags:['checklist'], updated: now-86400000*3, notes:'Pre-inspection checklist', src:''},
           {id:'d4', name:'City Plumbing Code.pdf', type:'pdf', project:'bathroom', folder:'Permits', size:2_800_000, tags:['code','permit'], updated: now-86400000*10, notes:'Section 14.2 - venting', src:''},
-          {id:'d5', name:'Vanity Spec Sheet.png', type:'image', project:'bathroom', folder:'Specs', size:640_000, tags:['vanity','hardware'], updated: now-86400000*6, notes:'36" matte black hardware', src:'https://images.unsplash.com/photo-1564540583246-934409427776?w=1200'},
+          {id:'d5', name:'Vanity Spec Sheet.png', type:'image', project:'bathroom', folder:'Specs', size:640_000, tags:['vanity','hardware'], updated: now-86400000*6, notes:'36\" matte black hardware', src:'https://images.unsplash.com/photo-1564540583246-934409427776?w=1200'},
           {id:'d6', name:'LVP Cost Model.xlsx', type:'sheet', project:'basement', folder:'Budget', size:220_000, tags:['budget','flooring'], updated: now-86400000*4, notes:'$2.39 sqft supplier', src:''},
           {id:'d7', name:'Contractor Agreement.docx', type:'doc', project:'kitchen', folder:'Contracts', size:96_000, tags:['contract'], updated: now-86400000*8, notes:'Signed by GC', src:''},
           {id:'d8', name:'Permit Portal', type:'link', project:'basement', folder:'Permits', size:0, tags:['url','permit'], updated: now-86400000*5, notes:'https://kingcounty.gov/permit-portal', href:'https://kingcounty.gov/permit-portal', src:''},
@@ -372,10 +404,35 @@
 
     /* ===== Filters wiring ===== */
     document.getElementById('searchInput').addEventListener('input', (e)=>{ state.query = e.target.value.trim(); state.page=1; render() });
-    document.getElementById('projectFilter').addEventListener('change', (e)=>{ state.project = e.target.value; state.page=1; render() });
-    document.getElementById('typeFilter').addEventListener('change', (e)=>{ state.type = e.target.value; state.page=1; render() });
-    document.getElementById('sortSelect').addEventListener('change', (e)=>{ state.sort = e.target.value; state.page=1; render() });
+    document.getElementById('projectFilter').addEventListener('change', (e)=>{ state.project = e.target.value; state.page=1; render(); updateFiltersBadge(); });
+    document.getElementById('typeFilter').addEventListener('change', (e)=>{ state.type = e.target.value; state.page=1; render(); updateFiltersBadge(); });
+    document.getElementById('sortSelect').addEventListener('change', (e)=>{ state.sort = e.target.value; state.page=1; render(); updateFiltersBadge(); });
     document.getElementById('fileInput').addEventListener('change', handleUploads);
+
+    /* ===== Compact/Expandable controls logic ===== */
+    const filtersToggle = document.getElementById('filtersToggle');
+    const filtersPanel  = document.getElementById('filtersPanel');
+    const filtersBadge  = document.getElementById('filtersBadge');
+
+    function toggleFilters(){
+      const open = !filtersPanel.classList.contains('open');
+      filtersPanel.classList.toggle('open', open);
+      filtersPanel.setAttribute('aria-hidden', String(!open));
+      filtersToggle.setAttribute('aria-expanded', String(open));
+    }
+    function updateFiltersBadge(){
+      const pf = document.getElementById('projectFilter');
+      const tf = document.getElementById('typeFilter');
+      const sf = document.getElementById('sortSelect');
+      let n = 0;
+      if(pf.value!=='all') n++;
+      if(tf.value!=='all') n++;
+      if(sf.value!=='updated_desc') n++;
+      if(n>0){ filtersBadge.style.display='inline-block'; filtersBadge.textContent=String(n); }
+      else { filtersBadge.style.display='none'; }
+    }
+    filtersToggle.addEventListener('click', toggleFilters);
+    updateFiltersBadge();
 
     function setView(mode){
       state.view = mode;
@@ -383,7 +440,7 @@
       document.getElementById('listBtn').classList.toggle('active', mode==='list');
       elGrid.style.display = mode==='grid' ? '' : 'none';
       elList.style.display = mode==='list' ? '' : 'none';
-      render(); // reflow not required but keeps layout tidy
+      render();
     }
 
     /* ===== Derivations ===== */
@@ -451,7 +508,7 @@
         return `
           <article class="doc" role="button" onclick="openPreview('${r.id}')">
             <div class="actions" onclick="event.stopPropagation()">
-              <button class="icon-btn" title="Favorite" aria-label="Favorite" onclick="toggleFav('${r.id}', event)">${fav?'★':'☆'}</button>
+              <button class="icon-btn" title="Favorite" aria-label="Favorite" onclick="toggleFav('${r.id}', event)">${favs[r.id]?'★':'☆'}</button>
               <button class="icon-btn" title="More" aria-label="More" onclick="openDocMenu('${r.id}', event)">⋮</button>
             </div>
             <div class="thumb">${img}</div>
