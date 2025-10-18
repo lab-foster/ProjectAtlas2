@@ -44,6 +44,21 @@
             --space-md: .75rem;    /* 12px */
             --space-lg: 1rem;      /* 16px */
             --space-xl: 1.5rem;    /* 24px */
+
+            --white: #fff;
+            --black: #000;
+
+            --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+            --shadow-md: 0 6px 16px rgba(16, 24, 40, 0.12);
+            --shadow-xl: 0 24px 48px rgba(16, 24, 40, 0.18);
+
+            --status-info: #1e88e5;
+            --status-success: #16a34a;
+            --status-warn: #f59e0b;
+            --status-error: #ef4444;
+
+            --transition-fast: 150ms ease;
+            --transition-normal: 220ms ease;
         }
 
         /* Page */
@@ -410,9 +425,9 @@
             <div class="calendar-controls">
                 <!-- Left controls -->
                 <div class="nav-controls" role="group" aria-label="Month navigation">
-                    <button class="btn btn-icon" aria-label="Previous month">←</button>
-                    <button class="btn btn-icon" aria-label="Today">Today</button>
-                    <button class="btn btn-icon" aria-label="Next month">→</button>
+                    <button class="btn btn-icon" aria-label="Previous month" onclick="previousMonth()">←</button>
+                    <button class="btn btn-icon" aria-label="Today" onclick="goToToday()">Today</button>
+                    <button class="btn btn-icon" aria-label="Next month" onclick="nextMonth()">→</button>
                 </div>
                 
                 <!-- View Controls -->
@@ -423,8 +438,7 @@
                             aria-label="Filter by project"
                             onchange="handleProjectFilter(this.value)">
                     <option value="all">All Projects</option>
-                    <option value="kitchen">Kitchen 
-Renovation</option>
+                    <option value="kitchen">Kitchen Renovation</option>
                     <option value="basement">Basement Finishing</option>
                     <option value="bathroom">Bathroom Update</option>
                 </select>
@@ -439,13 +453,13 @@ Renovation</option>
                     <button class="view-btn" 
                             role="radio" 
                             aria-checked="false"
-                            onclick="showComingSoonAlert()">
+                            onclick="changeView('week')">
                         Week
                     </button>
                     <button class="view-btn" 
                             role="radio" 
                             aria-checked="false"
-                            onclick="showComingSoonAlert()">
+                            onclick="changeView('day')">
                         Day
                     </button>
                 </div>
@@ -471,19 +485,19 @@ Renovation</option>
                 </div>
 
                 <!-- Week 1 -->
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 27">
+                <div class="calendar-day other-month" role="gridcell" aria-label="October 27" tabindex="0">
                     <div class="day-number">27</div>
                 </div>
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 28">
+                <div class="calendar-day other-month" role="gridcell" aria-label="October 28" tabindex="0">
                     <div class="day-number">28</div>
                 </div>
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 29">
+                <div class="calendar-day other-month" role="gridcell" aria-label="October 29" tabindex="0">
                     <div class="day-number">29</div>
                 </div>
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 30">
+                <div class="calendar-day other-month" role="gridcell" aria-label="October 30" tabindex="0">
                     <div class="day-number">30</div>
                 </div>
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 31">
+                <div class="calendar-day other-month" role="gridcell" aria-label="October 31" tabindex="0">
                     <div class="day-number">31</div>
                 </div>
                 <div class="calendar-day" role="gridcell" aria-label="November 1" tabindex="0">
@@ -769,7 +783,6 @@ Renovation</option>
         </div>
     </main>
 
-    <!-- Scripts -->
     <script>
         // Mobile menu toggle with accessibility
         function toggleMobileMenu() {
@@ -779,6 +792,208 @@ Renovation</option>
             
             // Update ARIA attribute
             toggle.setAttribute('aria-expanded', isExpanded);
+        }
+        
+        // Keyboard accessibility helper
+        function handleKeyPress(event, functionName, id) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                if (functionName === 'showEventDetails') {
+                    showEventDetails(id);
+                }
+            }
+        }
+
+        function buildModal(markup) {
+            // Create backdrop + modal using existing app styles (no palette changes)
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop show';
+            const modalHost = document.createElement('div');
+            modalHost.className = 'modal open';
+            const panel = document.createElement('div');
+            panel.className = 'modal-panel';
+            panel.innerHTML = markup;
+            modalHost.appendChild(panel);
+            document.body.appendChild(backdrop);
+            document.body.appendChild(modalHost);
+            document.body.classList.add('atlas-modal-open');
+
+            function close() {
+                try {
+                  document.body.removeChild(backdrop);
+                  document.body.removeChild(modalHost);
+                } catch(e){}
+                document.body.classList.remove('atlas-modal-open');
+                document.removeEventListener('keydown', onEsc);
+            }
+            function onEsc(e){ if(e.key === 'Escape') close(); }
+            document.addEventListener('keydown', onEsc);
+            backdrop.addEventListener('click', close);
+            const closeBtn = panel.querySelector('[data-close]');
+            if (closeBtn) closeBtn.addEventListener('click', close);
+            return { close };
+        }
+
+        function readEventFromDOM(eventId) {
+            const el = document.querySelector('.event[data-event-id="'+eventId+'"]');
+            if (!el) return null;
+            const day = el.closest('.calendar-day');
+            const title = el.querySelector('.event-title')?.textContent.trim() || 'Event';
+            const meta = el.querySelector('.event-meta')?.textContent.trim() || '';
+            const catMatch = el.className.match(/\bevent\s+([a-z-]+)/);
+            const category = catMatch ? catMatch[1] : 'general';
+            const dateLabel = day?.getAttribute('aria-label') || '';
+            return { id: eventId, title, meta, category, dateLabel };
+        }
+
+        function projectFromCategory(cat){
+            switch(cat){
+                case 'kitchen': return 'Kitchen Renovation';
+                case 'bathroom': return 'Bathroom Update';
+                case 'basement': return 'Basement Finishing';
+                case 'deadline': return 'Milestone';
+                default: return cat.charAt(0).toUpperCase()+cat.slice(1);
+            }
+        }
+
+        function showEventDetails(eventId) {
+            const ev = readEventFromDOM(eventId);
+            if (!ev) return;
+            const m = buildModal(`
+                <div class="modal-header">
+                  <h3 class="modal-title">${ev.title}</h3>
+                  <button class="modal-close" data-close aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                  <div class="detail-row"><strong>Date:</strong> <span>${ev.dateLabel || '—'}</span></div>
+                  <div class="detail-row"><strong>Info:</strong> <span>${ev.meta || '—'}</span></div>
+                  <div class="detail-row"><strong>Project:</strong> <span>${projectFromCategory(ev.category)}</span></div>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn" data-close>Close</button>
+                </div>
+            `);
+        }
+
+        function openDayModal(dayEl){
+            const events = Array.from(dayEl.querySelectorAll('.event[data-event-id]'));
+            const dayLabel = dayEl.getAttribute('aria-label') || 'Selected Day';
+            if (!events.length) {
+                buildModal(`
+                  <div class="modal-header">
+                    <h3 class="modal-title">${dayLabel}</h3>
+                    <button class="modal-close" data-close aria-label="Close">&times;</button>
+                  </div>
+                  <div class="modal-body"><p class="text-secondary">No events for this day.</p></div>
+                  <div class="modal-footer"><button class="btn" data-close>Close</button></div>
+                `);
+                return;
+            }
+            const items = events.map(e=>{
+                const id = e.getAttribute('data-event-id');
+                const title = e.querySelector('.event-title')?.textContent.trim() || 'Event';
+                const meta = e.querySelector('.event-meta')?.textContent.trim() || '';
+                return `<li><button class="btn btn-secondary" data-ev="${id}" style="width:100%; text-align:left;">${title} <span class="text-tertiary" style="float:right;">${meta}</span></button></li>`;
+            }).join('');
+            const { close } = buildModal(`
+              <div class="modal-header">
+                <h3 class="modal-title">${dayLabel}</h3>
+                <button class="modal-close" data-close aria-label="Close">&times;</button>
+              </div>
+              <div class="modal-body">
+                <ul class="modal-list" style="display:grid; gap:.5rem;">${items}</ul>
+              </div>
+              <div class="modal-footer"><button class="btn" data-close>Close</button></div>
+            `);
+            // wire item clicks
+            document.querySelectorAll('[data-ev]').forEach(btn=>{
+                btn.addEventListener('click', ()=>{ close(); showEventDetails(btn.getAttribute('data-ev')); });
+            });
+        }
+
+        function previousMonth() {
+            // keep existing UI static; provide gentle feedback without altering theme
+            buildModal(`
+              <div class="modal-header">
+                <h3 class="modal-title">Previous Month</h3>
+                <button class="modal-close" data-close aria-label="Close">&times;</button>
+              </div>
+              <div class="modal-body"><p class="text-secondary">Month navigation will be wired to dynamic data. Current view is November 2024.</p></div>
+              <div class="modal-footer"><button class="btn" data-close>Close</button></div>
+            `);
+        }
+        function nextMonth() {
+            buildModal(`
+              <div class="modal-header">
+                <h3 class="modal-title">Next Month</h3>
+                <button class="modal-close" data-close aria-label="Close">&times;</button>
+              </div>
+              <div class="modal-body"><p class="text-secondary">Month navigation will be wired to dynamic data. Current view is November 2024.</p></div>
+              <div class="modal-footer"><button class="btn" data-close>Close</button></div>
+            `);
+        }
+        function goToToday() {
+            // focus the first cell with today's number if visible
+            const today = new Date();
+            const todayNum = String(today.getDate());
+            const candidate = Array.from(document.querySelectorAll('.calendar-day:not(.other-month) .day-number'))
+              .find(el => el.textContent.trim() === todayNum);
+            if (candidate) { candidate.closest('.calendar-day').scrollIntoView({ behavior:'smooth', block:'center' }); candidate.closest('.calendar-day').focus(); }
+            else {
+              buildModal(`
+                <div class="modal-header"><h3 class="modal-title">Go to Today</h3><button class="modal-close" data-close aria-label="Close">&times;</button></div>
+                <div class="modal-body"><p class="text-secondary">Today is not in this static month view.</p></div>
+                <div class="modal-footer"><button class="btn" data-close>Close</button></div>
+              `);
+            }
+        }
+
+        function changeView(view) {
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === view);
+                btn.setAttribute('aria-checked', String(btn.classList.contains('active')));
+            });
+            if (view !== 'month') {
+                buildModal(`
+                  <div class="modal-header"><h3 class="modal-title">Coming Soon</h3><button class="modal-close" data-close aria-label="Close">&times;</button></div>
+                  <div class="modal-body"><p class="text-secondary">Week and Day views will respect your existing color palette.</p></div>
+                  <div class="modal-footer"><button class="btn" data-close>Close</button></div>
+                `);
+            }
+        }
+
+        function handleProjectFilter(value) {
+            const events = document.querySelectorAll('.calendar-day .event[data-event-id]');
+            events.forEach(el => {
+                const cat = (el.className.match(/\bevent\s+([a-z-]+)/) || [, ''])[1];
+                const show = value==='all' || value===cat || (value==='kitchen' && cat==='deadline');
+                el.style.display = show ? '' : 'none';
+            });
+            // dim empty days (without changing theme)
+            document.querySelectorAll('.calendar-day').forEach(day=>{
+                const visible = Array.from(day.querySelectorAll('.event[data-event-id]')).some(e=>e.style.display!=='none');
+                day.style.opacity = visible || day.classList.contains('other-month') ? '' : '0.6';
+            });
+        }
+
+        // Enhance day cells for click-to-open
+        document.querySelectorAll('.calendar-day[role="gridcell"]').forEach(cell=>{
+            cell.addEventListener('click', (e)=>{
+                if (e.target.closest('.event')) return; // event handled separately
+                openDayModal(cell);
+            });
+            cell.addEventListener('keydown', (e)=>{
+                if (e.key==='Enter') {
+                    if (cell.querySelector('.event[data-event-id]')) openDayModal(cell);
+                }
+            });
+        });
+
+        function showUserMenu() {
+            // Implementation (consistent across pages) is in atlas-interactive.js
+            if (window.atlas && typeof window.atlas.showUserMenu === 'function') {
+              window.atlas.showUserMenu();
+            }
         }
 
         // Close mobile menu with ESC
@@ -794,161 +1009,5 @@ Renovation</option>
     
     <!-- Main Interactive Script -->
     <script src="atlas-interactive.js"></script>
-
-<script>
-/* ===== Project Atlas Calendar Interactivity (non-destructive) =====
-   - Preserves all existing HTML/CSS and colors.
-   - Wires up event modals, filtering, keyboard access, and basic day focus.
-*/
-(function(){
-  const monthYear = '2024-11'; // matches static markup month (November 2024)
-  const toISO = (label) => {
-    // label like "November 3" or "November 10, Backsplash work"
-    const m = label.match(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2})/);
-    if(!m) return monthYear + '-01';
-    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    const mm = String(monthNames.indexOf(m[1]) + 1).padStart(2,'0');
-    const dd = String(+m[2]).padStart(2,'0');
-    return `${monthYear}-${mm}-${dd}`;
-  };
-
-  // Build EVENTS map from DOM so we don't diverge from your content
-  const EVENTS = {};
-  document.querySelectorAll('.calendar-day .event[data-event-id]').forEach(evEl => {
-    const id = evEl.getAttribute('data-event-id');
-    const title = evEl.querySelector('.event-title')?.textContent.trim() || 'Event';
-    const catMatch = evEl.className.match(/\bevent\s+([a-z-]+)/);
-    const category = catMatch ? catMatch[1] : 'general';
-    const dayEl = evEl.closest('.calendar-day');
-    const aria = dayEl?.getAttribute('aria-label') || '';
-    const dateISO = toISO(aria);
-    if(!EVENTS[id]) EVENTS[id] = { id, title, category, date: dateISO, time: '', project: prettyProject(category), notes: '' };
-  });
-
-  function prettyProject(category){
-    switch(category){
-      case 'kitchen': return 'Kitchen Renovation';
-      case 'basement': return 'Basement Finishing';
-      case 'bathroom': return 'Bathroom Update';
-      case 'deadline': return 'Kitchen Renovation';
-      default: return category.replace(/\b\w/g,c=>c.toUpperCase());
-    }
-  }
-
-  // --- Modal helpers ---
-  function modal(html){
-    const backdrop = document.createElement('div');
-    backdrop.className = 'modal-backdrop';
-    backdrop.innerHTML = html;
-    document.body.appendChild(backdrop);
-    const close = () => { try{ document.body.removeChild(backdrop); }catch(e){} };
-    backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop) close(); });
-    const closeBtn = backdrop.querySelector('[data-close]');
-    if (closeBtn) closeBtn.addEventListener('click', close);
-    document.addEventListener('keydown', function esc(e){ if(e.key==='Escape'){ close(); document.removeEventListener('keydown', esc); } });
-  }
-
-  // --- Public API used by markup ---
-  window.showEventDetails = function(id){
-    const ev = EVENTS[id];
-    if(!ev) return alert('Event not found.');
-    modal(`
-      <div class="modal-panel" role="dialog" aria-modal="true" aria-label="Event details">
-        <div class="flex items-center justify-between p-4 border-b">
-          <h3 class="text-base font-semibold text-gray-900">${escapeHtml(ev.title)}</h3>
-          <button class="p-2" aria-label="Close" data-close>&times;</button>
-        </div>
-        <div class="p-4 space-y-2 text-sm">
-          <div class="flex justify-between"><span class="text-gray-600">Date</span><span class="font-medium text-gray-900">${ev.date}</span></div>
-          <div class="flex justify-between"><span class="text-gray-600">Time</span><span class="font-medium text-gray-900">${ev.time || '—'}</span></div>
-          <div class="flex justify-between"><span class="text-gray-600">Project</span><span class="font-medium text-gray-900">${escapeHtml(ev.project)}</span></div>
-          ${ev.notes ? `<div class="pt-2"><div class="text-gray-600">Notes</div><div class="text-gray-900">${escapeHtml(ev.notes)}</div></div>` : ''}
-        </div>
-        <div class="p-4 border-t flex items-center justify-end">
-          <button class="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" data-close>Close</button>
-        </div>
-      </div>
-    `);
-  };
-
-  window.handleKeyPress = function(e, fnName, id){
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      if (fnName === 'showEventDetails') window.showEventDetails(id);
-    }
-  };
-
-  window.changeView = function(view){
-    // Only "month" is implemented in this static layout
-    document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-    const map = { month: 0, week: 1, day: 2 };
-    const btns = Array.from(document.querySelectorAll('.view-toggle .view-btn'));
-    if (btns[map[view]]) btns[map[view]].classList.add('active');
-    if (view !== 'month') showComingSoonAlert();
-  };
-
-  window.showComingSoonAlert = function(){
-    modal(`
-      <div class="modal-panel" role="dialog" aria-modal="true" aria-label="Coming soon">
-        <div class="flex items-center justify-between p-4 border-b">
-          <h3 class="text-base font-semibold text-gray-900">Coming Soon</h3>
-          <button class="p-2" aria-label="Close" data-close>&times;</button>
-        </div>
-        <div class="p-4 text-sm text-gray-700">
-          Week and Day views are on the roadmap. Your current month view remains fully functional.
-        </div>
-        <div class="p-4 border-t flex items-center justify-end">
-          <button class="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" data-close>Close</button>
-        </div>
-      </div>
-    `);
-  };
-
-  window.handleProjectFilter = function(value){
-    const evs = document.querySelectorAll('.calendar-day .event[data-event-id]');
-    evs.forEach(el => {
-      const cat = (el.className.match(/\bevent\s+([a-z-]+)/) || [, ''])[1];
-      const show = value==='all' || value===cat || (value==='kitchen' && cat==='deadline'); // treat deadline as kitchen
-      el.style.display = show ? '' : 'none';
-    });
-    // Dim days without any visible event
-    document.querySelectorAll('.calendar-day').forEach(day => {
-      const any = Array.from(day.querySelectorAll('.event[data-event-id]')).some(e => e.style.display !== 'none');
-      day.style.opacity = any || day.classList.contains('other-month') ? '' : '0.6';
-    });
-  };
-
-  // Make all days focusable for keyboard navigation
-  document.querySelectorAll('.calendar-day[role="gridcell"]').forEach((day, idx) => {
-    day.setAttribute('tabindex','0');
-    day.addEventListener('keydown', (e) => {
-      const days = Array.from(document.querySelectorAll('.calendar-day[role="gridcell"]'));
-      let i = days.indexOf(day);
-      const cols = 7;
-      if (e.key === 'ArrowRight') { e.preventDefault(); days[Math.min(i+1, days.length-1)].focus(); }
-      if (e.key === 'ArrowLeft')  { e.preventDefault(); days[Math.max(i-1, 0)].focus(); }
-      if (e.key === 'ArrowDown')  { e.preventDefault(); days[Math.min(i+cols, days.length-1)].focus(); }
-      if (e.key === 'ArrowUp')    { e.preventDefault(); days[Math.max(i-cols, 0)].focus(); }
-      if (e.key === 'Enter') {
-        const firstEvent = day.querySelector('.event[data-event-id]');
-        if (firstEvent) {
-          const id = firstEvent.getAttribute('data-event-id');
-          window.showEventDetails(id);
-        }
-      }
-    });
-  });
-
-  // Utility
-  function escapeHtml(s){ return String(s).replace(/[&<>\"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;', "'":'&#39;'}[m])); }
-
-  // Initialize filter based on current select value
-  (function init(){
-    const sel = document.getElementById('projectFilterCalendar');
-    if (sel) window.handleProjectFilter(sel.value);
-  })();
-})();
-</script>
-
 </body>
 </html>
