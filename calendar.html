@@ -1,1013 +1,841 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Project Calendar - Schedul...inspections, and milestones for your home improvement projects">
-    <meta name="robots" content="noindex, nofollow">
-    
-    <title>Calendar - Project Atlas</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+x...ox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
-    
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="atlas-interactive.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Project Calendar - Schedule and track deadlines, inspections, and milestones for your home improvement projects" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Calendar - Project Atlas</title>
 
-    <style>
-        :root {
-            --bg-primary: #f8fafc; 
-            --bg-secondary: #ffffff;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --border-default: #e2e8f0;
-            --muted: #94a3b8;
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
 
-            /* Blueprint-inspired blues from your design language */
-            --app-primary: #1e88e5; 
-            --app-primary-600: #1565C0;
-            --app-primary-light: #E3F2FD;
-            --app-primary-soft: #BBDEFB;
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="atlas-interactive.css" />
 
-            --focus: #93c5fd;
-            --success: #16a34a;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+  <style>
+    /* ===== Calendar page specific styles (kept aesthetic) ===== */
+    .calendar-main{padding:var(--space-xl);max-width:1600px;margin:0 auto;}
+    .calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xl);padding-bottom:var(--space-md);border-bottom:1px solid var(--border-default);gap:var(--space-lg);flex-wrap:wrap}
+    .calendar-title h2{margin-bottom:var(--space-xs);font-size:1.5rem}
+    .current-month,.calendar-title time{color:var(--text-secondary);font-size:.9375rem;font-weight:500}
+    .calendar-controls{display:flex;gap:var(--space-sm);align-items:center}
+    .nav-btn{width:36px;height:36px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:var(--radius-md);font-size:1.25rem;cursor:pointer;transition:all var(--transition-fast);display:flex;align-items:center;justify-content:center}
+    .nav-btn:hover{background:var(--app-primary-lighter);border-color:var(--app-primary);color:var(--app-primary)}
+    .today-btn{padding:var(--space-sm) var(--space-lg);border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:var(--radius-md);font-weight:500;cursor:pointer;transition:all var(--transition-fast)}
+    .today-btn:hover{background:var(--app-primary);border-color:var(--app-primary);color:var(--white)}
+    .view-controls{display:flex;gap:var(--space-md);align-items:center}
+    .filter-select{padding:var(--space-sm) var(--space-md);border:1px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-secondary);color:var(--text-primary);font-size:.9375rem;font-family:inherit;cursor:pointer;transition:all var(--transition-fast)}
+    .filter-select:hover{border-color:var(--border-medium)}
+    .filter-select:focus{outline:none;border-color:var(--app-primary);box-shadow:0 0 0 3px var(--app-primary-light)}
+    .view-toggle{display:flex;border:1px solid var(--border-default);border-radius:var(--radius-md);overflow:hidden}
+    .view-btn{padding:var(--space-sm) var(--space-md);background:var(--bg-secondary);color:var(--text-secondary);border:none;border-right:1px solid var(--border-default);cursor:pointer;transition:all var(--transition-fast);font-weight:500;font-size:.875rem}
+    .view-btn:last-child{border-right:none}
+    .view-btn:hover{background:var(--app-primary-lighter);color:var(--app-primary)}
+    .view-btn.active{background:var(--app-primary);color:var(--white)}
 
-            --radius-sm: 8px;
-            --radius-md: 14px;
-            --radius-lg: 18px;
+    .calendar-container{display:grid;grid-template-columns:1fr 350px;gap:var(--space-xl)}
+    .calendar-shell{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:var(--space-lg);box-shadow:var(--shadow-sm)}
+    .calendar-header-row{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:var(--space-sm)}
+    .day-header{text-align:center;font-weight:600;color:var(--text-secondary);font-size:.875rem;padding:var(--space-sm);text-transform:uppercase;letter-spacing:.05em}
 
-            --space-xs: .375rem;   /* 6px */
-            --space-sm: .5rem;     /* 8px */
-            --space-md: .75rem;    /* 12px */
-            --space-lg: 1rem;      /* 16px */
-            --space-xl: 1.5rem;    /* 24px */
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border-light)}
+    .calendar-day{background:var(--bg-secondary);min-height:120px;padding:var(--space-sm);position:relative;transition:all var(--transition-fast);cursor:pointer}
+    .calendar-day:hover{background:var(--app-primary-lighter)}
+    .calendar-day.other-month{background:var(--gray-100);opacity:.65}
+    .calendar-day.today{background:var(--app-primary-lighter);border:2px solid var(--app-primary)}
+    .day-number{font-weight:600;color:var(--text-primary);font-size:.875rem;margin-bottom:var(--space-xs)}
+    .calendar-day.other-month .day-number{color:var(--text-tertiary)}
+    .calendar-day.today .day-number{color:var(--app-primary)}
+    .day-indicator{position:absolute;top:var(--space-xs);right:var(--space-xs);font-size:.625rem;font-weight:700;color:var(--app-primary);text-transform:uppercase;letter-spacing:.05em}
 
-            --white: #fff;
-            --black: #000;
+    .event{background:var(--app-primary);color:var(--white);padding:var(--space-xs) var(--space-sm);border-radius:var(--radius-sm);margin-bottom:var(--space-xs);cursor:pointer;transition:all var(--transition-fast)}
+    .event:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+    .event.kitchen{background:#2196f3}
+    .event.bathroom{background:#ff9800}
+    .event.basement{background:#4caf50}
+    .event.deadline{background:var(--status-error);font-weight:600}
+    .event-title{font-size:.75rem;font-weight:500;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-            --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
-            --shadow-md: 0 6px 16px rgba(16, 24, 40, 0.12);
-            --shadow-xl: 0 24px 48px rgba(16, 24, 40, 0.18);
+    .calendar-sidebar{display:flex;flex-direction:column;gap:var(--space-xl)}
+    .upcoming-events,.calendar-legend,.calendar-stats{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:var(--space-lg);box-shadow:var(--shadow-sm)}
+    .upcoming-events h3,.calendar-legend h3,.calendar-stats h3{font-size:1rem;margin-bottom:var(--space-md);color:var(--text-primary);font-weight:600}
+    .event-list{display:flex;flex-direction:column;gap:var(--space-md)}
+    .upcoming-event{padding:var(--space-md);border:1px solid var(--border-light);border-radius:var(--radius-md);cursor:pointer;transition:all var(--transition-fast)}
+    .upcoming-event:hover{background:var(--app-primary-lighter);border-color:var(--app-primary-light);transform:translateY(-1px)}
+    .upcoming-event.high-priority{border-left:4px solid var(--status-error)}
+    .upcoming-event.medium-priority{border-left:4px solid var(--status-warning)}
+    .upcoming-event.low-priority{border-left:4px solid var(--status-success)}
+    .event-date{font-size:.8125rem;color:var(--text-tertiary);font-weight:500;margin-bottom:var(--space-xs)}
+    .event-name{font-weight:600;color:var(--text-primary);margin-bottom:var(--space-xs);font-size:.9375rem}
+    .event-project{font-size:.75rem;padding:var(--space-xs) var(--space-sm);border-radius:var(--radius-full);display:inline-block;font-weight:600}
+    .event-project.kitchen{background:rgba(33,150,243,.12);color:#2196f3}
+    .event-project.bathroom{background:rgba(255,152,0,.12);color:#ff9800}
+    .event-project.basement{background:rgba(76,175,80,.12);color:#4caf50}
 
-            --status-info: #1e88e5;
-            --status-success: #16a34a;
-            --status-warn: #f59e0b;
-            --status-error: #ef4444;
+    .legend-items{display:flex;flex-direction:column;gap:var(--space-md)}
+    .legend-item{display:flex;align-items:center;gap:var(--space-md)}
+    .legend-swatch{width:14px;height:14px;border-radius:3px}
+    .legend-swatch.kitchen{background:#2196f3}
+    .legend-swatch.bathroom{background:#ff9800}
+    .legend-swatch.basement{background:#4caf50}
+    .legend-swatch.deadline{background:var(--status-error)}
 
-            --transition-fast: 150ms ease;
-            --transition-normal: 220ms ease;
-        }
+    .calendar-stats .stat{display:flex;justify-content:space-between;color:var(--text-secondary);font-size:.9375rem;padding:.25rem 0;border-bottom:1px dashed var(--border-light)}
+    .calendar-stats .stat:last-child{border-bottom:none}
 
-        /* Page */
-        body.app-page {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-        }
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:50}
+    .modal-backdrop.active{display:flex}
+    .modal{background:var(--bg-secondary);width:min(720px,92vw);max-height:88vh;border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);border:1px solid var(--border-default);overflow:hidden;display:flex;flex-direction:column}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;padding:var(--space-lg);border-bottom:1px solid var(--border-light)}
+    .modal-title{font-size:1.1rem;font-weight:700}
+    .modal-body{padding:var(--space-lg);overflow:auto;display:grid;gap:var(--space-md)}
+    .modal-footer{display:flex;justify-content:flex-end;gap:var(--space-sm);padding:var(--space-md) var(--space-lg);border-top:1px solid var(--border-light);background:var(--bg-elevated)}
+    .btn{padding:.6rem .9rem;border-radius:var(--radius-md);border:1px solid var(--border-default);background:var(--bg-secondary);cursor:pointer;font-weight:600}
+    .btn.primary{background:var(--app-primary);border-color:var(--app-primary);color:var(--white)}
+    .btn.danger{background:var(--status-error);border-color:var(--status-error);color:#fff}
+    .btn.ghost{background:transparent}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md)}
+    .form-row.single{grid-template-columns:1fr}
+    .input, .select, .textarea{width:100%;border:1px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-secondary);color:var(--text-primary);padding:.65rem .75rem;font:inherit}
+    .textarea{min-height:90px;resize:vertical}
 
-        /* Uniform header (shared with other pages) */
-        .app-header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-default);
-        }
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: .75rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .logo h1 {
-            font-weight: 700;
-            letter-spacing: .5px;
-            display: flex; align-items: baseline; gap: .4rem;
-        }
-        .logo .atlas-blue { color: var(--app-primary); }
-        .tagline { font-size: .8rem; color: var(--text-secondary); display: block; margin-top: -4px; }
-        .mobile-menu-toggle {
-            margin-left: auto;
-            display: none;
-            border: 1px solid var(--border-default);
-            background: var(--bg-secondary);
-            padding: .4rem .6rem;
-            border-radius: var(--radius-sm);
-        }
-        .main-nav ul {
-            display: flex;
-            gap: .5rem;
-            align-items: center;
-        }
-        .main-nav a {
-            display: inline-block;
-            padding: .5rem .75rem;
-            border-radius: var(--radius-sm);
-            color: var(--text-secondary);
-            text-decoration: none;
-        }
-        .main-nav a.active, .main-nav a:hover {
-            background: var(--app-primary-light);
-            color: var(--app-primary-600);
-        }
-        .user-menu { display: flex; margin-left: auto; gap: .5rem; align-items: center; }
-        .user-avatar {
-            width: 36px; height: 36px; border-radius: 9999px;
-            background: var(--app-primary-light); color: var(--app-primary-600);
-            border: 1px solid var(--app-primary-soft);
-        }
-        .btn { font: inherit; cursor: pointer; }
-        .btn.btn-secondary {
-            border: 1px solid var(--border-default); background: var(--bg-secondary);
-            border-radius: var(--radius-sm); padding: .4rem .75rem;
-        }
+    /* Week/Day containers */
+    .week-grid{display:grid;grid-template-columns:120px 1fr;gap:1px;border:1px solid var(--border-default)}
+    .week-grid .hours{background:var(--bg-elevated)}
+    .hour{height:48px;border-bottom:1px dashed var(--border-light);font-size:.75rem;color:var(--text-tertiary);display:flex;align-items:flex-start;justify-content:flex-end;padding:.25rem .5rem}
+    .week-columns{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+    .week-day-col{min-height:720px;background:var(--bg-secondary);position:relative}
+    .time-block{position:absolute;left:6px;right:6px;border-radius:8px;padding:.25rem .5rem;font-size:.75rem;color:#fff;cursor:pointer;box-shadow:var(--shadow-sm)}
+    .time-block.kitchen{background:#2196f3}.time-block.bathroom{background:#ff9800}.time-block.basement{background:#4caf50}.time-block.deadline{background:var(--status-error)}
 
-        /* Calendar Page */
-        main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: var(--space-md);
-            border-bottom: 1px solid var(--border-default);
-            gap: var(--space-lg);
-            flex-wrap: wrap;
-        }
-
-        .calendar-title h2 {
-            margin-bottom: var(--space-xs);
-            font-size: 1.5rem;
-        }
-
-        .current-month {
-            color: var(--text-secondary);
-            font-size: 0.9375rem;
-        }
-
-        .calendar-controls {
-            display: flex;
-            gap: var(--space-lg);
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: .5rem;
-        }
-
-        .btn-icon {
-            border: 1px solid var(--border-default);
-            background: var(--bg-secondary);
-            border-radius: var(--radius-sm);
-            padding: .35rem .6rem;
-        }
-
-        .filter-select {
-            padding: .45rem .6rem;
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-sm);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-        }
-        .filter-select:focus {
-            outline: none;
-            border-color: var(--app-primary);
-            box-shadow: 0 0 0 3px var(--app-primary-light);
-        }
-
-        .view-toggle {
-            display: flex;
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-        }
-
-        .view-btn {
-            padding: var(--space-sm) var(--space-md);
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            border: 0;
-            cursor: pointer;
-        }
-        .view-btn.active,
-        .view-btn:hover {
-            background: var(--app-primary-light);
-            color: var(--app-primary-600);
-        }
-
-        /* Calendar Grid */
-        .calendar-container {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: var(--space-xl);
-        }
-
-        .calendar-grid {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .calendar-header-row {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            margin-bottom: var(--space-md);
-            color: var(--text-secondary);
-            font-size: .8rem;
-        }
-
-        .day-header {
-            text-align: center;
-            padding-bottom: var(--space-sm);
-            border-bottom: 1px solid var(--border-default);
-        }
-
-        .calendar-day {
-            min-height: 110px;
-            border-radius: var(--radius-md);
-            padding: .5rem;
-            border: 1px dashed transparent;
-        }
-        .calendar-day:hover {
-            border-color: var(--app-primary-light);
-            background: #fbfdff;
-        }
-
-        .calendar-day.other-month {
-            opacity: .45;
-        }
-
-        .calendar-day .day-number {
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: .35rem;
-        }
-
-        .event {
-            margin-top: .35rem;
-            background: #f8fafc;   /* do not alter palette */
-            border: 1px solid var(--border-default);
-            border-radius: 10px;
-            padding: .35rem .5rem;
-            font-size: .85rem;
-            cursor: pointer;
-            transition: transform .12s ease;
-        }
-        .event:hover { transform: translateY(-1px); }
-
-        /* Tag colors (kept exactly as theme intent) */
-        .event.kitchen { border-color: #bdd8ff; background: #f3f8ff; }
-        .event.bathroom { border-color: #cfead6; background: #f4fbf6; }
-        .event.basement { border-color: #ffe4b5; background: #fffaf0; }
-        .event.deadline { border-color: #ffe0e0; background: #fff5f5; }
-
-        .event .event-title {
-            font-weight: 600;
-        }
-        .event .event-meta {
-            font-size: .75rem;
-            color: var(--text-secondary);
-        }
-
-        /* Sidebar */
-        .calendar-sidebar {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-lg);
-            height: fit-content;
-            position: sticky;
-            top: 92px;
-        }
-
-        .calendar-sidebar h3 {
-            margin-bottom: var(--space-sm);
-            font-size: 1rem;
-        }
-
-        .upcoming-events .event-list {
-            display: grid;
-            gap: .5rem;
-        }
-
-        .upcoming-event {
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-md);
-            padding: .5rem .6rem;
-            background: #f8fafc;
-            cursor: pointer;
-        }
-        .upcoming-event:hover {
-            background: var(--app-primary-light);
-            border-color: var(--app-primary-soft);
-        }
-
-        .legend .legend-list {
-            display: grid;
-            gap: .35rem;
-        }
-        .legend .legend-item {
-            display: flex; gap: .5rem; align-items: center;
-            font-size: .85rem; color: var(--text-secondary);
-        }
-        .legend .swatch {
-            width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--border-default);
-        }
-        .legend .kitchen { background: #f3f8ff; border-color: #bdd8ff; }
-        .legend .bathroom { background: #f4fbf6; border-color: #cfead6; }
-        .legend .basement { background: #fffaf0; border-color: #ffe4b5; }
-        .legend .deadline { background: #fff5f5; border-color: #ffe0e0; }
-
-        .stats .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: .6rem;
-        }
-        .stat-card {
-            border: 1px solid var(--border-default);
-            border-radius: 12px;
-            padding: .65rem .75rem;
-            background: #f9fbff;
-        }
-        .stat-card .label { color: var(--text-secondary); font-size: .8rem; }
-        .stat-card .value { font-weight: 700; }
-
-        .sr-only {
-            position: absolute !important;
-            width: 1px; height: 1px;
-            padding: 0; margin: -1px;
-            overflow: hidden; clip: rect(0,0,0,0);
-            white-space: nowrap; border: 0;
-        }
-
-        @media (max-width: 960px) {
-            .calendar-container { grid-template-columns: 1fr; }
-            .mobile-menu-toggle { display: inline-flex; }
-            .main-nav { display: none; }
-            .main-nav.active { display: block; }
-            .main-nav ul { flex-direction: column; align-items: flex-start; margin-top: .5rem; }
-        }
-    </style>
+    @media (max-width:1200px){.calendar-container{grid-template-columns:1fr}}
+  </style>
 </head>
-<body class="app-page">
-    <!-- Skip to Main -->
-    <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <!-- Uniform Header -->
-    <header class="app-header">
-        <div class="header-container">
-            <!-- Logo -->
-            <div class="logo">
-                <h1>Project <span class="atlas-blue">ATLAS</span></h1>
-                <span class="tagline">Home Project Management</span>
-            </div>
+<body class="app-shell">
+  <!-- ===== Global App Header (kept consistent style) ===== -->
+  <header class="app-header">
+    <div class="brand">
+      <img src="subtle-banner.svg" alt="Project Atlas" style="height:28px" />
+      <span class="brand-name">Project Atlas</span>
+    </div>
+    <button class="mobile-menu-toggle" aria-label="Toggle Navigation" aria-expanded="false" onclick="toggleMobileMenu()">☰</button>
+    <nav id="mainNav" class="app-nav" aria-label="Primary">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="projects.html">Projects</a>
+      <a href="kanban.html">Kanban</a>
+      <a href="calendar.html" aria-current="page">Calendar</a>
+      <a href="documents.html">Documents</a>
+      <a href="budget.html">Budget</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="user-controls">
+      <button class="btn ghost" onclick="showUserMenu()">AF</button>
+    </div>
+  </header>
 
-            <!-- Mobile Menu Toggle -->
-            <button
-                class="mobile-menu-toggle"
-                onclick="toggleMobileMenu()"
-                aria-label="Toggle navigation menu"
-                aria-expanded="false"
-                aria-controls="mainNav">
-                <span aria-hidden="true">☰</span>
-            </button>
-
-            <!-- Main Navigation -->
-            <nav class="main-nav" id="mainNav" aria-label="Main navigation">
-                <ul>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="kanban.html">Kanban Board</a></li>
-                    <li><a href="budget.html">Budget Tracker</a></li>
-                    <li><a href="calendar.html" class="active" aria-current="page">Calendar</a></li>
-                    <li><a href="documents.html">Documents</a></li>
-                </ul>
-            </nav>
-
-            <!-- User Menu -->
-            <div class="user-menu">
-                <button class="btn btn-secondary" aria-label="New Event (coming soon)" title="New Event">
-                    <span aria-hidden="true">＋</span>
-                    New Event
-                </button>
-
-                <button class="user-avatar" onclick="showUserMenu()" aria-label="User menu" title="User Menu">
-                    AF
-                </button>
-            </div>
+  <!-- ===== Page Content ===== -->
+  <main class="calendar-main">
+    <!-- Page Title + Controls -->
+    <section class="calendar-header" aria-label="Calendar toolbar">
+      <div class="calendar-title">
+        <h2>Project Calendar</h2>
+        <time id="currentMonthLabel" class="current-month"></time>
+      </div>
+      <div class="calendar-controls">
+        <button class="nav-btn" title="Previous" aria-label="Previous" onclick="navigateMonth(-1)">‹</button>
+        <button class="today-btn" onclick="goToToday()">Today</button>
+        <button class="nav-btn" title="Next" aria-label="Next" onclick="navigateMonth(1)">›</button>
+      </div>
+      <div class="view-controls">
+        <select id="projectFilter" class="filter-select" onchange="handleProjectFilter(this.value)" aria-label="Filter by Project">
+          <option value="all">All Projects</option>
+          <option value="kitchen">Kitchen</option>
+          <option value="bathroom">Bathroom</option>
+          <option value="basement">Basement</option>
+        </select>
+        <div class="view-toggle" role="tablist" aria-label="View">
+          <button class="view-btn active" role="tab" aria-selected="true" onclick="changeView('month', event)">Month</button>
+          <button class="view-btn" role="tab" aria-selected="false" onclick="changeView('week', event)">Week</button>
+          <button class="view-btn" role="tab" aria-selected="false" onclick="changeView('day', event)">Day</button>
         </div>
-    </header>
+        <button class="today-btn" onclick="openAddEvent()">+ New</button>
+      </div>
+    </section>
 
-    <main id="main-content">
-        <!-- Calendar Header -->
-        <div class="calendar-header" role="region" aria-label="Calendar header">
-            <div class="calendar-title">
-                <h2>Calendar</h2>
-                <div class="current-month" aria-live="polite">November 2024</div>
-            </div>
-
-            <div class="calendar-controls">
-                <!-- Left controls -->
-                <div class="nav-controls" role="group" aria-label="Month navigation">
-                    <button class="btn btn-icon" aria-label="Previous month" onclick="previousMonth()">←</button>
-                    <button class="btn btn-icon" aria-label="Today" onclick="goToToday()">Today</button>
-                    <button class="btn btn-icon" aria-label="Next month" onclick="nextMonth()">→</button>
-                </div>
-                
-                <!-- View Controls -->
-                <div class="view-controls" role="group" aria-label="View options">
-                    <label for="projectFilterCalendar" class="sr-only">Filter by project</label>
-                    <select class="filter-select" 
-                            id="projectFilterCalendar"
-                            aria-label="Filter by project"
-                            onchange="handleProjectFilter(this.value)">
-                    <option value="all">All Projects</option>
-                    <option value="kitchen">Kitchen Renovation</option>
-                    <option value="basement">Basement Finishing</option>
-                    <option value="bathroom">Bathroom Update</option>
-                </select>
-                
-                <div class="view-toggle" role="radiogroup" aria-label="Calendar view">
-                    <button class="view-btn active" 
-                            role="radio" 
-                            aria-checked="true"
-                            onclick="changeView('month')">
-                   Month
-                    </button>
-                    <button class="view-btn" 
-                            role="radio" 
-                            aria-checked="false"
-                            onclick="changeView('week')">
-                        Week
-                    </button>
-                    <button class="view-btn" 
-                            role="radio" 
-                            aria-checked="false"
-                            onclick="changeView('day')">
-                        Day
-                    </button>
-                </div>
-            </div>
+    <!-- Calendar + Sidebar -->
+    <section class="calendar-container">
+      <!-- Calendar Board -->
+      <section class="calendar-shell" aria-label="Calendar" id="calendarShell">
+        <div class="calendar-header-row" id="dowRow" role="row">
+          <div class="day-header" role="columnheader">Sun</div>
+          <div class="day-header" role="columnheader">Mon</div>
+          <div class="day-header" role="columnheader">Tue</div>
+          <div class="day-header" role="columnheader">Wed</div>
+          <div class="day-header" role="columnheader">Thu</div>
+          <div class="day-header" role="columnheader">Fri</div>
+          <div class="day-header" role="columnheader">Sat</div>
         </div>
 
-        <!-- Calendar Container -->
-        <div class="calendar-container">
-            <!-- Calendar Grid -->
-            <section class="calendar-grid" 
-                     role="grid" 
-                     aria-label="November 2024 calendar"
-                     aria-readonly="true">
-                <!-- Day Headers -->
-                <div class="calendar-header-row" role="row">
-                    <div class="day-header" role="columnheader">Sun</div>
-                    <div class="day-header" role="columnheader">Mon</div>
-                    <div class="day-header" role="columnheader">Tue</div>
-                    <div class="day-header" role="columnheader">Wed</div>
-                    <div class="day-header" role="columnheader">Thu</div>
-                    <div class="day-header" role="columnheader">Fri</div>
-                    <div class="day-header" role="columnheader">Sat</div>
-                </div>
+        <!-- Month Grid -->
+        <div id="monthGrid" class="calendar-grid" role="grid" aria-label="Month view"></div>
 
-                <!-- Week 1 -->
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 27" tabindex="0">
-                    <div class="day-number">27</div>
-                </div>
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 28" tabindex="0">
-                    <div class="day-number">28</div>
-                </div>
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 29" tabindex="0">
-                    <div class="day-number">29</div>
-                </div>
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 30" tabindex="0">
-                    <div class="day-number">30</div>
-                </div>
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 31" tabindex="0">
-                    <div class="day-number">31</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 1" tabindex="0">
-                    <div class="day-number">1</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 2, Material delivery" tabindex="0">
-                    <div class="day-number">2</div>
-                    <div class="event kitchen" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-1')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-1')"
-                         data-event-id="evt-1">
-                        <div class="event-title">Material delivery</div>
-                        <div class="event-meta">Kitchen · 8:00 AM</div>
-                    </div>
-                </div>
-
-                <!-- Week 2 -->
-                <div class="calendar-day" role="gridcell" aria-label="November 3, Contractor meeting" tabindex="0">
-                    <div class="day-number">3</div>
-                    <div class="event basement" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-2')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-2')"
-                         data-event-id="evt-2">
-                        <div class="event-title">Contractor meeting</div>
-                        <div class="event-meta">Basement · 9:30 AM</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 4" tabindex="0">
-                    <div class="day-number">4</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 5, Plumbing inspection" tabindex="0">
-                    <div class="day-number">5</div>
-                    <div class="event bathroom" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-3')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-3')"
-                         data-event-id="evt-3">
-                        <div class="event-title">Plumbing inspection</div>
-                        <div class="event-meta">Bathroom · 10:30 AM</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 6" tabindex="0">
-                    <div class="day-number">6</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 7, Backsplash work" tabindex="0">
-                    <div class="day-number">7</div>
-                    <div class="event kitchen" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-4')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-4')"
-                         data-event-id="evt-4">
-                        <div class="event-title">Backsplash work</div>
-                        <div class="event-meta">Kitchen · 1:00 PM</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 8" tabindex="0">
-                    <div class="day-number">8</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 9" tabindex="0">
-                    <div class="day-number">9</div>
-                </div>
-
-                <!-- Week 3 -->
-                <div class="calendar-day" role="gridcell" aria-label="November 10, Backsplash work" tabindex="0">
-                    <div class="day-number">10</div>
-                    <div class="event kitchen" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-4')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-4')"
-                         data-event-id="evt-4">
-                        <div class="event-title">Backsplash work</div>
-                        <div class="event-meta">Kitchen · 10:00 AM</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 11, Permit application" tabindex="0">
-                    <div class="day-number">11</div>
-                    <div class="event basement" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-5')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-5')"
-                         data-event-id="evt-5">
-                        <div class="event-title">Permit application</div>
-                        <div class="event-meta">Basement · 3:00 PM</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 12" tabindex="0">
-                    <div class="day-number">12</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 13, Vanity installation" tabindex="0">
-                    <div class="day-number">13</div>
-                    <div class="event bathroom" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-6')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-6')"
-                         data-event-id="evt-6">
-                        <div class="event-title">Vanity installation</div>
-                        <div class="event-meta">Bathroom · 2:00 PM</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 14" tabindex="0">
-                    <div class="day-number">14</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 15, Final kitchen cleanup" tabindex="0">
-                    <div class="day-number">15</div>
-                    <div class="event kitchen" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-7')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-7')"
-                         data-event-id="evt-7">
-                        <div class="event-title">Final kitchen cleanup</div>
-                        <div class="event-meta">Kitchen · 4:00 PM</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 16" tabindex="0">
-                    <div class="day-number">16</div>
-                </div>
-
-                <!-- Week 4 -->
-                <div class="calendar-day" role="gridcell" aria-label="November 17" tabindex="0">
-                    <div class="day-number">17</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 18" tabindex="0">
-                    <div class="day-number">18</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 19, Material shopping" tabindex="0">
-                    <div class="day-number">19</div>
-                    <div class="event basement" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-8')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-8')"
-                         data-event-id="evt-8">
-                        <div class="event-title">Material shopping</div>
-                        <div class="event-meta">Basement · 11:00 AM</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 20" tabindex="0">
-                    <div class="day-number">20</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 21" tabindex="0">
-                    <div class="day-number">21</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 22" tabindex="0">
-                    <div class="day-number">22</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 23" tabindex="0">
-                    <div class="day-number">23</div>
-                </div>
-
-                <!-- Week 5 -->
-                <div class="calendar-day" role="gridcell" aria-label="November 24, Kitchen project deadline" tabindex="0">
-                    <div class="day-number">24</div>
-                    <div class="event deadline" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-9')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-9')"
-                         data-event-id="evt-9">
-                        <div class="event-title">Kitchen project deadline</div>
-                        <div class="event-meta">Milestone</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 25" tabindex="0">
-                    <div class="day-number">25</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 26, Basement work begins" tabindex="0">
-                    <div class="day-number">26</div>
-                    <div class="event basement" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-10')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-10')"
-                         data-event-id="evt-10">
-                        <div class="event-title">Basement work begins</div>
-                        <div class="event-meta">Basement · 9:00 AM</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 27" tabindex="0">
-                    <div class="day-number">27</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 28" tabindex="0">
-                    <div class="day-number">28</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 29" tabindex="0">
-                    <div class="day-number">29</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 30" tabindex="0">
-                    <div class="day-number">30</div>
-                </div>
-            </section>
-
-            <!-- Calendar Sidebar -->
-            <aside class="calendar-sidebar" aria-label="Calendar information">
-                <!-- Upcoming Events -->
-                <section class="upcoming-events" aria-labelledby="upcoming-heading">
-                    <h3 id="upcoming-heading">Upcoming This Week</h3>
-                    
-                    <div class="event-list">
-                        <article class="upcoming-event high-priority"
-                                 role="button"
-                                 tabindex="0"
-                                 onclick="showEventDetails('evt-9')"
-                                 onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-9')"
-                                 data-event-id="evt-9">
-                            <div class="event-title">Kitchen project deadline</div>
-                            <div class="event-meta">Sun, Nov 24</div>
-                        </article>
-
-                        <article class="upcoming-event"
-                                 role="button"
-                                 tabindex="0"
-                                 onclick="showEventDetails('evt-10')"
-                                 onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-10')"
-                                 data-event-id="evt-10">
-                            <div class="event-title">Basement work begins</div>
-                            <div class="event-meta">Tue, Nov 26 – 9:00 AM</div>
-                        </article>
-
-                        <article class="upcoming-event"
-                                 role="button"
-                                 tabindex="0"
-                                 onclick="showEventDetails('evt-6')"
-                                 onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-6')"
-                                 data-event-id="evt-6">
-                            <div class="event-title">Vanity installation</div>
-                            <div class="event-meta">Wed, Nov 13 – 2:00 PM</div>
-                        </article>
-                    </div>
-                </section>
-
-                <!-- Legend -->
-                <section class="legend" aria-labelledby="legend-heading">
-                    <h3 id="legend-heading">Legend</h3>
-                    <div class="legend-list">
-                        <div class="legend-item">
-                            <span class="swatch kitchen" aria-hidden="true"></span>
-                            <span>Kitchen Renovation</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="swatch bathroom" aria-hidden="true"></span>
-                            <span>Bathroom Update</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="swatch basement" aria-hidden="true"></span>
-                            <span>Basement Finishing</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="swatch deadline" aria-hidden="true"></span>
-                            <span>Milestone / Deadline</span>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Stats -->
-                <section class="stats" aria-labelledby="stats-heading">
-                    <h3 id="stats-heading">At a Glance</h3>
-                    <div class="stat-grid">
-                        <div class="stat-card">
-                            <div class="label">Total Events</div>
-                            <div class="value">10</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="label">Kitchen</div>
-                            <div class="value">4</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="label">Basement</div>
-                            <div class="value">3</div>
-                        </div>
-                    </div>
-                </section>
-            </aside>
+        <!-- Week Grid (hidden by default) -->
+        <div id="weekGrid" class="week-grid" style="display:none">
+          <div class="hours" id="weekHours"></div>
+          <div class="week-columns" id="weekColumns"></div>
         </div>
-    </main>
 
-    <script>
-        // Mobile menu toggle with accessibility
-        function toggleMobileMenu() {
-            const nav = document.getElementById('mainNav');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            const isExpanded = nav.classList.toggle('active');
-            
-            // Update ARIA attribute
-            toggle.setAttribute('aria-expanded', isExpanded);
+        <!-- Day View container (hidden by default) -->
+        <div id="dayContainer" style="display:none">
+          <div class="week-grid">
+            <div class="hours" id="dayHours"></div>
+            <div class="week-columns">
+              <div class="week-day-col" id="dayColumn"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Calendar Sidebar -->
+      <aside class="calendar-sidebar" aria-label="Calendar information">
+        <!-- Upcoming Events -->
+        <section class="upcoming-events" aria-labelledby="upcoming-heading">
+          <h3 id="upcoming-heading">Upcoming</h3>
+          <div id="upcomingList" class="event-list"></div>
+        </section>
+
+        <!-- Calendar Legend -->
+        <section class="calendar-legend" aria-labelledby="legend-heading">
+          <h3 id="legend-heading">Project Color Key</h3>
+          <div class="legend-items">
+            <div class="legend-item"><span class="legend-swatch kitchen"></span><span>Kitchen</span></div>
+            <div class="legend-item"><span class="legend-swatch bathroom"></span><span>Bathroom</span></div>
+            <div class="legend-item"><span class="legend-swatch basement"></span><span>Basement</span></div>
+            <div class="legend-item"><span class="legend-swatch deadline"></span><span>Deadline / Inspection</span></div>
+          </div>
+        </section>
+
+        <!-- Simple Stats -->
+        <section class="calendar-stats" aria-labelledby="stats-heading">
+          <h3 id="stats-heading">This Month</h3>
+          <div id="statsList">
+            <div class="stat"><span>Total events</span><strong id="statTotal">0</strong></div>
+            <div class="stat"><span>Deadlines</span><strong id="statDeadlines">0</strong></div>
+            <div class="stat"><span>Kitchen</span><strong id="statKitchen">0</strong></div>
+            <div class="stat"><span>Bathroom</span><strong id="statBathroom">0</strong></div>
+            <div class="stat"><span>Basement</span><strong id="statBasement">0</strong></div>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <!-- ===== Event Modal ===== -->
+  <div id="eventModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="eventModalTitle">Event</div>
+        <button class="btn ghost" aria-label="Close" onclick="closeModal('eventModal')">✕</button>
+      </div>
+      <div class="modal-body" id="eventModalBody"></div>
+      <div class="modal-footer" id="eventModalFooter"></div>
+    </div>
+  </div>
+
+  <!-- ===== Add/Edit Modal ===== -->
+  <div id="editModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="editModalTitle">Add Event</div>
+        <button class="btn ghost" aria-label="Close" onclick="closeModal('editModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <label>Title
+            <input id="f_title" class="input" type="text" placeholder="e.g., Plumbing Inspection" />
+          </label>
+          <label>Project
+            <select id="f_project" class="select">
+              <option value="kitchen">Kitchen</option>
+              <option value="bathroom">Bathroom</option>
+              <option value="basement">Basement</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Start
+            <input id="f_start" class="input" type="datetime-local" />
+          </label>
+          <label>End
+            <input id="f_end" class="input" type="datetime-local" />
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Type
+            <select id="f_type" class="select">
+              <option value="event">Event</option>
+              <option value="deadline">Deadline</option>
+              <option value="inspection">Inspection</option>
+            </select>
+          </label>
+          <label>Reminder (mins)
+            <input id="f_reminder" class="input" type="number" min="0" step="5" placeholder="30" />
+          </label>
+        </div>
+        <div class="form-row single">
+          <label>Notes
+            <textarea id="f_notes" class="textarea" placeholder="Details, checklist, contacts…"></textarea>
+          </label>
+        </div>
+        <input id="f_id" type="hidden" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeModal('editModal')">Cancel</button>
+        <button class="btn primary" id="saveEventBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================
+       Accessibility & Global UI
+       ========================= */
+    function toggleMobileMenu(){
+      const nav=document.getElementById('mainNav');
+      const toggle=document.querySelector('.mobile-menu-toggle');
+      const isExpanded=nav.classList.toggle('active');
+      toggle.setAttribute('aria-expanded',isExpanded);
+    }
+    function showUserMenu(){/* no-op placeholder, unified across app */ }
+
+    /* =========================
+       Calendar State & Storage
+       ========================= */
+    const CalendarStore = (() => {
+      const KEY='atlas_calendar_events_v1';
+      const parse = (s)=>{try{return JSON.parse(s)||[]}catch{return[]}}
+      const list = ()=>parse(localStorage.getItem(KEY));
+      const save = (arr)=>localStorage.setItem(KEY,JSON.stringify(arr));
+      const upsert = (evt)=>{
+        const all=list();
+        const i = all.findIndex(e=>e.id===evt.id);
+        if(i>=0){all[i]=evt}else{all.push(evt)}
+        save(all); return evt;
+      };
+      const remove = (id)=>{
+        const all=list().filter(e=>e.id!==id);
+        save(all);
+      };
+      // Seed some demo events once
+      const seedIfEmpty = ()=>{
+        if(list().length) return;
+        const now=new Date();
+        const y=now.getFullYear(), m=now.getMonth();
+        const sample=[
+          {id:crypto.randomUUID(),title:'Plumbing Inspection',project:'kitchen',type:'inspection',start:new Date(y,m,5,9,0),end:new Date(y,m,5,10,0),notes:'City inspector #42. Clear access under sink.',reminder:30},
+          {id:crypto.randomUUID(),title:'Tile Delivery',project:'bathroom',type:'event',start:new Date(y,m,8,13,0),end:new Date(y,m,8,14,0),notes:'Check for chipped boxes.',reminder:60},
+          {id:crypto.randomUUID(),title:'Electrical rough-in',project:'basement',type:'event',start:new Date(y,m,12,9,0),end:new Date(y,m,12,12,0),notes:'Circuit map in Documents.',reminder:15},
+          {id:crypto.randomUUID(),title:'Permit deadline',project:'kitchen',type:'deadline',start:new Date(y,m,15,17,0),end:new Date(y,m,15,17,0),notes:'Submit revised drawings.',reminder:180},
+          {id:crypto.randomUUID(),title:'Backsplash Install',project:'kitchen',type:'event',start:new Date(y,m,22,9,0),end:new Date(y,m,22,17,0),notes:'Use white grout #001.',reminder:30}
+        ];
+        save(sample.map(e=>({...e,start:e.start.toISOString(),end:e.end.toISOString()})));
+      };
+      return { list, save, upsert, remove, seedIfEmpty };
+    })();
+
+    /* =========================
+       Calendar Rendering Engine
+       ========================= */
+    const state = {
+      view:'month', // 'month' | 'week' | 'day'
+      cursor: new Date(), // current view anchor
+      filter: 'all', // project filter
+      selectedDate: null,
+    };
+
+    const els = {
+      monthLabel: document.getElementById('currentMonthLabel'),
+      monthGrid: document.getElementById('monthGrid'),
+      weekGrid: document.getElementById('weekGrid'),
+      weekHours: document.getElementById('weekHours'),
+      weekColumns: document.getElementById('weekColumns'),
+      dayContainer: document.getElementById('dayContainer'),
+      dayHours: document.getElementById('dayHours'),
+      dayColumn: document.getElementById('dayColumn'),
+      upcomingList: document.getElementById('upcomingList'),
+      stats: {
+        total: document.getElementById('statTotal'),
+        deadlines: document.getElementById('statDeadlines'),
+        kitchen: document.getElementById('statKitchen'),
+        bathroom: document.getElementById('statBathroom'),
+        basement: document.getElementById('statBasement'),
+      }
+    };
+
+    function fmtMonthLabel(d){
+      return d.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    }
+
+    function startOfWeek(d){
+      const x=new Date(d); const day=(x.getDay()+7)%7; x.setDate(x.getDate()-day); x.setHours(0,0,0,0); return x;
+    }
+
+    function endOfWeek(d){
+      const x=startOfWeek(d); x.setDate(x.getDate()+6); x.setHours(23,59,59,999); return x;
+    }
+
+    function startOfMonth(d){
+      return new Date(d.getFullYear(), d.getMonth(), 1);
+    }
+    function endOfMonth(d){
+      return new Date(d.getFullYear(), d.getMonth()+1, 0, 23,59,59,999);
+    }
+
+    function sameDay(a,b){
+      return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+    }
+
+    function filterByProject(evts){
+      if(state.filter==='all') return evts;
+      return evts.filter(e=>e.project===state.filter);
+    }
+
+    function getEventsInRange(start,end){
+      const all = CalendarStore.list().map(e=>({...e,start:new Date(e.start),end:new Date(e.end)}));
+      return all.filter(e=> e.end>=start && e.start<=end);
+    }
+
+    /* ===== Month View ===== */
+    function renderMonth(){
+      els.weekGrid.style.display='none';
+      els.dayContainer.style.display='none';
+      els.monthGrid.style.display='grid';
+
+      const first=startOfMonth(state.cursor);
+      const last=endOfMonth(state.cursor);
+      const firstGrid=startOfWeek(first);
+      const lastGrid=endOfWeek(last);
+
+      els.monthLabel.textContent=fmtMonthLabel(state.cursor);
+      els.monthGrid.innerHTML='';
+
+      const evts = filterByProject(getEventsInRange(firstGrid,lastGrid));
+
+      // Group events by day
+      const byDay = {};
+      for(const e of evts){
+        const key = new Date(e.start.getFullYear(),e.start.getMonth(),e.start.getDate()).toISOString().slice(0,10);
+        byDay[key]=(byDay[key]||[]).concat(e);
+      }
+
+      const today=new Date();
+      for(let d=new Date(firstGrid); d<=lastGrid; d.setDate(d.getDate()+1)){
+        const inMonth=d.getMonth()===state.cursor.getMonth();
+        const cell=document.createElement('div');
+        cell.className='calendar-day'+(inMonth?'':' other-month')+(sameDay(d,today)?' today':'');
+        cell.setAttribute('role','gridcell');
+        cell.setAttribute('aria-label', d.toDateString());
+        cell.tabIndex=0;
+
+        const num=document.createElement('div');
+        num.className='day-number';
+        num.textContent=d.getDate();
+        cell.appendChild(num);
+
+        const isoKey=d.toISOString().slice(0,10);
+        const list=byDay[isoKey]||[];
+        list.sort((a,b)=>a.start-b.start);
+        for(const e of list.slice(0,4)){ // show up to 4, "+N" indicator below
+          const pill=document.createElement('div');
+          pill.className='event '+(e.type==='deadline'?'deadline ': '')+e.project;
+          pill.innerHTML=`<div class="event-title" title="${e.title}">${e.title}</div>`;
+          pill.onclick=(ev)=>{ev.stopPropagation(); showEventDetails(e.id)};
+          pill.onkeydown=(ev)=>{if(ev.key==='Enter'||ev.key===' ') {ev.preventDefault(); showEventDetails(e.id)}};
+          pill.setAttribute('tabindex','0');
+          cell.appendChild(pill);
         }
-        
-        // Keyboard accessibility helper
-        function handleKeyPress(event, functionName, id) {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                if (functionName === 'showEventDetails') {
-                    showEventDetails(id);
-                }
-            }
+        if(list.length>4){
+          const more=document.createElement('div');
+          more.className='event';
+          more.style.background='var(--bg-elevated)';
+          more.style.color='var(--text-secondary)';
+          more.innerHTML=`<div class="event-title">+${list.length-4} more…</div>`;
+          more.onclick=(ev)=>{ev.stopPropagation(); openDay(d)};
+          cell.appendChild(more);
         }
 
-        function buildModal(markup) {
-            // Create backdrop + modal using existing app styles (no palette changes)
-            const backdrop = document.createElement('div');
-            backdrop.className = 'modal-backdrop show';
-            const modalHost = document.createElement('div');
-            modalHost.className = 'modal open';
-            const panel = document.createElement('div');
-            panel.className = 'modal-panel';
-            panel.innerHTML = markup;
-            modalHost.appendChild(panel);
-            document.body.appendChild(backdrop);
-            document.body.appendChild(modalHost);
-            document.body.classList.add('atlas-modal-open');
+        cell.onclick=()=>openDay(d);
+        cell.onkeydown=(ev)=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault(); openDay(d)}};
+        els.monthGrid.appendChild(cell);
+      }
 
-            function close() {
-                try {
-                  document.body.removeChild(backdrop);
-                  document.body.removeChild(modalHost);
-                } catch(e){}
-                document.body.classList.remove('atlas-modal-open');
-                document.removeEventListener('keydown', onEsc);
-            }
-            function onEsc(e){ if(e.key === 'Escape') close(); }
-            document.addEventListener('keydown', onEsc);
-            backdrop.addEventListener('click', close);
-            const closeBtn = panel.querySelector('[data-close]');
-            if (closeBtn) closeBtn.addEventListener('click', close);
-            return { close };
-        }
+      updateSidebar();
+      updateStats();
+    }
 
-        function readEventFromDOM(eventId) {
-            const el = document.querySelector('.event[data-event-id="'+eventId+'"]');
-            if (!el) return null;
-            const day = el.closest('.calendar-day');
-            const title = el.querySelector('.event-title')?.textContent.trim() || 'Event';
-            const meta = el.querySelector('.event-meta')?.textContent.trim() || '';
-            const catMatch = el.className.match(/\bevent\s+([a-z-]+)/);
-            const category = catMatch ? catMatch[1] : 'general';
-            const dateLabel = day?.getAttribute('aria-label') || '';
-            return { id: eventId, title, meta, category, dateLabel };
-        }
+    /* ===== Week View ===== */
+    function renderWeek(){
+      els.monthGrid.style.display='none';
+      els.dayContainer.style.display='none';
+      els.weekGrid.style.display='grid';
+      els.monthLabel.textContent = `${fmtMonthLabel(state.cursor)} — Week of ${startOfWeek(state.cursor).toLocaleDateString()}`;
 
-        function projectFromCategory(cat){
-            switch(cat){
-                case 'kitchen': return 'Kitchen Renovation';
-                case 'bathroom': return 'Bathroom Update';
-                case 'basement': return 'Basement Finishing';
-                case 'deadline': return 'Milestone';
-                default: return cat.charAt(0).toUpperCase()+cat.slice(1);
-            }
-        }
+      // hours column
+      els.weekHours.innerHTML='';
+      for(let h=0; h<24; h++){
+        const row=document.createElement('div'); row.className='hour';
+        row.textContent=String(h).padStart(2,'0')+':00';
+        els.weekHours.appendChild(row);
+      }
 
-        function showEventDetails(eventId) {
-            const ev = readEventFromDOM(eventId);
-            if (!ev) return;
-            const m = buildModal(`
-                <div class="modal-header">
-                  <h3 class="modal-title">${ev.title}</h3>
-                  <button class="modal-close" data-close aria-label="Close">&times;</button>
-                </div>
-                <div class="modal-body">
-                  <div class="detail-row"><strong>Date:</strong> <span>${ev.dateLabel || '—'}</span></div>
-                  <div class="detail-row"><strong>Info:</strong> <span>${ev.meta || '—'}</span></div>
-                  <div class="detail-row"><strong>Project:</strong> <span>${projectFromCategory(ev.category)}</span></div>
-                </div>
-                <div class="modal-footer">
-                  <button class="btn" data-close>Close</button>
-                </div>
-            `);
-        }
+      // day columns
+      els.weekColumns.innerHTML='';
+      const s = startOfWeek(state.cursor);
+      const e = endOfWeek(state.cursor);
+      const evts = filterByProject(getEventsInRange(s,e)).sort((a,b)=>a.start-b.start);
 
-        function openDayModal(dayEl){
-            const events = Array.from(dayEl.querySelectorAll('.event[data-event-id]'));
-            const dayLabel = dayEl.getAttribute('aria-label') || 'Selected Day';
-            if (!events.length) {
-                buildModal(`
-                  <div class="modal-header">
-                    <h3 class="modal-title">${dayLabel}</h3>
-                    <button class="modal-close" data-close aria-label="Close">&times;</button>
-                  </div>
-                  <div class="modal-body"><p class="text-secondary">No events for this day.</p></div>
-                  <div class="modal-footer"><button class="btn" data-close>Close</button></div>
-                `);
-                return;
-            }
-            const items = events.map(e=>{
-                const id = e.getAttribute('data-event-id');
-                const title = e.querySelector('.event-title')?.textContent.trim() || 'Event';
-                const meta = e.querySelector('.event-meta')?.textContent.trim() || '';
-                return `<li><button class="btn btn-secondary" data-ev="${id}" style="width:100%; text-align:left;">${title} <span class="text-tertiary" style="float:right;">${meta}</span></button></li>`;
-            }).join('');
-            const { close } = buildModal(`
-              <div class="modal-header">
-                <h3 class="modal-title">${dayLabel}</h3>
-                <button class="modal-close" data-close aria-label="Close">&times;</button>
-              </div>
-              <div class="modal-body">
-                <ul class="modal-list" style="display:grid; gap:.5rem;">${items}</ul>
-              </div>
-              <div class="modal-footer"><button class="btn" data-close>Close</button></div>
-            `);
-            // wire item clicks
-            document.querySelectorAll('[data-ev]').forEach(btn=>{
-                btn.addEventListener('click', ()=>{ close(); showEventDetails(btn.getAttribute('data-ev')); });
-            });
-        }
+      for(let i=0;i<7;i++){
+        const day=new Date(s); day.setDate(s.getDate()+i);
+        const col=document.createElement('div'); col.className='week-day-col';
+        col.setAttribute('data-date', day.toISOString().slice(0,10));
+        col.onclick=()=>openAddEvent(day);
+        col.title=day.toDateString();
 
-        function previousMonth() {
-            // keep existing UI static; provide gentle feedback without altering theme
-            buildModal(`
-              <div class="modal-header">
-                <h3 class="modal-title">Previous Month</h3>
-                <button class="modal-close" data-close aria-label="Close">&times;</button>
-              </div>
-              <div class="modal-body"><p class="text-secondary">Month navigation will be wired to dynamic data. Current view is November 2024.</p></div>
-              <div class="modal-footer"><button class="btn" data-close>Close</button></div>
-            `);
+        // place blocks
+        for(const evt of evts){
+          if(sameDay(evt.start,day)){
+            const top = (evt.start.getHours()*60 + evt.start.getMinutes())/ (24*60) * col.clientHeight;
+            const bottom = (evt.end.getHours()*60 + evt.end.getMinutes())/ (24*60) * col.clientHeight;
+            const block=document.createElement('div');
+            block.className='time-block '+(evt.type==='deadline'?'deadline ': '')+evt.project;
+            block.style.top = Math.max(2, top||10) + 'px';
+            block.style.height = Math.max(24, (bottom-top)||60) + 'px';
+            block.textContent=evt.title;
+            block.onclick=(ev)=>{ev.stopPropagation(); showEventDetails(evt.id)};
+            col.appendChild(block);
+          }
         }
-        function nextMonth() {
-            buildModal(`
-              <div class="modal-header">
-                <h3 class="modal-title">Next Month</h3>
-                <button class="modal-close" data-close aria-label="Close">&times;</button>
-              </div>
-              <div class="modal-body"><p class="text-secondary">Month navigation will be wired to dynamic data. Current view is November 2024.</p></div>
-              <div class="modal-footer"><button class="btn" data-close>Close</button></div>
-            `);
-        }
-        function goToToday() {
-            // focus the first cell with today's number if visible
-            const today = new Date();
-            const todayNum = String(today.getDate());
-            const candidate = Array.from(document.querySelectorAll('.calendar-day:not(.other-month) .day-number'))
-              .find(el => el.textContent.trim() === todayNum);
-            if (candidate) { candidate.closest('.calendar-day').scrollIntoView({ behavior:'smooth', block:'center' }); candidate.closest('.calendar-day').focus(); }
-            else {
-              buildModal(`
-                <div class="modal-header"><h3 class="modal-title">Go to Today</h3><button class="modal-close" data-close aria-label="Close">&times;</button></div>
-                <div class="modal-body"><p class="text-secondary">Today is not in this static month view.</p></div>
-                <div class="modal-footer"><button class="btn" data-close>Close</button></div>
-              `);
-            }
-        }
+        els.weekColumns.appendChild(col);
+      }
 
-        function changeView(view) {
-            document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === view);
-                btn.setAttribute('aria-checked', String(btn.classList.contains('active')));
-            });
-            if (view !== 'month') {
-                buildModal(`
-                  <div class="modal-header"><h3 class="modal-title">Coming Soon</h3><button class="modal-close" data-close aria-label="Close">&times;</button></div>
-                  <div class="modal-body"><p class="text-secondary">Week and Day views will respect your existing color palette.</p></div>
-                  <div class="modal-footer"><button class="btn" data-close>Close</button></div>
-                `);
-            }
-        }
+      updateSidebar();
+      updateStats();
+    }
 
-        function handleProjectFilter(value) {
-            const events = document.querySelectorAll('.calendar-day .event[data-event-id]');
-            events.forEach(el => {
-                const cat = (el.className.match(/\bevent\s+([a-z-]+)/) || [, ''])[1];
-                const show = value==='all' || value===cat || (value==='kitchen' && cat==='deadline');
-                el.style.display = show ? '' : 'none';
-            });
-            // dim empty days (without changing theme)
-            document.querySelectorAll('.calendar-day').forEach(day=>{
-                const visible = Array.from(day.querySelectorAll('.event[data-event-id]')).some(e=>e.style.display!=='none');
-                day.style.opacity = visible || day.classList.contains('other-month') ? '' : '0.6';
-            });
-        }
+    /* ===== Day View ===== */
+    function renderDay(){
+      els.monthGrid.style.display='none';
+      els.weekGrid.style.display='none';
+      els.dayContainer.style.display='block';
 
-        // Enhance day cells for click-to-open
-        document.querySelectorAll('.calendar-day[role="gridcell"]').forEach(cell=>{
-            cell.addEventListener('click', (e)=>{
-                if (e.target.closest('.event')) return; // event handled separately
-                openDayModal(cell);
-            });
-            cell.addEventListener('keydown', (e)=>{
-                if (e.key==='Enter') {
-                    if (cell.querySelector('.event[data-event-id]')) openDayModal(cell);
-                }
-            });
-        });
+      els.monthLabel.textContent = state.cursor.toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric', year:'numeric'});
 
-        function showUserMenu() {
-            // Implementation (consistent across pages) is in atlas-interactive.js
-            if (window.atlas && typeof window.atlas.showUserMenu === 'function') {
-              window.atlas.showUserMenu();
-            }
-        }
+      // hours
+      els.dayHours.innerHTML='';
+      for(let h=0; h<24; h++){
+        const row=document.createElement('div'); row.className='hour';
+        row.textContent=String(h).padStart(2,'0')+':00';
+        els.dayHours.appendChild(row);
+      }
 
-        // Close mobile menu with ESC
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const nav = document.getElementById('mainNav');
-                if (nav.classList.contains('active')) {
-                    toggleMobileMenu();
-                }
-            }
-        });
-    </script>
-    
-    <!-- Main Interactive Script -->
-    <script src="atlas-interactive.js"></script>
+      // events
+      els.dayColumn.innerHTML='';
+      const s=new Date(state.cursor); s.setHours(0,0,0,0);
+      const e=new Date(state.cursor); e.setHours(23,59,59,999);
+      const evts = filterByProject(getEventsInRange(s,e)).sort((a,b)=>a.start-b.start);
+      const col=els.dayColumn;
+
+      col.onclick=()=>openAddEvent(state.cursor);
+
+      for(const evt of evts){
+        const top = (evt.start.getHours()*60+evt.start.getMinutes())/(24*60)* col.clientHeight;
+        const bottom = (evt.end.getHours()*60+evt.end.getMinutes())/(24*60)* col.clientHeight;
+        const block=document.createElement('div');
+        block.className='time-block '+(evt.type==='deadline'?'deadline ': '')+evt.project;
+        block.style.top=(top||10)+'px';
+        block.style.height=Math.max(24,(bottom-top)||60)+'px';
+        block.textContent=evt.title;
+        block.onclick=(ev)=>{ev.stopPropagation(); showEventDetails(evt.id)};
+        col.appendChild(block);
+      }
+
+      updateSidebar();
+      updateStats();
+    }
+
+    /* ===== Sidebar & Stats ===== */
+    function updateSidebar(){
+      const now=new Date();
+      const rangeStart = (state.view==='month') ? startOfMonth(state.cursor)
+                        : (state.view==='week') ? startOfWeek(state.cursor)
+                        : new Date(state.cursor.getFullYear(),state.cursor.getMonth(),state.cursor.getDate());
+      const rangeEnd   = (state.view==='month') ? endOfMonth(state.cursor)
+                        : (state.view==='week') ? endOfWeek(state.cursor)
+                        : new Date(state.cursor.getFullYear(),state.cursor.getMonth(),state.cursor.getDate(),23,59,59,999);
+
+      const list = filterByProject(getEventsInRange(rangeStart,rangeEnd))
+                    .sort((a,b)=>a.start-b.start)
+                    .slice(0,10);
+
+      els.upcomingList.innerHTML='';
+      for(const e of list){
+        const item=document.createElement('article');
+        const pri = e.type==='deadline' ? 'high-priority' : 'low-priority';
+        item.className = `upcoming-event ${pri}`;
+        item.setAttribute('role','button');
+        item.tabIndex=0;
+        const ds=e.start.toLocaleString(undefined,{weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'});
+        item.innerHTML=`
+          <time class="event-date">${ds}</time>
+          <div class="event-name">${e.title}</div>
+          <span class="event-project ${e.project}">${e.project[0].toUpperCase()+e.project.slice(1)}</span>
+        `;
+        item.onclick=()=>showEventDetails(e.id);
+        item.onkeydown=(ev)=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();showEventDetails(e.id)}};
+        els.upcomingList.appendChild(item);
+      }
+      if(list.length===0){
+        els.upcomingList.innerHTML='<div class="event-date">No events in view.</div>';
+      }
+    }
+
+    function updateStats(){
+      const s = (state.view==='month') ? startOfMonth(state.cursor)
+              : (state.view==='week')  ? startOfWeek(state.cursor)
+              : new Date(state.cursor.getFullYear(),state.cursor.getMonth(),state.cursor.getDate());
+      const e = (state.view==='month') ? endOfMonth(state.cursor)
+              : (state.view==='week')  ? endOfWeek(state.cursor)
+              : new Date(state.cursor.getFullYear(),state.cursor.getMonth(),state.cursor.getDate(),23,59,59,999);
+      const list = filterByProject(getEventsInRange(s,e));
+      els.stats.total.textContent = list.length;
+      els.stats.deadlines.textContent = list.filter(x=>x.type==='deadline').length;
+      els.stats.kitchen.textContent = list.filter(x=>x.project==='kitchen').length;
+      els.stats.bathroom.textContent = list.filter(x=>x.project==='bathroom').length;
+      els.stats.basement.textContent = list.filter(x=>x.project==='basement').length;
+    }
+
+    /* =========================
+       Interaction Handlers
+       ========================= */
+    function navigateMonth(delta){
+      if(state.view!=='month'){ state.view='month'; activateViewButtons('month'); }
+      state.cursor = new Date(state.cursor.getFullYear(), state.cursor.getMonth()+delta, 1);
+      render();
+    }
+
+    function goToToday(){
+      state.cursor = new Date();
+      render();
+    }
+
+    function changeView(view, evt){
+      state.view=view;
+      if(evt){ activateViewButtons(view, evt.target); }
+      render();
+    }
+
+    function activateViewButtons(view){
+      document.querySelectorAll('.view-btn').forEach(btn=>{
+        const is=btn.textContent.toLowerCase()===view;
+        btn.classList.toggle('active', is);
+        btn.setAttribute('aria-selected', is?'true':'false');
+      });
+    }
+
+    function handleProjectFilter(val){
+      state.filter=val;
+      render();
+    }
+
+    function openDay(d){
+      state.view='day';
+      state.cursor = new Date(d);
+      activateViewButtons('day');
+      render();
+    }
+
+    function openAddEvent(prefillDate){
+      // Prefill the form
+      document.getElementById('editModalTitle').textContent='Add Event';
+      document.getElementById('f_id').value='';
+      document.getElementById('f_title').value='';
+      document.getElementById('f_project').value='kitchen';
+      const start = prefillDate ? new Date(prefillDate) : state.cursor;
+      start.setHours(9,0,0,0);
+      const end=new Date(start); end.setHours(start.getHours()+1);
+      document.getElementById('f_start').value = toLocalDatetime(start);
+      document.getElementById('f_end').value = toLocalDatetime(end);
+      document.getElementById('f_type').value='event';
+      document.getElementById('f_reminder').value='';
+      document.getElementById('f_notes').value='';
+      openModal('editModal');
+    }
+
+    function editEvent(evt){
+      document.getElementById('editModalTitle').textContent='Edit Event';
+      document.getElementById('f_id').value=evt.id;
+      document.getElementById('f_title').value=evt.title;
+      document.getElementById('f_project').value=evt.project;
+      document.getElementById('f_start').value=toLocalDatetime(evt.start);
+      document.getElementById('f_end').value=toLocalDatetime(evt.end);
+      document.getElementById('f_type').value=evt.type||'event';
+      document.getElementById('f_reminder').value=evt.reminder||'';
+      document.getElementById('f_notes').value=evt.notes||'';
+      openModal('editModal');
+    }
+
+    function toLocalDatetime(date){
+      const d = (date instanceof Date)? date : new Date(date);
+      const off = d.getTimezoneOffset();
+      const local = new Date(d.getTime() - off*60000);
+      return local.toISOString().slice(0,16);
+    }
+
+    function fromLocalDatetime(s){
+      // s is "YYYY-MM-DDTHH:mm" in local time; convert to real Date
+      const d = new Date(s);
+      return d;
+    }
+
+    function showEventDetails(id){
+      const evt=CalendarStore.list().map(e=>({...e,start:new Date(e.start),end:new Date(e.end)})).find(e=>e.id===id);
+      if(!evt) return;
+      const body=document.getElementById('eventModalBody');
+      const footer=document.getElementById('eventModalFooter');
+      document.getElementById('eventModalTitle').textContent=evt.title;
+
+      const meta = `
+        <div><strong>Project:</strong> ${evt.project[0].toUpperCase()+evt.project.slice(1)}</div>
+        <div><strong>When:</strong> ${evt.start.toLocaleString()} — ${evt.end.toLocaleString()}</div>
+        <div><strong>Type:</strong> ${evt.type||'event'}</div>
+        ${evt.reminder?`<div><strong>Reminder:</strong> ${evt.reminder} mins before</div>`:''}
+      `;
+      const notes = evt.notes ? `<div><strong>Notes</strong><div style="margin-top:.25rem">${escapeHtml(evt.notes).replaceAll('\n','<br>')}</div></div>` : '';
+
+      // If atlas task linking exists
+      let taskLink='';
+      if(window.atlas && typeof window.atlas.openTaskById==='function' && evt.taskId){
+        taskLink = `<button class="btn" onclick="tryOpenTask('${evt.taskId}')">Open Linked Task</button>`;
+      }
+
+      body.innerHTML = `
+        <div class="form-row single">
+          <div class="event ${evt.type==='deadline'?'deadline ':''}${evt.project}" style="display:inline-block">${evt.title}</div>
+        </div>
+        ${meta}
+        ${notes}
+      `;
+
+      footer.innerHTML=`
+        ${taskLink}
+        <button class="btn" onclick="duplicateEvent('${evt.id}')">Duplicate</button>
+        <button class="btn" onclick="editEvent(${JSON.stringify({...evt,start:evt.start.toISOString(),end:evt.end.toISOString()}).replace(/"/g,'&quot;')})">Edit</button>
+        <button class="btn danger" onclick="deleteEvent('${evt.id}')">Delete</button>
+      `;
+      openModal('eventModal');
+    }
+
+    function tryOpenTask(taskId){
+      try{ window.atlas.openTaskById(taskId) }catch(e){ console.warn(e) }
+    }
+
+    function duplicateEvent(id){
+      const all=CalendarStore.list();
+      const src=all.find(e=>e.id===id); if(!src) return;
+      const copy = {...src,id:crypto.randomUUID(),title:src.title+' (copy)'};
+      CalendarStore.upsert(copy);
+      closeModal('eventModal');
+      render();
+    }
+
+    function deleteEvent(id){
+      if(!confirm('Delete this event?')) return;
+      CalendarStore.remove(id);
+      closeModal('eventModal');
+      render();
+    }
+
+    // Save handler
+    document.getElementById('saveEventBtn').addEventListener('click', ()=>{
+      const id = document.getElementById('f_id').value || crypto.randomUUID();
+      const title = document.getElementById('f_title').value.trim();
+      const project = document.getElementById('f_project').value;
+      const start = fromLocalDatetime(document.getElementById('f_start').value);
+      const end   = fromLocalDatetime(document.getElementById('f_end').value);
+      const type = document.getElementById('f_type').value;
+      const reminder = Number(document.getElementById('f_reminder').value||0);
+      const notes = document.getElementById('f_notes').value;
+
+      if(!title || !start || !end){ alert('Please provide title, start and end times.'); return; }
+      if(end < start){ alert('End must be after start.'); return; }
+
+      const evt = {id,title,project,start:start.toISOString(),end:end.toISOString(),type,reminder,notes};
+      CalendarStore.upsert(evt);
+      closeModal('editModal');
+      render();
+    });
+
+    /* =========================
+       Modal helpers
+       ========================= */
+    function openModal(id){
+      const m=document.getElementById(id);
+      m.classList.add('active');
+      document.body.style.overflow='hidden';
+    }
+    function closeModal(id){
+      const m=document.getElementById(id);
+      m.classList.remove('active');
+      document.body.style.overflow='';
+    }
+
+    function escapeHtml(str){ return (str||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+
+    /* =========================
+       Bootstrap
+       ========================= */
+    function render(){
+      if(state.view==='month') renderMonth();
+      else if(state.view==='week') renderWeek();
+      else renderDay();
+    }
+
+    // Initialize
+    CalendarStore.seedIfEmpty();
+    state.cursor = new Date();
+    render();
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e)=>{
+      // Ignore when focused inside inputs/textareas
+      const tag = (e.target && e.target.tagName || '').toLowerCase();
+      if(tag==='input' || tag==='textarea') return;
+
+      if(e.key==='ArrowLeft'){ // prev
+        if(state.view==='month') navigateMonth(-1);
+        else { state.cursor.setDate(state.cursor.getDate()-1); render(); }
+      }else if(e.key==='ArrowRight'){ // next
+        if(state.view==='month') navigateMonth(1);
+        else { state.cursor.setDate(state.cursor.getDate()+1); render(); }
+      }else if(e.key==='t' || (e.key==='T')){ goToToday(); }
+      else if(e.key==='n' || e.key==='N'){ openAddEvent(); }
+      else if(e.key==='1'){ changeView('month'); }
+      else if(e.key==='2'){ changeView('week'); }
+      else if(e.key==='3'){ changeView('day'); }
+    });
+
+    // Resize recalculations for blocks
+    window.addEventListener('resize', ()=>{
+      if(state.view==='week') renderWeek();
+      if(state.view==='day') renderDay();
+    });
+  </script>
+
+  <!-- Main Interactive Script (kept for cross-page behaviors) -->
+  <script src="atlas-interactive.js"></script>
 </body>
 </html>
