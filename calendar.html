@@ -1,1034 +1,691 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Project Calendar - Schedule and track deadlines, inspections, and milestones for your home improvement projects">
-    <meta name="robots" content="noindex, nofollow">
-    
-    <title>Calendar - Project Atlas</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
-    
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="atlas-interactive.css">
-    
-    <style>
-        /* Calendar page specific styles */
-        .calendar-main {
-            padding: var(--space-xl);
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-xl);
-            padding-bottom: var(--space-md);
-            border-bottom: 1px solid var(--border-default);
-            gap: var(--space-lg);
-            flex-wrap: wrap;
-        }
-
-        .calendar-title h2 {
-            margin-bottom: var(--space-xs);
-            font-size: 1.5rem;
-        }
-
-        .current-month {
-            color: var(--text-secondary);
-            font-size: 0.9375rem;
-            font-weight: 500;
-        }
-
-        .calendar-controls {
-            display: flex;
-            gap: var(--space-sm);
-            align-items: center;
-        }
-
-        .nav-btn {
-            width: 36px;
-            height: 36px;
-            border: 1px solid var(--border-default);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border-radius: var(--radius-md);
-            font-size: 1.25rem;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-btn:hover {
-            background: var(--app-primary-lighter);
-            border-color: var(--app-primary);
-            color: var(--app-primary);
-        }
-
-        .today-btn {
-            padding: var(--space-sm) var(--space-lg);
-            border: 1px solid var(--border-default);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border-radius: var(--radius-md);
-            font-weight: 500;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .today-btn:hover {
-            background: var(--app-primary);
-            border-color: var(--app-primary);
-            color: var(--white);
-        }
-
-        .view-controls {
-            display: flex;
-            gap: var(--space-md);
-            align-items: center;
-        }
-
-        .filter-select {
-            padding: var(--space-sm) var(--space-md);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-md);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            font-size: 0.9375rem;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .filter-select:hover {
-            border-color: var(--border-medium);
-        }
-
-        .filter-select:focus {
-            outline: none;
-            border-color: var(--app-primary);
-            box-shadow: 0 0 0 3px var(--app-primary-light);
-        }
-
-        .view-toggle {
-            display: flex;
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-        }
-
-        .view-btn {
-            padding: var(--space-sm) var(--space-md);
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            border: none;
-            border-right: 1px solid var(--border-default);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            font-weight: 500;
-            font-size: 0.875rem;
-        }
-
-        .view-btn:last-child {
-            border-right: none;
-        }
-
-        .view-btn:hover {
-            background: var(--app-primary-lighter);
-            color: var(--app-primary);
-        }
-
-        .view-btn.active {
-            background: var(--app-primary);
-            color: var(--white);
-        }
-
-        /* Calendar Grid */
-        .calendar-container {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: var(--space-xl);
-        }
-
-        .calendar-grid {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .calendar-header-row {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            margin-bottom: var(--space-sm);
-        }
-
-        .day-header {
-            text-align: center;
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            padding: var(--space-sm);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .calendar-grid > .calendar-day {
-            display: inline-block;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            background: var(--border-light);
-        }
-
-        .calendar-day {
-            background: var(--bg-secondary);
-            min-height: 120px;
-            padding: var(--space-sm);
-            position: relative;
-            transition: all var(--transition-fast);
-            cursor: pointer;
-        }
-
-        .calendar-day:hover {
-            background: var(--app-primary-lighter);
-        }
-
-        .calendar-day.other-month {
-            background: var(--gray-100);
-            opacity: 0.5;
-        }
-
-        .calendar-day.today {
-            background: var(--app-primary-lighter);
-            border: 2px solid var(--app-primary);
-        }
-
-        .day-number {
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            margin-bottom: var(--space-xs);
-        }
-
-        .calendar-day.other-month .day-number {
-            color: var(--text-tertiary);
-        }
-
-        .calendar-day.today .day-number {
-            color: var(--app-primary);
-        }
-
-        .day-indicator {
-            position: absolute;
-            top: var(--space-xs);
-            right: var(--space-xs);
-            font-size: 0.625rem;
-            font-weight: 700;
-            color: var(--app-primary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .event {
-            background: var(--app-primary);
-            color: var(--white);
-            padding: var(--space-xs) var(--space-sm);
-            border-radius: var(--radius-sm);
-            margin-bottom: var(--space-xs);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .event:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .event.kitchen { background: #2196f3; }
-        .event.bathroom { background: #ff9800; }
-        .event.basement { background: #4caf50; }
-        .event.deadline { 
-            background: var(--status-error);
-            font-weight: 600;
-        }
-
-        .event-title {
-            font-size: 0.75rem;
-            font-weight: 500;
-            line-height: 1.3;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        /* Calendar Sidebar */
-        .calendar-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-xl);
-        }
-
-        .upcoming-events,
-        .calendar-legend,
-        .calendar-stats {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-default);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .upcoming-events h3,
-        .calendar-legend h3,
-        .calendar-stats h3 {
-            font-size: 1rem;
-            margin-bottom: var(--space-md);
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .event-list {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-md);
-        }
-
-        .upcoming-event {
-            padding: var(--space-md);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-
-        .upcoming-event:hover {
-            background: var(--app-primary-lighter);
-            border-color: var(--app-primary-light);
-            transform: translateY(-1px);
-        }
-
-        .upcoming-event.high-priority {
-            border-left: 4px solid var(--status-error);
-        }
-
-        .upcoming-event.medium-priority {
-            border-left: 4px solid var(--status-warning);
-        }
-
-        .upcoming-event.low-priority {
-            border-left: 4px solid var(--status-success);
-        }
-
-        .event-date {
-            font-size: 0.8125rem;
-            color: var(--text-tertiary);
-            font-weight: 500;
-            margin-bottom: var(--space-xs);
-        }
-
-        .event-name {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--space-xs);
-            font-size: 0.9375rem;
-        }
-
-        .event-project {
-            font-size: 0.75rem;
-            padding: var(--space-xs) var(--space-sm);
-            border-radius: var(--radius-full);
-            display: inline-block;
-            font-weight: 600;
-        }
-
-        .event-project.kitchen {
-            background: rgba(33, 150, 243, 0.12);
-            color: #2196f3;
-        }
-
-        .event-project.bathroom {
-            background: rgba(255, 152, 0, 0.12);
-            color: #ff9800;
-        }
-
-        .event-project.basement {
-            background: rgba(76, 175, 80, 0.12);
-            color: #4caf50;
-        }
-
-        /* Legend */
-        .legend-items {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-md);
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: var(--radius-sm);
-            flex-shrink: 0;
-        }
-
-        .legend-color.kitchen { background: #2196f3; }
-        .legend-color.bathroom { background: #ff9800; }
-        .legend-color.basement { background: #4caf50; }
-        .legend-color.deadline { background: var(--status-error); }
-
-        .legend-label {
-            font-size: 0.875rem;
-            color: var(--text-primary);
-        }
-
-        /* Stats */
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            padding: var(--space-sm) 0;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .stat-item:last-child {
-            border-bottom: none;
-        }
-
-        .stat-label {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        .stat-value {
-            color: var(--text-primary);
-            font-weight: 700;
-            font-size: 0.875rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .calendar-container {
-                grid-template-columns: 1fr 300px;
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .calendar-container {
-                grid-template-columns: 1fr;
-            }
-
-            .calendar-sidebar {
-                order: -1;
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            }
-        }
-
-        @media (max-width: 768px) {
-            .calendar-main {
-                padding: var(--space-lg);
-            }
-
-            .calendar-header {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-            }
-
-            .calendar-controls {
-                justify-content: center;
-            }
-
-            .view-controls {
-                flex-direction: column;
-            }
-
-            .filter-select,
-            .view-toggle {
-                width: 100%;
-            }
-
-            .calendar-day {
-                min-height: 90px;
-                font-size: 0.8125rem;
-            }
-
-            .event-title {
-                font-size: 0.6875rem;
-            }
-
-            .calendar-sidebar {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .calendar-main {
-                padding: var(--space-md);
-            }
-
-            .calendar-grid {
-                padding: var(--space-sm);
-            }
-
-            .calendar-day {
-                min-height: 80px;
-                padding: var(--space-xs);
-            }
-
-            .day-number {
-                font-size: 0.75rem;
-            }
-
-            .upcoming-events,
-            .calendar-legend,
-            .calendar-stats {
-                padding: var(--space-md);
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <title>Calendar - Project Atlas</title>
+
+  <!-- Favicon (match other app pages) -->
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>"
+  />
+
+  <!-- Shared Styles (do not compromise existing palette) -->
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="atlas-interactive.css"/>
+
+  <!-- Tailwind (used only for utility layout; palette remains your CSS) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Keep color system from your CSS. Only minimal layout helpers here. */
+    :root {
+      --atlas-blue-50:#E3F2FD; /* blueprint-light */
+      --atlas-blue-100:#BBDEFB;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: .5rem;
+    }
+    .calendar-cell {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: .5rem;
+      min-height: 96px;
+      padding: .5rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .calendar-cell.is-today {
+      outline: 2px solid var(--atlas-blue-100);
+      outline-offset: 0;
+      box-shadow: inset 0 0 0 2px var(--atlas-blue-50);
+    }
+    .calendar-cell .day-num {
+      font-size: .875rem;
+      color: #111827;
+      font-weight: 600;
+    }
+    .event-pill {
+      margin-top: .25rem;
+      font-size: .75rem;
+      line-height: 1rem;
+      border-radius: .375rem;
+      padding: .125rem .375rem;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+    .event-pill:hover { background: var(--atlas-blue-50); }
+    .weekday {
+      font-size: .75rem;
+      color: #6b7280;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: .25rem 0 .5rem;
+    }
+    .sticky-subnav {
+      position: sticky;
+      top: 64px;
+      z-index: 10;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    /* Scroll containers */
+    .scroll-y { overflow-y: auto; }
+    .scroll-shadow {
+      -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+    }
+    /* Simple modal base matching your app */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,.5);
+      display: flex; align-items: center; justify-content: center; padding: 1rem;
+      z-index: 1000;
+    }
+    .modal-panel {
+      width: 100%; max-width: 640px; background: #fff; border-radius: .75rem;
+      border: 1px solid #e5e7eb; box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    }
+    .kbd {
+      border: 1px solid #d1d5db; padding: .1rem .35rem; border-radius: .375rem; font-size: .75rem;
+      background: #f9fafb; color: #111827;
+    }
+  </style>
 </head>
 <body class="app-page">
-    <!-- Skip to Main Content -->
-    <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    
-    <!-- Application Header -->
-    <header class="app-header">
-        <div class="header-container">
-            <!-- Logo -->
-            <div class="logo">
-                <h1>Project <span class="atlas-blue">ATLAS</span></h1>
-                <span class="tagline">Home Project Management</span>
-            </div>
-            
-            <!-- Mobile Menu Toggle -->
-            <button class="mobile-menu-toggle" 
-                    onclick="toggleMobileMenu()" 
-                    aria-label="Toggle navigation menu"
-                    aria-expanded="false"
-                    aria-controls="mainNav">
-                <span aria-hidden="true">☰</span>
-            </button>
-            
-            <!-- Main Navigation -->
-            <nav class="main-nav" id="mainNav" aria-label="Main navigation">
-                <ul>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="kanban.html">Kanban Board</a></li>
-                    <li><a href="budget.html">Budget Tracker</a></li>
-                    <li><a href="calendar.html" class="active" aria-current="page">Calendar</a></li>
-                    <li><a href="documents.html">Documents</a></li>
-                </ul>
-            </nav>
-            
-            <!-- User Menu -->
-            <div class="user-menu">
-                <button class="btn btn-secondary" 
-                        onclick="showAddEventModal()"
-                        aria-label="Schedule new task">
-                    <span aria-hidden="true">+</span> Schedule Task
-                </button>
-                <button class="user-avatar" 
-                        onclick="showUserMenu()" 
-                        aria-label="User menu"
-                        title="User Menu">
-                    AF
-                </button>
-            </div>
-        </div>
-    </header>
+  <!-- Skip to Main -->
+  <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <!-- Main Content -->
-    <main class="calendar-main" id="main-content">
-        <!-- Calendar Header -->
-        <div class="calendar-header">
-            <div class="calendar-title">
-                <h2>Project Calendar</h2>
-                <time class="current-month" datetime="2024-11">November 2024</time>
-            </div>
-            
-            <!-- Navigation Controls -->
-            <div class="calendar-controls" role="group" aria-label="Calendar navigation">
-                <button class="nav-btn" 
-                        onclick="previousMonth()"
-                        aria-label="Previous month">
-                    <span aria-hidden="true">‹</span>
-                </button>
-                <button class="today-btn" 
-                        onclick="goToToday()"
-                        aria-label="Go to today">
-                    Today
-                </button>
-                <button class="nav-btn" 
-                        onclick="nextMonth()"
-                        aria-label="Next month">
-                    <span aria-hidden="true">›</span>
-                </button>
-            </div>
-            
-            <!-- View Controls -->
-            <div class="view-controls" role="group" aria-label="View options">
-                <label for="projectFilterCalendar" class="sr-only">Filter by project</label>
-                <select class="filter-select" 
-                        id="projectFilterCalendar"
-                        aria-label="Filter by project"
-                        onchange="handleProjectFilter(this.value)">
-                    <option value="all">All Projects</option>
-                    <option value="kitchen">Kitchen Renovation</option>
-                    <option value="basement">Basement Finishing</option>
-                    <option value="bathroom">Bathroom Update</option>
-                </select>
-                
-                <div class="view-toggle" role="radiogroup" aria-label="Calendar view">
-                    <button class="view-btn active" 
-                            role="radio" 
-                            aria-checked="true"
-                            onclick="changeView('month')">
-                        Month
-                    </button>
-                    <button class="view-btn" 
-                            role="radio" 
-                            aria-checked="false"
-                            onclick="showComingSoonAlert()">
-                        Week
-                    </button>
-                    <button class="view-btn" 
-                            role="radio" 
-                            aria-checked="false"
-                            onclick="showComingSoonAlert()">
-                        Day
-                    </button>
-                </div>
-            </div>
+  <!-- Uniform Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <!-- Logo -->
+      <div class="logo">
+        <h1>Project <span class="atlas-blue">ATLAS</span></h1>
+        <span class="tagline">Home Project Management</span>
+      </div>
+
+      <!-- Mobile Menu Toggle -->
+      <button
+        class="mobile-menu-toggle"
+        onclick="toggleMobileMenu()"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        aria-controls="mainNav"
+      >
+        <span aria-hidden="true">☰</span>
+      </button>
+
+      <!-- Main Navigation -->
+      <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+        <ul>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="kanban.html">Kanban Board</a></li>
+          <li><a href="budget.html">Budget Tracker</a></li>
+          <li><a href="calendar.html" class="active" aria-current="page">Calendar</a></li>
+          <li><a href="documents.html">Documents</a></li>
+        </ul>
+      </nav>
+
+      <!-- User Menu -->
+      <div class="user-menu">
+        <button class="btn btn-secondary" id="headerAddEventBtn" aria-label="Add new event">
+          <span aria-hidden="true">+</span> Add Event
+        </button>
+        <button class="user-avatar" onclick="showUserMenu()" aria-label="User menu" title="User Menu">AF</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <!-- Subnav / Controls -->
+    <section class="sticky-subnav">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-2">
+        <button id="prevMonthBtn" class="px-3 py-2 text-sm rounded border border-gray-300 bg-white hover:bg-gray-50" aria-label="Previous month">←</button>
+        <button id="todayBtn" class="px-3 py-2 text-sm rounded border border-gray-300 bg-white hover:bg-gray-50">Today</button>
+        <button id="nextMonthBtn" class="px-3 py-2 text-sm rounded border border-gray-300 bg-white hover:bg-gray-50" aria-label="Next month">→</button>
+        <div class="flex-1"></div>
+        <div class="text-sm text-gray-500 hidden md:block">Tip: Press <span class="kbd">N</span> to add event, <span class="kbd">⭾</span>/<span class="kbd">⇧⭾</span> to move, <span class="kbd">↩</span> to open.</div>
+      </div>
+    </section>
+
+    <!-- Page Header -->
+    <section class="pt-6 pb-4">
+      <div class="flex items-center justify-between">
+        <h2 id="monthYear" class="text-3xl font-light text-gray-900">Calendar</h2>
+        <div class="flex items-center gap-2">
+          <button id="addEventBtn" class="px-3 py-2 text-sm rounded border border-gray-300 bg-white hover:bg-gray-50">+ Add Event</button>
+          <button id="exportIcsBtn" class="px-3 py-2 text-sm rounded border border-gray-300 bg-white hover:bg-gray-50">Export .ics</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Calendar Layout -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Month View -->
+      <div class="lg:col-span-2">
+        <div class="grid grid-cols-7 gap-2 mb-2">
+          <div class="weekday">Sun</div><div class="weekday">Mon</div><div class="weekday">Tue</div>
+          <div class="weekday">Wed</div><div class="weekday">Thu</div><div class="weekday">Fri</div><div class="weekday">Sat</div>
+        </div>
+        <div id="calendarGrid" class="calendar-grid" role="grid" aria-label="Monthly calendar"></div>
+      </div>
+
+      <!-- Selected Day / Agenda -->
+      <aside class="bg-white border border-gray-200 rounded-lg p-4 h-[560px] flex flex-col">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs uppercase tracking-wide text-gray-500">Selected Day</p>
+            <h3 id="selectedDayLabel" class="text-xl font-semibold text-gray-900">—</h3>
+          </div>
+          <button id="addEventForSelected" class="px-3 py-2 text-sm rounded border border-gray-300 bg-white hover:bg-gray-50">+ Add</button>
         </div>
 
-        <!-- Calendar Container -->
-        <div class="calendar-container">
-            <!-- Calendar Grid -->
-            <section class="calendar-grid" 
-                     role="grid" 
-                     aria-label="November 2024 calendar"
-                     aria-readonly="true">
-                <!-- Day Headers -->
-                <div class="calendar-header-row" role="row">
-                    <div class="day-header" role="columnheader">Sun</div>
-                    <div class="day-header" role="columnheader">Mon</div>
-                    <div class="day-header" role="columnheader">Tue</div>
-                    <div class="day-header" role="columnheader">Wed</div>
-                    <div class="day-header" role="columnheader">Thu</div>
-                    <div class="day-header" role="columnheader">Fri</div>
-                    <div class="day-header" role="columnheader">Sat</div>
-                </div>
-
-                <!-- Week 1 -->
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 27">
-                    <div class="day-number">27</div>
-                </div>
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 28">
-                    <div class="day-number">28</div>
-                </div>
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 29">
-                    <div class="day-number">29</div>
-                </div>
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 30">
-                    <div class="day-number">30</div>
-                </div>
-                <div class="calendar-day other-month" role="gridcell" aria-label="October 31">
-                    <div class="day-number">31</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 1" tabindex="0">
-                    <div class="day-number">1</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 2, Material delivery" tabindex="0">
-                    <div class="day-number">2</div>
-                    <div class="event kitchen" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-1')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-1')"
-                         data-event-id="evt-1">
-                        <div class="event-title">Material delivery</div>
-                    </div>
-                </div>
-
-                <!-- Week 2 -->
-                <div class="calendar-day" role="gridcell" aria-label="November 3" tabindex="0">
-                    <div class="day-number">3</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 4, Contractor meeting" tabindex="0">
-                    <div class="day-number">4</div>
-                    <div class="event basement" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-2')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-2')"
-                         data-event-id="evt-2">
-                        <div class="event-title">Contractor meeting</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 5" tabindex="0">
-                    <div class="day-number">5</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 6, Plumbing inspection" tabindex="0">
-                    <div class="day-number">6</div>
-                    <div class="event bathroom" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-3')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-3')"
-                         data-event-id="evt-3">
-                        <div class="event-title">Plumbing inspection</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 7" tabindex="0">
-                    <div class="day-number">7</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 8" tabindex="0">
-                    <div class="day-number">8</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 9, Backsplash work" tabindex="0">
-                    <div class="day-number">9</div>
-                    <div class="event kitchen" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-4')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-4')"
-                         data-event-id="evt-4">
-                        <div class="event-title">Backsplash work</div>
-                    </div>
-                </div>
-
-                <!-- Week 3 -->
-                <div class="calendar-day" role="gridcell" aria-label="November 10, Backsplash work" tabindex="0">
-                    <div class="day-number">10</div>
-                    <div class="event kitchen" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-4')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-4')"
-                         data-event-id="evt-4">
-                        <div class="event-title">Backsplash work</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 11" tabindex="0">
-                    <div class="day-number">11</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 12, Permit application" tabindex="0">
-                    <div class="day-number">12</div>
-                    <div class="event basement" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-5')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-5')"
-                         data-event-id="evt-5">
-                        <div class="event-title">Permit application</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 13" tabindex="0">
-                    <div class="day-number">13</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 14, Vanity installation" tabindex="0">
-                    <div class="day-number">14</div>
-                    <div class="event bathroom" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-6')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-6')"
-                         data-event-id="evt-6">
-                        <div class="event-title">Vanity installation</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 15" tabindex="0">
-                    <div class="day-number">15</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 16" tabindex="0">
-                    <div class="day-number">16</div>
-                </div>
-
-                <!-- Week 4 -->
-                <div class="calendar-day" role="gridcell" aria-label="November 17" tabindex="0">
-                    <div class="day-number">17</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 18, Final kitchen cleanup" tabindex="0">
-                    <div class="day-number">18</div>
-                    <div class="event kitchen" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-7')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-7')"
-                         data-event-id="evt-7">
-                        <div class="event-title">Final kitchen cleanup</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 19" tabindex="0">
-                    <div class="day-number">19</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 20" tabindex="0">
-                    <div class="day-number">20</div>
-                </div>
-                <div class="calendar-day today" role="gridcell" aria-label="November 21, Today" aria-current="date" tabindex="0">
-                    <div class="day-number">21</div>
-                    <div class="day-indicator">Today</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 22" tabindex="0">
-                    <div class="day-number">22</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 23, Material shopping" tabindex="0">
-                    <div class="day-number">23</div>
-                    <div class="event basement" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-8')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-8')"
-                         data-event-id="evt-8">
-                        <div class="event-title">Material shopping</div>
-                    </div>
-                </div>
-
-                <!-- Week 5 -->
-                <div class="calendar-day" role="gridcell" aria-label="November 24" tabindex="0">
-                    <div class="day-number">24</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 25, Kitchen project deadline" tabindex="0">
-                    <div class="day-number">25</div>
-                    <div class="event deadline" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-9')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-9')"
-                         data-event-id="evt-9">
-                        <div class="event-title">Kitchen project deadline</div>
-                    </div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 26" tabindex="0">
-                    <div class="day-number">26</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 27" tabindex="0">
-                    <div class="day-number">27</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 28" tabindex="0">
-                    <div class="day-number">28</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 29" tabindex="0">
-                    <div class="day-number">29</div>
-                </div>
-                <div class="calendar-day" role="gridcell" aria-label="November 30, Basement work begins" tabindex="0">
-                    <div class="day-number">30</div>
-                    <div class="event basement" 
-                         role="button"
-                         tabindex="0"
-                         onclick="showEventDetails('evt-10')"
-                         onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-10')"
-                         data-event-id="evt-10">
-                        <div class="event-title">Basement work begins</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Calendar Sidebar -->
-            <aside class="calendar-sidebar" aria-label="Calendar information">
-                <!-- Upcoming Events -->
-                <section class="upcoming-events" aria-labelledby="upcoming-heading">
-                    <h3 id="upcoming-heading">Upcoming This Week</h3>
-                    
-                    <div class="event-list">
-                        <article class="upcoming-event high-priority"
-                                 role="button"
-                                 tabindex="0"
-                                 onclick="showEventDetails('evt-9')"
-                                 onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-9')">
-                            <time class="event-date" datetime="2024-11-25">Mon, Nov 25</time>
-                            <div class="event-name">Kitchen Project Deadline</div>
-                            <span class="event-project kitchen">Kitchen Renovation</span>
-                        </article>
-
-                        <article class="upcoming-event medium-priority"
-                                 role="button"
-                                 tabindex="0"
-                                 onclick="showEventDetails('evt-8')"
-                                 onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-8')">
-                            <time class="event-date" datetime="2024-11-23">Sat, Nov 23</time>
-                            <div class="event-name">Material Shopping Trip</div>
-                            <span class="event-project basement">Basement Finishing</span>
-                        </article>
-
-                        <article class="upcoming-event low-priority"
-                                 role="button"
-                                 tabindex="0"
-                                 onclick="showEventDetails('evt-4')"
-                                 onkeypress="handleKeyPress(event, 'showEventDetails', 'evt-4')">
-                            <time class="event-date" datetime="2024-11-09">Sat, Nov 9-10</time>
-                            <div class="event-name">Backsplash Installation</div>
-                            <span class="event-project kitchen">Kitchen Renovation</span>
-                        </article>
-                    </div>
-                </section>
-
-                <!-- Calendar Legend -->
-                <section class="calendar-legend" aria-labelledby="legend-heading">
-                    <h3 id="legend-heading">Project Color Key</h3>
-                    
-                    <div class="legend-items">
-                        <div class="legend-item">
-                            <div class="legend-color kitchen" aria-hidden="true"></div>
-                            <span class="legend-label">Kitchen Renovation</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color bathroom" aria-hidden="true"></div>
-                            <span class="legend-label">Bathroom Update</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color basement" aria-hidden="true"></div>
-                            <span class="legend-label">Basement Finishing</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color deadline" aria-hidden="true"></div>
-                            <span class="legend-label">Deadlines & Milestones</span>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Calendar Stats -->
-                <section class="calendar-stats" aria-labelledby="stats-heading">
-                    <h3 id="stats-heading">This Month</h3>
-                    
-                    <div class="stat-item">
-                        <span class="stat-label">Total Events</span>
-                        <span class="stat-value">12</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Inspections</span>
-                        <span class="stat-value">3</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Deadlines</span>
-                        <span class="stat-value">2</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Contractor Meetings</span>
-                        <span class="stat-value">4</span>
-                    </div>
-                </section>
-            </aside>
+        <div id="dayEvents" class="mt-4 flex-1 scroll-y scroll-shadow divide-y divide-gray-100">
+          <!-- Dynamic list -->
         </div>
-    </main>
+      </aside>
+    </section>
+  </main>
 
-    <!-- Scripts -->
-    <script>
-        // Mobile menu toggle with accessibility
-        function toggleMobileMenu() {
-            const nav = document.getElementById('mainNav');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            const isExpanded = nav.classList.toggle('active');
-            
-            // Update ARIA attribute
-            toggle.setAttribute('aria-expanded', isExpanded);
-        }
-        
-        // Keyboard accessibility helper
-        function handleKeyPress(event, functionName, id) {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                window[functionName](id);
-            }
-        }
-        
-        // Filter handler
-        function handleProjectFilter(value) {
-            console.log('Filter by project:', value);
-            if (window.atlas && typeof window.atlas.filterCalendarByProject === 'function') {
-                window.atlas.filterCalendarByProject(value);
-            }
-        }
-        
-        // Modal and navigation functions
-        function showAddEventModal() {
-            console.log('Show add event modal');
-            alert('📅 Schedule New Task\n\nForm fields:\n• Task/event title\n• Date and time\n• Project assignment\n• Duration estimate\n• Reminders\n• Recurring options\n\nComing soon!');
-        }
+  <!-- Shared App Script -->
+  <script src="atlas-interactive.js"></script>
 
-        function showEventDetails(eventId) {
-            console.log('Show event details:', eventId);
-            alert('📋 Event Details\n\nView:\n• Complete event information\n• Related tasks\n• Attendees/contractors\n• Edit/reschedule options\n• Progress notes\n\nComing soon!');
-        }
+  <script>
+    // Uniform mobile nav toggle
+    function toggleMobileMenu() {
+      const nav = document.getElementById('mainNav');
+      const toggle = document.querySelector('.mobile-menu-toggle');
+      const isExpanded = nav.classList.toggle('active');
+      if (toggle) toggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+    }
 
-        function previousMonth() {
-            console.log('Navigate to previous month');
-            alert('◀ Previous Month\n\nNavigating to October 2024...\n\nComing soon!');
-        }
+    // ---------- Calendar State ----------
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-        function nextMonth() {
-            console.log('Navigate to next month');
-            alert('▶ Next Month\n\nNavigating to December 2024...\n\nComing soon!');
-        }
+    const storageKey = 'atlas.calendar.events';
+    const pub = (type, payload) => {
+      // Fire a storage-like event to keep other tabs/pages in sync
+      try {
+        localStorage.setItem('__atlas_tmp__', String(Math.random()));
+        window.dispatchEvent(new CustomEvent('atlas:' + type, { detail: payload }));
+      } catch (_) {}
+    };
 
-        function goToToday() {
-            console.log('Go to today');
-            alert('📅 Go to Today\n\nJumping to current date...\n\nComing soon!');
-        }
+    const now = new Date();
+    let viewYear = now.getFullYear();
+    let viewMonth = now.getMonth(); // 0-11
+    let selectedDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-        function changeView(view) {
-            console.log('Change view to:', view);
-            // Update active button state
-            document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.classList.remove('active');
-                btn.setAttribute('aria-checked', 'false');
-            });
-            event.target.classList.add('active');
-            event.target.setAttribute('aria-checked', 'true');
-        }
+    function fmtDateISO(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const da = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${da}`;
+    }
 
-        function showComingSoonAlert() {
-            alert('🚧 Coming Soon\n\nWeek and Day views are under development.\n\nComing soon!');
-        }
-        
-        function showUserMenu() {
-            console.log('Show user menu');
-            // Implementation in atlas-interactive.js
-        }
-        
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const nav = document.getElementById('mainNav');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            if (nav.classList.contains('active') && 
-                !nav.contains(event.target) && 
-                !toggle.contains(event.target)) {
-                toggleMobileMenu();
-            }
+    function loadEvents() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey) || '[]');
+      } catch { return []; }
+    }
+    function saveEvents(events) {
+      localStorage.setItem(storageKey, JSON.stringify(events));
+      pub('events:updated', null);
+    }
+
+    function getEventsOn(dateISO) {
+      return loadEvents().filter(e => e.date === dateISO).sort((a,b) => (a.time || '').localeCompare(b.time || ''));
+    }
+
+    // Seed a few mock events if none
+    (function seedIfEmpty(){
+      const existing = loadEvents();
+      if (existing.length) return;
+      const seed = [
+        { id: crypto.randomUUID(), title: 'Electrical rough-in', date: fmtDateISO(new Date()), time: '09:00', project: 'Basement Finishing', notes: 'Confirm GFCI in workshop.' },
+        { id: crypto.randomUUID(), title: 'Tile delivery', date: fmtDateISO(new Date()), time: '14:00', project: 'Kitchen Renovation', notes: 'Check for damaged boxes.' },
+        { id: crypto.randomUUID(), title: 'Plumbing inspection', date: fmtDateISO(new Date(now.getFullYear(), now.getMonth(), now.getDate()+2)), time: '10:30', project: 'Bathroom Update', notes: 'Have permit docs ready.' }
+      ];
+      saveEvents(seed);
+    })();
+
+    // ---------- Rendering ----------
+    function setMonthHeader() {
+      const monthYearEl = $('#monthYear');
+      const label = new Date(viewYear, viewMonth, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+      monthYearEl.textContent = label;
+    }
+
+    function buildMonthGrid() {
+      const grid = $('#calendarGrid');
+      grid.innerHTML = '';
+
+      const first = new Date(viewYear, viewMonth, 1);
+      const firstDay = first.getDay(); // 0 Sun - 6 Sat
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+      // Create 42 cells (6 weeks) to keep grid stable
+      const totalCells = 42;
+      const prevMonthDays = firstDay;
+      const startDate = new Date(viewYear, viewMonth, 1 - prevMonthDays);
+
+      for (let i = 0; i < totalCells; i++) {
+        const cellDate = new Date(startDate);
+        cellDate.setDate(startDate.getDate() + i);
+
+        const isCurrentMonth = cellDate.getMonth() === viewMonth;
+        const isToday = fmtDateISO(cellDate) === fmtDateISO(now);
+        const isSelected = fmtDateISO(cellDate) === fmtDateISO(selectedDate);
+
+        const cell = document.createElement('div');
+        cell.className = 'calendar-cell ' + (isToday ? 'is-today ' : '') + (!isCurrentMonth ? 'opacity-40 ' : '') + (isSelected ? 'ring-2 ring-offset-2 ring-blue-300 ' : '');
+        cell.setAttribute('role','gridcell');
+        cell.setAttribute('tabindex','0');
+        cell.dataset.date = fmtDateISO(cellDate);
+
+        const header = document.createElement('div');
+        header.className = 'flex items-center justify-between';
+        const dayNum = document.createElement('div');
+        dayNum.className = 'day-num';
+        dayNum.textContent = String(cellDate.getDate());
+        header.appendChild(dayNum);
+
+        // Quick-add affordance
+        const plus = document.createElement('button');
+        plus.className = 'text-gray-400 hover:text-gray-700';
+        plus.setAttribute('aria-label','Add event on this day');
+        plus.textContent = '+';
+        plus.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openAddEventModal(cell.dataset.date);
         });
-        
-        // Close mobile menu on escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const nav = document.getElementById('mainNav');
-                if (nav.classList.contains('active')) {
-                    toggleMobileMenu();
-                }
-            }
+        header.appendChild(plus);
+
+        cell.appendChild(header);
+
+        // Events for the day
+        const events = getEventsOn(fmtDateISO(cellDate));
+        events.slice(0,3).forEach(ev => {
+          const pill = document.createElement('div');
+          pill.className = 'event-pill';
+          pill.title = ev.title + (ev.time ? ` • ${ev.time}` : '');
+          pill.textContent = (ev.time ? ev.time + ' ' : '') + ev.title;
+          pill.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openViewEventModal(ev);
+          });
+          cell.appendChild(pill);
         });
-    </script>
-    
-    <!-- Main Interactive Script -->
-    <script src="atlas-interactive.js"></script>
+        if (events.length > 3) {
+          const more = document.createElement('div');
+          more.className = 'event-pill';
+          more.textContent = `+${events.length - 3} more`;
+          more.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setSelectedDate(cellDate);
+          });
+          cell.appendChild(more);
+        }
+
+        cell.addEventListener('click', () => setSelectedDate(cellDate));
+        cell.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') setSelectedDate(cellDate);
+        });
+
+        grid.appendChild(cell);
+      }
+    }
+
+    function setSelectedDate(d) {
+      selectedDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      // If different month, switch view so the selection is visible
+      if (selectedDate.getMonth() !== viewMonth || selectedDate.getFullYear() !== viewYear) {
+        viewMonth = selectedDate.getMonth();
+        viewYear = selectedDate.getFullYear();
+        setMonthHeader();
+        buildMonthGrid();
+      } else {
+        // just refresh highlight
+        buildMonthGrid();
+      }
+      renderDayAgenda();
+    }
+
+    function renderDayAgenda() {
+      $('#selectedDayLabel').textContent = selectedDate.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+      const list = $('#dayEvents');
+      list.innerHTML = '';
+      const events = getEventsOn(fmtDateISO(selectedDate));
+      if (!events.length) {
+        const empty = document.createElement('div');
+        empty.className = 'text-sm text-gray-500 py-8 text-center';
+        empty.textContent = 'No events for this day.';
+        list.appendChild(empty);
+        return;
+      }
+      events.forEach(ev => {
+        const row = document.createElement('div');
+        row.className = 'py-3 flex items-start justify-between';
+
+        const meta = document.createElement('div');
+        meta.innerHTML = `
+          <div class="text-sm font-semibold text-gray-900">${ev.title}</div>
+          <div class="text-xs text-gray-600">${ev.time || '—'} ${ev.project ? ' • ' + ev.project : ''}</div>
+          ${ev.notes ? `<div class="text-xs text-gray-500 mt-1">${ev.notes}</div>` : ''}
+        `;
+        row.appendChild(meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'flex items-center gap-2';
+        const openBtn = document.createElement('button');
+        openBtn.className = 'px-2 py-1 text-xs rounded border border-gray-300 bg-white hover:bg-gray-50';
+        openBtn.textContent = 'Open';
+        openBtn.addEventListener('click', () => openViewEventModal(ev));
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'px-2 py-1 text-xs rounded border border-red-200 text-red-700 bg-white hover:bg-red-50';
+        delBtn.textContent = 'Delete';
+        delBtn.addEventListener('click', () => {
+          const all = loadEvents().filter(e => e.id !== ev.id);
+          saveEvents(all);
+          buildMonthGrid();
+          renderDayAgenda();
+        });
+
+        actions.appendChild(openBtn);
+        actions.appendChild(delBtn);
+        row.appendChild(actions);
+
+        list.appendChild(row);
+      });
+    }
+
+    // ---------- Modals ----------
+    function openAddEventModal(prefillDateISO) {
+      const backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop';
+      backdrop.innerHTML = `
+        <div class="modal-panel">
+          <div class="flex items-center justify-between p-4 border-b">
+            <h3 class="text-base font-semibold text-gray-900">Add Event</h3>
+            <button class="p-2" aria-label="Close" data-close>&times;</button>
+          </div>
+          <div class="p-4 space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+                <input id="evTitle" class="w-full border rounded-md px-3 py-2" placeholder="e.g. Plumbing inspection"/>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Project</label>
+                <input id="evProject" class="w-full border rounded-md px-3 py-2" placeholder="Optional"/>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="sm:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                <input id="evDate" type="date" class="w-full border rounded-md px-3 py-2"/>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                <input id="evTime" type="time" class="w-full border rounded-md px-3 py-2"/>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+              <textarea id="evNotes" rows="3" class="w-full border rounded-md px-3 py-2" placeholder="Optional details..."></textarea>
+            </div>
+          </div>
+          <div class="p-4 border-t flex items-center justify-end gap-2">
+            <button class="px-4 py-2 rounded border" data-close>Cancel</button>
+            <button class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" id="saveEventBtn">Save Event</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(backdrop);
+
+      const dateEl = $('#evDate', backdrop);
+      dateEl.value = prefillDateISO || fmtDateISO(selectedDate);
+
+      function close() { document.body.removeChild(backdrop); }
+      $('[data-close]', backdrop).addEventListener('click', close);
+      backdrop.addEventListener('click', (e) => { if (e.target === backdrop) close(); });
+      document.addEventListener('keydown', function esc(e){ if (e.key === 'Escape'){ close(); document.removeEventListener('keydown', esc);} });
+
+      $('#saveEventBtn', backdrop).addEventListener('click', () => {
+        const title = $('#evTitle', backdrop).value.trim();
+        const date = $('#evDate', backdrop).value;
+        const time = $('#evTime', backdrop).value;
+        const project = $('#evProject', backdrop).value.trim();
+        const notes = $('#evNotes', backdrop).value.trim();
+
+        if (!title || !date) { alert('Title and Date are required.'); return; }
+
+        const newEv = { id: crypto.randomUUID(), title, date, time, project, notes };
+        const events = loadEvents();
+        events.push(newEv);
+        saveEvents(events);
+
+        // If date visible, update UI
+        buildMonthGrid();
+        if (fmtDateISO(selectedDate) === date) renderDayAgenda();
+
+        close();
+      });
+    }
+
+    function openViewEventModal(ev) {
+      const backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop';
+      backdrop.innerHTML = `
+        <div class="modal-panel">
+          <div class="flex items-center justify-between p-4 border-b">
+            <h3 class="text-base font-semibold text-gray-900">Event Details</h3>
+            <button class="p-2" aria-label="Close" data-close>&times;</button>
+          </div>
+          <div class="p-4 space-y-2 text-sm">
+            <div class="flex justify-between"><span class="text-gray-600">Title</span><span class="font-medium text-gray-900">${ev.title}</span></div>
+            <div class="flex justify-between"><span class="text-gray-600">Date</span><span class="font-medium text-gray-900">${ev.date}</span></div>
+            <div class="flex justify-between"><span class="text-gray-600">Time</span><span class="font-medium text-gray-900">${ev.time || '—'}</span></div>
+            <div class="flex justify-between"><span class="text-gray-600">Project</span><span class="font-medium text-gray-900">${ev.project || '—'}</span></div>
+            ${ev.notes ? `<div class="pt-2"><div class="text-gray-600">Notes</div><div class="text-gray-900">${ev.notes}</div></div>` : ''}
+          </div>
+          <div class="p-4 border-t flex items-center justify-between">
+            <div class="text-xs text-gray-500">ID: ${ev.id}</div>
+            <div class="flex items-center gap-2">
+              <button class="px-3 py-2 text-sm rounded border border-gray-300 bg-white hover:bg-gray-50" data-edit>Edit</button>
+              <button class="px-3 py-2 text-sm rounded border border-red-200 text-red-700 bg-white hover:bg-red-50" data-delete>Delete</button>
+              <button class="px-3 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700" data-close>Close</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(backdrop);
+
+      function close(){ document.body.removeChild(backdrop); }
+      $('[data-close]', backdrop).addEventListener('click', close);
+      backdrop.addEventListener('click', (e)=>{ if (e.target === backdrop) close(); });
+      document.addEventListener('keydown', function esc(e){ if (e.key === 'Escape'){ close(); document.removeEventListener('keydown', esc);} });
+
+      $('[data-delete]', backdrop).addEventListener('click', () => {
+        if (!confirm('Delete this event?')) return;
+        const events = loadEvents().filter(e => e.id !== ev.id);
+        saveEvents(events);
+        buildMonthGrid();
+        if (fmtDateISO(selectedDate) === ev.date) renderDayAgenda();
+        close();
+      });
+
+      $('[data-edit]', backdrop).addEventListener('click', () => {
+        close();
+        // Reopen add modal prefilled
+        const pre = document.createElement('div');
+        pre.className = 'modal-backdrop';
+        pre.innerHTML = `
+          <div class="modal-panel">
+            <div class="flex items-center justify-between p-4 border-b">
+              <h3 class="text-base font-semibold text-gray-900">Edit Event</h3>
+              <button class="p-2" aria-label="Close" data-close>&times;</button>
+            </div>
+            <div class="p-4 space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+                  <input id="evTitle" class="w-full border rounded-md px-3 py-2" value="${ev.title}"/>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Project</label>
+                  <input id="evProject" class="w-full border rounded-md px-3 py-2" value="${ev.project || ''}"/>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="sm:col-span-2">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                  <input id="evDate" type="date" class="w-full border rounded-md px-3 py-2" value="${ev.date}"/>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                  <input id="evTime" type="time" class="w-full border rounded-md px-3 py-2" value="${ev.time || ''}"/>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <textarea id="evNotes" rows="3" class="w-full border rounded-md px-3 py-2">${ev.notes || ''}</textarea>
+              </div>
+            </div>
+            <div class="p-4 border-t flex items-center justify-end gap-2">
+              <button class="px-4 py-2 rounded border" data-close>Cancel</button>
+              <button class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" id="updateEventBtn">Update Event</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(pre);
+
+        function closePre(){ document.body.removeChild(pre); }
+        $('[data-close]', pre).addEventListener('click', closePre);
+        pre.addEventListener('click', (e)=>{ if (e.target === pre) closePre(); });
+
+        $('#updateEventBtn', pre).addEventListener('click', () => {
+          const title = $('#evTitle', pre).value.trim();
+          const date = $('#evDate', pre).value;
+          const time = $('#evTime', pre).value;
+          const project = $('#evProject', pre).value.trim();
+          const notes = $('#evNotes', pre).value.trim();
+          if (!title || !date) { alert('Title and Date are required.'); return; }
+
+          const all = loadEvents();
+          const idx = all.findIndex(e => e.id === ev.id);
+          if (idx !== -1) {
+            all[idx] = { ...all[idx], title, date, time, project, notes };
+            saveEvents(all);
+            buildMonthGrid();
+            if (fmtDateISO(selectedDate) === date) renderDayAgenda(); else if (fmtDateISO(selectedDate) === ev.date) renderDayAgenda();
+          }
+          closePre();
+        });
+      });
+    }
+
+    // ---------- Export .ics ----------
+    function exportICS() {
+      const events = loadEvents();
+      const pad = (n) => String(n).padStart(2,'0');
+      const toICSDate = (date, time) => {
+        // Convert local date/time to floating format (no TZ) for simplicity
+        const [y,m,d] = date.split('-').map(Number);
+        if (time) {
+          const [hh,mm] = time.split(':').map(Number);
+          return `${y}${pad(m)}${pad(d)}T${pad(hh)}${pad(mm)}00`;
+        }
+        return `${y}${pad(m)}${pad(d)}`;
+      };
+
+      let ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Project Atlas//Calendar//EN\r\n';
+      events.forEach(ev => {
+        const dt = toICSDate(ev.date, ev.time);
+        ics += 'BEGIN:VEVENT\r\n';
+        ics += `UID:${ev.id}\r\n`;
+        ics += `DTSTAMP:${toICSDate(fmtDateISO(new Date()), now.toTimeString().slice(0,5))}\r\n`;
+        if (ev.time) ics += `DTSTART:${dt}\r\n`;
+        else ics += `DTSTART;VALUE=DATE:${dt}\r\n`;
+        ics += `SUMMARY:${(ev.title || '').replace(/\r?\n/g,' ')}\r\n`;
+        if (ev.notes) ics += `DESCRIPTION:${ev.notes.replace(/\r?\n/g,' ')}\r\n`;
+        if (ev.project) ics += `CATEGORIES:${ev.project.replace(/[,;]/g,' ')}\r\n`;
+        ics += 'END:VEVENT\r\n';
+      });
+      ics += 'END:VCALENDAR\r\n';
+
+      const blob = new Blob([ics], { type: 'text/calendar' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'atlas-calendar.ics';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ---------- Controls / Keyboard ----------
+    function goPrevMonth() {
+      if (viewMonth === 0) { viewMonth = 11; viewYear--; } else viewMonth--;
+      setMonthHeader(); buildMonthGrid();
+    }
+    function goNextMonth() {
+      if (viewMonth === 11) { viewMonth = 0; viewYear++; } else viewMonth++;
+      setMonthHeader(); buildMonthGrid();
+    }
+    function goToday() {
+      viewYear = now.getFullYear();
+      viewMonth = now.getMonth();
+      setMonthHeader(); buildMonthGrid();
+      setSelectedDate(now);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+      if (e.key.toLowerCase() === 'n') openAddEventModal(fmtDateISO(selectedDate));
+      if (e.key === 'ArrowLeft') goPrevMonth();
+      if (e.key === 'ArrowRight') goNextMonth();
+      if (e.key === 't' || e.key === 'T') goToday();
+    });
+
+    // ---------- Header & Buttons ----------
+    $('#prevMonthBtn').addEventListener('click', goPrevMonth);
+    $('#nextMonthBtn').addEventListener('click', goNextMonth);
+    $('#todayBtn').addEventListener('click', goToday);
+    $('#addEventBtn').addEventListener('click', () => openAddEventModal(fmtDateISO(selectedDate)));
+    $('#addEventForSelected').addEventListener('click', () => openAddEventModal(fmtDateISO(selectedDate)));
+    $('#exportIcsBtn').addEventListener('click', exportICS);
+
+    // Bind header Add Event
+    (function bindHeaderBtn(){
+      const headerBtn = document.getElementById('headerAddEventBtn');
+      if (headerBtn) headerBtn.onclick = () => openAddEventModal(fmtDateISO(selectedDate));
+    })();
+
+    // ---------- Initial Render ----------
+    setMonthHeader();
+    buildMonthGrid();
+    setSelectedDate(now);
+
+    // Listen for external updates (other tabs/pages)
+    window.addEventListener('storage', (e) => {
+      if (e.key === storageKey) { buildMonthGrid(); renderDayAgenda(); }
+    });
+    window.addEventListener('atlas:events:updated', () => { buildMonthGrid(); renderDayAgenda(); });
+  </script>
 </body>
 </html>
+
