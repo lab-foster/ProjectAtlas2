@@ -22,7 +22,7 @@
     .docs-header{display:flex;flex-wrap:wrap;gap:var(--space-lg);align-items:center;justify-content:space-between;margin-bottom:var(--space-xl);padding-bottom:var(--space-md);border-bottom:1px solid var(--border-default)}
     .docs-title h2{margin-bottom:6px}
 
-    /* NEW: compact toolbar + expandable filters */
+    /* Compact toolbar + expandable filters */
     .toolbar{
       display:flex;align-items:center;gap:10px;flex-wrap:wrap;
       background:var(--bg-elevated);border:1px solid var(--border-light);
@@ -60,6 +60,31 @@
     .card{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
     .card-header{padding:12px 16px;border-bottom:1px solid var(--border-light);font-weight:600}
     .card-body{padding:12px 16px}
+
+    /* === Collapsible sidebar cards (Folders / Quick Tags) === */
+    .card.collapsible .card-header{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;
+      padding:10px 12px;
+    }
+    .card.collapsible .card-header button{
+      all:unset;display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text-primary)
+    }
+    .card.collapsible .chev{
+      display:inline-block;transition:transform .18s ease;transform:rotate(-90deg);
+      font-size:.95rem;opacity:.85
+    }
+    .card.collapsible.open .chev{ transform:rotate(0deg) }
+    .card.collapsible .count-pill{
+      margin-left:auto;font-size:.75rem;padding:2px 8px;border-radius:999px;border:1px solid var(--border-light);
+      background:var(--bg-elevated);color:var(--text-secondary)
+    }
+    .card.collapsible .card-body{
+      overflow:hidden;max-height:0;opacity:.0;transition:max-height .22s ease, opacity .22s ease, padding-top .22s ease, padding-bottom .22s ease;
+      padding-top:0;padding-bottom:0
+    }
+    .card.collapsible.open .card-body{
+      max-height:460px;opacity:1;padding-top:12px;padding-bottom:12px
+    }
 
     .folder-list{display:flex;flex-direction:column;gap:10px}
     .folder{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--border-light);border-radius:var(--radius-md);cursor:pointer;transition:all var(--transition-fast)}
@@ -239,20 +264,35 @@
     <div class="layout">
       <!-- Sidebar -->
       <aside class="sidebar">
-        <section class="card">
-          <div class="card-header">Folders</div>
-          <div class="card-body">
+        <!-- Collapsible Folders -->
+        <section class="card collapsible collapsed" id="foldersCard" data-key="folders">
+          <div class="card-header">
+            <button id="foldersToggle" aria-expanded="false" aria-controls="foldersBody">
+              <span class="chev">▾</span>
+              <span>Folders</span>
+              <span id="foldersCount" class="count-pill" aria-hidden="true">0</span>
+            </button>
+          </div>
+          <div class="card-body" id="foldersBody">
             <div class="folder-list" id="folderList"></div>
           </div>
         </section>
 
-        <section class="card">
-          <div class="card-header">Quick Tags</div>
-          <div class="card-body">
+        <!-- Collapsible Quick Tags -->
+        <section class="card collapsible collapsed" id="tagsCard" data-key="tags">
+          <div class="card-header">
+            <button id="tagsToggle" aria-expanded="false" aria-controls="tagsBody">
+              <span class="chev">▾</span>
+              <span>Quick Tags</span>
+              <span id="tagsCount" class="count-pill" aria-hidden="true">0</span>
+            </button>
+          </div>
+          <div class="card-body" id="tagsBody">
             <div class="tags" id="tagCloud"></div>
           </div>
         </section>
 
+        <!-- Stats (non-collapsible) -->
         <section class="card">
           <div class="card-header">This Month</div>
           <div class="card-body">
@@ -362,7 +402,7 @@
           {id:'d2', name:'Backsplash inspiration.jpg', type:'image', project:'kitchen', folder:'Inspiration', size:1_204_000, tags:['tile','mood'], updated: now-86400000*2, notes:'Herringbone matte white', src:'https://images.unsplash.com/photo-1556910096-6f5e72db6809?w=1200'},
           {id:'d3', name:'Basement Framing Checklist.md', type:'doc', project:'basement', folder:'Plans', size:18_000, tags:['checklist'], updated: now-86400000*3, notes:'Pre-inspection checklist', src:''},
           {id:'d4', name:'City Plumbing Code.pdf', type:'pdf', project:'bathroom', folder:'Permits', size:2_800_000, tags:['code','permit'], updated: now-86400000*10, notes:'Section 14.2 - venting', src:''},
-          {id:'d5', name:'Vanity Spec Sheet.png', type:'image', project:'bathroom', folder:'Specs', size:640_000, tags:['vanity','hardware'], updated: now-86400000*6, notes:'36\" matte black hardware', src:'https://images.unsplash.com/photo-1564540583246-934409427776?w=1200'},
+          {id:'d5', name:'Vanity Spec Sheet.png', type:'image', project:'bathroom', folder:'Specs', size:640_000, tags:['vanity','hardware'], updated: now-86400000*6, notes:'36" matte black hardware', src:'https://images.unsplash.com/photo-1564540583246-934409427776?w=1200'},
           {id:'d6', name:'LVP Cost Model.xlsx', type:'sheet', project:'basement', folder:'Budget', size:220_000, tags:['budget','flooring'], updated: now-86400000*4, notes:'$2.39 sqft supplier', src:''},
           {id:'d7', name:'Contractor Agreement.docx', type:'doc', project:'kitchen', folder:'Contracts', size:96_000, tags:['contract'], updated: now-86400000*8, notes:'Signed by GC', src:''},
           {id:'d8', name:'Permit Portal', type:'link', project:'basement', folder:'Permits', size:0, tags:['url','permit'], updated: now-86400000*5, notes:'https://kingcounty.gov/permit-portal', href:'https://kingcounty.gov/permit-portal', src:''},
@@ -409,11 +449,10 @@
     document.getElementById('sortSelect').addEventListener('change', (e)=>{ state.sort = e.target.value; state.page=1; render(); updateFiltersBadge(); });
     document.getElementById('fileInput').addEventListener('change', handleUploads);
 
-    /* ===== Compact/Expandable controls logic ===== */
+    /* ===== Compact/Expandable toolbar ===== */
     const filtersToggle = document.getElementById('filtersToggle');
     const filtersPanel  = document.getElementById('filtersPanel');
     const filtersBadge  = document.getElementById('filtersBadge');
-
     function toggleFilters(){
       const open = !filtersPanel.classList.contains('open');
       filtersPanel.classList.toggle('open', open);
@@ -432,7 +471,41 @@
       else { filtersBadge.style.display='none'; }
     }
     filtersToggle.addEventListener('click', toggleFilters);
-    updateFiltersBadge();
+
+    /* ===== Collapsible sidebar (Folders / Tags) ===== */
+    const COLLAPSE_KEY = 'atlas.docs.sidebar.v1';
+    function readCollapseState(){
+      try{ return JSON.parse(localStorage.getItem(COLLAPSE_KEY)) || {}; }catch{ return {}; }
+    }
+    function writeCollapseState(m){ localStorage.setItem(COLLAPSE_KEY, JSON.stringify(m)); }
+
+    function wireCollapsible(cardId, btnId, bodyId, key){
+      const card = document.getElementById(cardId);
+      const btn  = document.getElementById(btnId);
+      const body = document.getElementById(bodyId);
+      const state = readCollapseState();
+      const open = state[key] !== false; // default open? we want collapsed by default => set false unless stored
+      // For your request: default collapsed -> treat missing as false
+      const isOpen = (key in state) ? state[key] : false;
+      setOpen(isOpen);
+
+      function setOpen(v){
+        card.classList.toggle('open', v);
+        card.classList.toggle('collapsed', !v);
+        btn.setAttribute('aria-expanded', String(v));
+        // body visibility is handled by CSS; nothing else to do
+      }
+      function toggle(){
+        const next = !card.classList.contains('open');
+        setOpen(next);
+        const m = readCollapseState(); m[key] = next; writeCollapseState(m);
+      }
+      btn.addEventListener('click', toggle);
+      btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggle(); } });
+    }
+
+    wireCollapsible('foldersCard','foldersToggle','foldersBody','folders');
+    wireCollapsible('tagsCard','tagsToggle','tagsBody','tags');
 
     function setView(mode){
       state.view = mode;
@@ -570,24 +643,24 @@
 
     function renderFoldersAndTags(){
       const rows = DocStore.read();
-      const folders = new Map(); // name -> count
-      const tags = new Map();
-      rows.forEach(r=>{
-        folders.set(r.folder || 'Misc', (folders.get(r.folder||'Misc')||0)+1);
-        (r.tags||[]).forEach(t=> tags.set(t, (tags.get(t)||0)+1));
-      });
 
       // Folders
+      const folders = new Map(); // name -> count
+      rows.forEach(r=> folders.set(r.folder || 'Misc', (folders.get(r.folder||'Misc')||0)+1));
       const entries = Array.from(folders.entries()).sort((a,b)=> a[0].localeCompare(b[0]));
       const allCount = rows.length;
       elFolderList.innerHTML = `
         <div class="folder" onclick="setFolder('All')"><span>📁 All</span><span class="count">${allCount}</span></div>
         ${entries.map(([name,count])=>`<div class="folder" onclick="setFolder('${name.replace(/'/g,"\\'")}')"><span>📁 ${name}</span><span class="count">${count}</span></div>`).join('')}
       `;
+      document.getElementById('foldersCount').textContent = String(allCount);
 
       // Tags
-      const tagEntries = Array.from(tags.entries()).sort((a,b)=> b[1]-a[1]).slice(0,12);
+      const tags = new Map();
+      rows.forEach(r=> (r.tags||[]).forEach(t=> tags.set(t, (tags.get(t)||0)+1)));
+      const tagEntries = Array.from(tags.entries()).sort((a,b)=> b[1]-a[1]).slice(0,24);
       elTagCloud.innerHTML = tagEntries.map(([t,count])=>`<span class="tag ${state.tag===t?'active':''}" onclick="filterTag('${t.replace(/'/g,"\\'")}')">#${t} (${count})</span>`).join('');
+      document.getElementById('tagsCount').textContent = String(tagEntries.length);
     }
 
     function setFolder(name){ state.folder = name; state.page=1; render() }
@@ -855,6 +928,7 @@
     /* ===== Init ===== */
     (function init(){
       setView('grid'); // default
+      updateFiltersBadge();
       render();
     })();
   </script>
