@@ -7,62 +7,43 @@
   <meta name="robots" content="noindex, nofollow" />
   <title>Budget Tracker - Project Atlas</title>
 
-  <!-- Favicon (match other app pages) -->
   <link
     rel="icon"
     type="image/svg+xml"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>"
   />
 
-  <!-- Shared App Styles -->
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="atlas-interactive.css" />
 
-  <!-- React + Babel + Tailwind -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* Minor polish */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #f1f1f1; }
-    ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #555; }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-slide-in { animation: slideIn 0.2s ease-out; }
+    ::-webkit-scrollbar{width:8px;height:8px}
+    ::-webkit-scrollbar-track{background:#f1f1f1}
+    ::-webkit-scrollbar-thumb{background:#999;border-radius:4px}
+    ::-webkit-scrollbar-thumb:hover{background:#777}
+    @keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    .animate-slide-in{animation:slideIn .2s ease-out}
   </style>
 </head>
 <body class="app-page">
-  <!-- Skip to Main Content -->
   <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-  <!-- Application Header (UNIFORM) -->
   <header class="app-header">
     <div class="header-container">
-      <!-- Logo -->
       <div class="logo">
         <h1>Project <span class="atlas-blue">ATLAS</span></h1>
         <span class="tagline">Home Project Management</span>
       </div>
 
-      <!-- Mobile Menu Toggle -->
-      <button
-        class="mobile-menu-toggle"
-        onclick="toggleMobileMenu()"
-        aria-label="Toggle navigation menu"
-        aria-expanded="false"
-        aria-controls="mainNav"
-      >
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mainNav">
         <span aria-hidden="true">☰</span>
       </button>
 
-      <!-- Main Navigation -->
       <nav class="main-nav" id="mainNav" aria-label="Main navigation">
         <ul>
           <li><a href="dashboard.html">Dashboard</a></li>
@@ -74,43 +55,50 @@
         </ul>
       </nav>
 
-      <!-- User Menu (avatar only; actions live in page header now) -->
       <div class="user-menu">
-        <button
-          class="user-avatar"
-          onclick="showUserMenu()"
-          aria-label="User menu"
-          title="User Menu"
-        >
-          AF
-        </button>
+        <button class="user-avatar" aria-label="User menu" title="User Menu">AF</button>
       </div>
     </div>
   </header>
 
-  <!-- Main Content Wrapper to satisfy skip link -->
   <main id="main-content">
     <div id="root"></div>
   </main>
 
-  <!-- Shared App Script -->
   <script src="atlas-interactive.js"></script>
-
-  <!-- Header behavior across pages -->
   <script>
-    function toggleMobileMenu() {
-      const nav = document.getElementById('mainNav');
-      const toggle = document.querySelector('.mobile-menu-toggle');
-      const isExpanded = nav.classList.toggle('active');
-      if (toggle) toggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+    function toggleMobileMenu(){
+      const nav=document.getElementById('mainNav');
+      const toggle=document.querySelector('.mobile-menu-toggle');
+      const isExpanded=nav.classList.toggle('active');
+      if(toggle) toggle.setAttribute('aria-expanded', isExpanded?'true':'false');
     }
   </script>
 
-  <!-- Budget React App -->
   <script type="text/babel">
     const { useState, useMemo } = React;
 
-    // Icons
+    /* ===== Icons ===== */
+    const IconWallet = ({className}) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 12v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11l5 5z"/><path strokeWidth="2" d="M21 12h-6a2 2 0 0 0-2 2v0a2 2 0 0 0 2 2h6"/>
+      </svg>
+    );
+    const IconCreditCard = ({className}) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <rect x="2" y="4" width="20" height="16" rx="2" ry="2" strokeWidth="2"/><line x1="2" y1="10" x2="22" y2="10" strokeWidth="2"/><line x1="6" y1="16" x2="10" y2="16" strokeWidth="2"/>
+      </svg>
+    );
+    const IconPiggy = ({className}) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path strokeWidth="2" d="M20 8h-1.81A8 8 0 1 0 4 13v5h2l1 2h6l1-2h2a3 3 0 0 0 3-3v-2l2-2-1-3z"/><circle cx="16" cy="9" r="1" strokeWidth="2"/>
+      </svg>
+    );
+    const IconGauge = ({className}) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path strokeWidth="2" d="M12 21A9 9 0 1 1 21 12"/><path strokeWidth="2" d="M12 12l6-3"/>
+      </svg>
+    );
     const CheckCircle = ({ className }) => (
       <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -119,11 +107,6 @@
     const Download = ({ className }) => (
       <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-      </svg>
-    );
-    const X = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
       </svg>
     );
     const Plus = ({ className }) => (
@@ -137,7 +120,46 @@
       </svg>
     );
 
-    // ===== Budget App =====
+    /* Progress Ring for % Utilized */
+    const ProgressRing = ({value, size=64, stroke=8, track="#fde68a", fill="#f59e0b"}) => {
+      const r = (size - stroke)/2;
+      const c = 2*Math.PI*r;
+      const offset = c - (value/100)*c;
+      return (
+        <svg width={size} height={size} className="shrink-0">
+          <circle cx={size/2} cy={size/2} r={r} stroke={track} strokeWidth={stroke} fill="none" />
+          <circle cx={size/2} cy={size/2} r={r} stroke={fill} strokeWidth={stroke} fill="none" strokeLinecap="round" strokeDasharray={`${c} ${c}`} strokeDashoffset={offset} transform={`rotate(-90 ${size/2} ${size/2})`} />
+          <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontSize="14" fontWeight="700" fill="#92400e">{Math.round(value)}%</text>
+        </svg>
+      );
+    };
+
+    /* Stat Card */
+    const StatCard = ({title, value, accent, Icon, hint}) => {
+      const styles = {
+        indigo: { ring: 'ring-indigo-200', badge: 'bg-indigo-50 text-indigo-700', icon: 'text-indigo-600', border:'border-indigo-100' },
+        rose:   { ring: 'ring-rose-200',   badge: 'bg-rose-50 text-rose-700',     icon: 'text-rose-600',   border:'border-rose-100' },
+        emerald:{ ring: 'ring-emerald-200',badge: 'bg-emerald-50 text-emerald-700',icon: 'text-emerald-600',border:'border-emerald-100' },
+        amber:  { ring: 'ring-amber-200',  badge: 'bg-amber-50 text-amber-700',   icon: 'text-amber-600',  border:'border-amber-100' },
+      }[accent];
+
+      return (
+        <div className={`bg-white rounded-xl p-5 shadow-sm border ${styles.border} ring-1 ${styles.ring}`}>
+          <div className="flex items-center justify-between">
+            <span className={`inline-flex items-center gap-2 text-xs font-semibold px-2.5 py-1 rounded ${styles.badge}`}>
+              <Icon className="w-4 h-4" />
+              {title}
+            </span>
+            {hint && <span className="text-xs text-gray-500">{hint}</span>}
+          </div>
+          <div className="mt-3 flex items-end justify-between">
+            <div className="text-3xl font-semibold text-gray-900">{value}</div>
+          </div>
+        </div>
+      );
+    };
+
+    /* ===== Budget App ===== */
     const BudgetTracker = () => {
       const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
       const [showExpenseDetailsModal, setShowExpenseDetailsModal] = useState(false);
@@ -146,149 +168,66 @@
       const [visibleExpenses, setVisibleExpenses] = useState(5);
       const [successMessage, setSuccessMessage] = useState('');
 
-      // Project-level budgets
       const [projectsData, setProjectsData] = useState([
-        {
-          id: 1,
-          name: 'Kitchen Renovation Epic',
-          budget: 20000,
-          spent: 23400,
-          status: '$3400 OVER',
-          statusType: 'over',
-          categories: [
-            { name: 'Materials', amount: 18200 },
-            { name: 'Labor', amount: 4800 },
-            { name: 'Permits', amount: 400 }
-          ]
-        },
-        {
-          id: 2,
-          name: 'Basement Finishing Epic',
-          budget: 35000,
-          spent: 5200,
-          status: 'ON TRACK',
-          statusType: 'on-track',
-          categories: [
-            { name: 'Planning & Permits', amount: 1200 },
-            { name: 'Materials (partial)', amount: 4000 }
-          ]
-        },
-        {
-          id: 3,
-          name: 'Bathroom Update Epic',
-          budget: 12000,
-          spent: 8100,
-          status: 'ON TRACK',
-          statusType: 'on-track',
-          categories: [
-            { name: 'Fixtures', amount: 3200 },
-            { name: 'Plumbing', amount: 2800 },
-            { name: 'Materials', amount: 2100 }
-          ]
-        }
+        { id:1, name:'Kitchen Renovation Epic', budget:20000, spent:23400, status:'$3400 OVER', statusType:'over',
+          categories:[{name:'Materials',amount:18200},{name:'Labor',amount:4800},{name:'Permits',amount:400}] },
+        { id:2, name:'Basement Finishing Epic', budget:35000, spent:5200, status:'ON TRACK', statusType:'on-track',
+          categories:[{name:'Planning & Permits',amount:1200},{name:'Materials (partial)',amount:4000}] },
+        { id:3, name:'Bathroom Update Epic', budget:12000, spent:8100, status:'ON TRACK', statusType:'on-track',
+          categories:[{name:'Fixtures',amount:3200},{name:'Plumbing',amount:2800},{name:'Materials',amount:2100}] }
       ]);
 
-      // Expense ledger
       const [allExpenses, setAllExpenses] = useState([
-        { id: 1, title: 'Tile grout and spacers', project: 'Kitchen Renovation', projectId: 1, time: '2 hours ago', amount: 127.43, category: 'Materials', date: '2025-10-18' },
-        { id: 2, title: 'Cabinet hardware and hinges', project: 'Kitchen Renovation', projectId: 1, time: 'Yesterday', amount: 324.67, category: 'Materials', date: '2025-10-17' },
-        { id: 3, title: 'Electrician - rough-in work', project: 'Basement Finishing', projectId: 2, time: '3 days ago', amount: 1200.00, category: 'Labor', date: '2025-10-15' },
-        { id: 4, title: 'Countertop installation', project: 'Kitchen Renovation', projectId: 1, time: '5 days ago', amount: 3800.00, category: 'Materials', date: '2025-10-13' },
-        { id: 5, title: 'Building permit renewal', project: 'Bathroom Update', projectId: 3, time: '1 week ago', amount: 200.00, category: 'Permits', date: '2025-10-11' },
-        { id: 6, title: 'Drywall materials', project: 'Basement Finishing', projectId: 2, time: '1 week ago', amount: 850.00, category: 'Materials', date: '2025-10-11' },
-        { id: 7, title: 'Paint and primer supplies', project: 'Kitchen Renovation', projectId: 1, time: '2 weeks ago', amount: 289.50, category: 'Materials', date: '2025-10-04' },
-        { id: 8, title: 'HVAC ductwork', project: 'Basement Finishing', projectId: 2, time: '2 weeks ago', amount: 1650.00, category: 'Materials', date: '2025-10-04' }
+        { id:1, title:'Tile grout and spacers', project:'Kitchen Renovation', projectId:1, time:'2 hours ago', amount:127.43, category:'Materials', date:'2025-10-18' },
+        { id:2, title:'Cabinet hardware and hinges', project:'Kitchen Renovation', projectId:1, time:'Yesterday', amount:324.67, category:'Materials', date:'2025-10-17' },
+        { id:3, title:'Electrician - rough-in work', project:'Basement Finishing', projectId:2, time:'3 days ago', amount:1200.00, category:'Labor', date:'2025-10-15' },
+        { id:4, title:'Countertop installation', project:'Kitchen Renovation', projectId:1, time:'5 days ago', amount:3800.00, category:'Materials', date:'2025-10-13' },
+        { id:5, title:'Building permit renewal', project:'Bathroom Update', projectId:3, time:'1 week ago', amount:200.00, category:'Permits', date:'2025-10-11' },
+        { id:6, title:'Drywall materials', project:'Basement Finishing', projectId:2, time:'1 week ago', amount:850.00, category:'Materials', date:'2025-10-11' },
+        { id:7, title:'Paint and primer supplies', project:'Kitchen Renovation', projectId:1, time:'2 weeks ago', amount:289.50, category:'Materials', date:'2025-10-04' },
+        { id:8, title:'HVAC ductwork', project:'Basement Finishing', projectId:2, time:'2 weeks ago', amount:1650.00, category:'Materials', date:'2025-10-04' }
       ]);
 
       const summary = useMemo(() => {
         const totalBudget = projectsData.reduce((s, p) => s + p.budget, 0);
-        const totalSpent = projectsData.reduce((s, p) => s + p.spent, 0);
-        const remaining = totalBudget - totalSpent;
+        const totalSpent  = projectsData.reduce((s, p) => s + p.spent, 0);
+        const remaining   = totalBudget - totalSpent;
         const percentUsed = totalBudget ? (totalSpent / totalBudget) * 100 : 0;
         return { totalBudget, totalSpent, remaining, percentUsed };
       }, [projectsData]);
 
       const [newExpense, setNewExpense] = useState({
-        description: '',
-        amount: '',
-        date: new Date().toISOString().split('T')[0],
-        project: '',
-        category: '',
-        notes: ''
+        description:'', amount:'', date:new Date().toISOString().split('T')[0],
+        project:'', category:'', notes:''
       });
 
-      const showSuccess = (msg) => {
-        setSuccessMessage(msg);
-        setTimeout(() => setSuccessMessage(''), 3000);
-      };
-
-      const viewExpense = (exp) => { setSelectedExpense(exp); setShowExpenseDetailsModal(true); };
-      const loadMore = () => {
-        if (visibleExpenses < allExpenses.length) {
-          setVisibleExpenses((v) => Math.min(v + 5, allExpenses.length));
-          showSuccess('Loaded more expenses');
-        }
-      };
-
-      const downloadCSV = () => {
-        let csv = 'Date,Project,Category,Description,Amount\n';
-        allExpenses.forEach(e => {
-          csv += `${e.date},"${e.project}","${e.category}","${e.title}",${e.amount}\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = 'budget-report.csv';
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+      const showSuccess = (msg)=>{ setSuccessMessage(msg); setTimeout(()=>setSuccessMessage(''),3000); };
+      const viewExpense = (exp)=>{ setSelectedExpense(exp); setShowExpenseDetailsModal(true); };
+      const loadMore = ()=>{ if(visibleExpenses<allExpenses.length){ setVisibleExpenses(v=>Math.min(v+5, allExpenses.length)); showSuccess('Loaded more expenses'); } };
+      const downloadCSV = ()=>{
+        let csv='Date,Project,Category,Description,Amount\n';
+        allExpenses.forEach(e=>{ csv+=`${e.date},"${e.project}","${e.category}","${e.title}",${e.amount}\n`; });
+        const blob=new Blob([csv],{type:'text/csv'}), url=URL.createObjectURL(blob);
+        const a=document.createElement('a'); a.href=url; a.download='budget-report.csv';
+        document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
         showSuccess('Budget report downloaded!');
       };
 
-      const submitNewExpense = () => {
-        if (!newExpense.description || !newExpense.amount || !newExpense.project) {
-          alert('Please fill in Description, Amount, and Project.');
-          return;
-        }
-        const proj = projectsData.find(p => p.name === newExpense.project);
-        const projId = proj?.id ?? null;
-
-        const created = {
-          id: allExpenses.length + 1,
-          title: newExpense.description,
-          project: newExpense.project,
-          projectId: projId,
-          time: 'Just now',
-          amount: parseFloat(newExpense.amount),
-          category: newExpense.category || 'Uncategorized',
-          date: newExpense.date,
-          notes: newExpense.notes
-        };
-        setAllExpenses(prev => [created, ...prev]);
-
-        if (projId) {
-          setProjectsData(prev => prev.map(p => {
-            if (p.id !== projId) return p;
-            const newSpent = p.spent + created.amount;
-            const over = newSpent - p.budget;
-            return {
-              ...p,
-              spent: newSpent,
-              status: over > 0 ? `$${over.toFixed(2)} OVER` : 'ON TRACK',
-              statusType: over > 0 ? 'over' : 'on-track'
-            };
+      const submitNewExpense = ()=>{
+        if(!newExpense.description || !newExpense.amount || !newExpense.project){ alert('Please fill in Description, Amount, and Project.'); return; }
+        const proj = projectsData.find(p=>p.name===newExpense.project); const projId = proj?.id ?? null;
+        const created = { id:allExpenses.length+1, title:newExpense.description, project:newExpense.project, projectId:projId, time:'Just now',
+          amount:parseFloat(newExpense.amount), category:newExpense.category||'Uncategorized', date:newExpense.date, notes:newExpense.notes };
+        setAllExpenses(prev=>[created,...prev]);
+        if(projId){
+          setProjectsData(prev=>prev.map(p=>{
+            if(p.id!==projId) return p;
+            const newSpent=p.spent+created.amount; const over=newSpent-p.budget;
+            return {...p, spent:newSpent, status:over>0?`$${over.toFixed(2)} OVER`:'ON TRACK', statusType:over>0?'over':'on-track'};
           }));
         }
-
-        setNewExpense({
-          description: '',
-          amount: '',
-          date: new Date().toISOString().split('T')[0],
-          project: '',
-          category: '',
-          notes: ''
-        });
-        setShowAddExpenseModal(false);
-        showSuccess('Expense added successfully!');
+        setNewExpense({description:'',amount:'',date:new Date().toISOString().split('T')[0],project:'',category:'',notes:''});
+        setShowAddExpenseModal(false); showSuccess('Expense added successfully!');
       };
 
       return (
@@ -303,47 +242,56 @@
             </div>
           )}
 
-          {/* Page Header with Actions */}
+          {/* Page Header */}
           <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-3xl font-light text-gray-900">Budget Tracker</h2>
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setShowAddExpenseModal(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Expense</span>
+                <button onClick={()=>setShowAddExpenseModal(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 shadow-sm">
+                  <Plus className="w-4 h-4" /><span>Add Expense</span>
                 </button>
-                <button
-                  onClick={downloadCSV}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-blue-600 text-blue-700 bg-white hover:bg-blue-50"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Download Report</span>
+                <button onClick={downloadCSV} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-blue-600 text-blue-700 bg-white hover:bg-blue-50">
+                  <Download className="w-4 h-4" /><span>Download Report</span>
                 </button>
               </div>
             </div>
           </section>
 
-          {/* Summary Cards */}
+          {/* Summary Cards (colorful) */}
           <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                <span className="text-sm text-gray-500 uppercase tracking-wide">Total Budget</span>
-                <div className="mt-2 text-2xl font-semibold text-gray-900">${summary.totalBudget.toLocaleString()}</div>
-              </div>
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                <span className="text-sm text-gray-500 uppercase tracking-wide">Total Spent</span>
-                <div className="mt-2 text-2xl font-semibold text-gray-900">${summary.totalSpent.toLocaleString()}</div>
-              </div>
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                <span className="text-sm text-gray-500 uppercase tracking-wide">Remaining</span>
-                <div className="mt-2 text-2xl font-semibold text-gray-900">${summary.remaining.toLocaleString()}</div>
-              </div>
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                <span className="text-sm text-gray-500 uppercase tracking-wide">% Utilized</span>
-                <div className="mt-2 text-2xl font-semibold text-gray-900">{summary.percentUsed.toFixed(0)}%</div>
+              <StatCard
+                title="TOTAL BUDGET"
+                value={`$${summary.totalBudget.toLocaleString()}`}
+                accent="indigo"
+                Icon={IconWallet}
+                hint="Allocated across all epics"
+              />
+              <StatCard
+                title="TOTAL SPENT"
+                value={`$${summary.totalSpent.toLocaleString()}`}
+                accent="rose"
+                Icon={IconCreditCard}
+                hint="Recorded expenses to date"
+              />
+              <StatCard
+                title="REMAINING"
+                value={`$${summary.remaining.toLocaleString()}`}
+                accent="emerald"
+                Icon={IconPiggy}
+                hint="Budget still available"
+              />
+              <div className="bg-white rounded-xl p-5 shadow-sm border border-amber-100 ring-1 ring-amber-200">
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-2 text-xs font-semibold px-2.5 py-1 rounded bg-amber-50 text-amber-700">
+                    <IconGauge className="w-4 h-4" /> % UTILIZED
+                  </span>
+                  <span className="text-xs text-gray-500">Spend vs. allocation</span>
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <div className="text-3xl font-semibold text-gray-900">{Math.round(summary.percentUsed)}%</div>
+                  <ProgressRing value={summary.percentUsed} />
+                </div>
               </div>
             </div>
           </section>
@@ -353,31 +301,18 @@
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {projectsData.map(project => {
                 const percent = Math.min(100, Math.max(0, (project.spent / project.budget) * 100));
-                const statusColor =
-                  project.statusType === 'over'
-                    ? 'text-red-700 bg-red-50 border-red-200'
-                    : 'text-green-700 bg-green-50 border-green-200';
-                const barBg =
-                  project.statusType === 'over' ? 'bg-red-600' : 'bg-blue-600';
-
+                const statusColor = project.statusType==='over' ? 'text-red-700 bg-red-50 border-red-200' : 'text-green-700 bg-green-50 border-green-200';
+                const barBg = project.statusType==='over' ? 'bg-red-600' : 'bg-blue-600';
                 return (
                   <div key={project.id} className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
                     <div className="flex items-start justify-between">
                       <h3 className="text-lg font-semibold text-gray-900">{project.name}</h3>
-                      <span className={`text-xs font-semibold px-2.5 py-1 rounded border ${statusColor}`}>
-                        {project.status}
-                      </span>
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded border ${statusColor}`}>{project.status}</span>
                     </div>
 
                     <div className="mt-4 space-y-2 text-sm text-gray-600">
-                      <div className="flex justify-between">
-                        <span>Budget</span>
-                        <span className="font-medium text-gray-900">${project.budget.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Spent</span>
-                        <span className="font-medium text-gray-900">${project.spent.toLocaleString()}</span>
-                      </div>
+                      <div className="flex justify-between"><span>Budget</span><span className="font-medium text-gray-900">${project.budget.toLocaleString()}</span></div>
+                      <div className="flex justify-between"><span>Spent</span><span className="font-medium text-gray-900">${project.spent.toLocaleString()}</span></div>
                       <div className="w-full h-2 bg-gray-200 rounded mt-2">
                         <div className={`h-2 rounded ${barBg}`} style={{ width: `${percent}%` }}></div>
                       </div>
@@ -413,19 +348,11 @@
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Recent Expenses</h3>
               <div className="flex items-center gap-2">
-                <button
-                  className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
-                  onClick={() => setShowAddExpenseModal(true)}
-                >
-                  <Plus className="w-4 h-4" />
-                  + Add Expense
+                <button className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 shadow-sm" onClick={()=>setShowAddExpenseModal(true)}>
+                  <Plus className="w-4 h-4" /> + Add Expense
                 </button>
-                <button
-                  className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
-                  onClick={() => setShowReportModal(true)}
-                >
-                  <FileText className="w-4 h-4" />
-                  View Report
+                <button className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50" onClick={()=>setShowReportModal(true)}>
+                  <FileText className="w-4 h-4" /> View Report
                 </button>
               </div>
             </div>
@@ -443,11 +370,7 @@
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
                   {allExpenses.slice(0, visibleExpenses).map((e) => (
-                    <tr
-                      key={e.id}
-                      className="hover:bg-blue-50/40 cursor-pointer"
-                      onClick={() => viewExpense(e)}
-                    >
+                    <tr key={e.id} className="hover:bg-blue-50/40 cursor-pointer" onClick={()=>viewExpense(e)}>
                       <td className="px-6 py-3 text-sm text-gray-700">{e.date}</td>
                       <td className="px-6 py-3 text-sm text-gray-900 font-medium">{e.project}</td>
                       <td className="px-6 py-3 text-sm text-gray-700">{e.category}</td>
@@ -463,119 +386,75 @@
                   Showing {Math.min(visibleExpenses, allExpenses.length)} of {allExpenses.length}
                 </span>
                 {visibleExpenses < allExpenses.length && (
-                  <button
-                    className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md border border-blue-600 text-blue-700 bg-white hover:bg-blue-50"
-                    onClick={loadMore}
-                  >
-                    <Plus className="w-4 h-4" />
-                    Load more
+                  <button className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md border border-blue-600 text-blue-700 bg-white hover:bg-blue-50" onClick={loadMore}>
+                    <Plus className="w-4 h-4" /> Load more
                   </button>
                 )}
               </div>
             </div>
           </section>
 
-          {/* Add Expense Modal */}
+          {/* Modals (unchanged except labels) */}
           {showAddExpenseModal && (
             <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center p-4">
               <div className="w-full max-w-lg bg-white rounded-xl shadow-xl border border-gray-200">
                 <div className="flex items-center justify-between p-4 border-b">
                   <h4 className="text-base font-semibold text-gray-900">Add Expense</h4>
-                  <button className="p-2" onClick={() => setShowAddExpenseModal(false)}>
-                    <X className="w-5 h-5" />
+                  <button className="p-2" onClick={()=>setShowAddExpenseModal(false)}>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
                   </button>
                 </div>
                 <div className="p-4 space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-                    <input
-                      className="w-full border rounded-md px-3 py-2"
-                      placeholder="e.g. Subway tile boxes"
-                      value={newExpense.description}
-                      onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
-                    />
+                    <input className="w-full border rounded-md px-3 py-2" placeholder="e.g. Subway tile boxes" value={newExpense.description} onChange={e=>setNewExpense({...newExpense, description:e.target.value})}/>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Amount *</label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        className="w-full border rounded-md px-3 py-2"
-                        placeholder="0.00"
-                        value={newExpense.amount}
-                        onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
-                      />
+                      <input type="number" step="0.01" className="w-full border rounded-md px-3 py-2" placeholder="0.00" value={newExpense.amount} onChange={e=>setNewExpense({...newExpense, amount:e.target.value})}/>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                      <input
-                        type="date"
-                        className="w-full border rounded-md px-3 py-2"
-                        value={newExpense.date}
-                        onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })}
-                      />
+                      <input type="date" className="w-full border rounded-md px-3 py-2" value={newExpense.date} onChange={e=>setNewExpense({...newExpense, date:e.target.value})}/>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Project *</label>
-                      <select
-                        className="w-full border rounded-md px-3 py-2"
-                        value={newExpense.project}
-                        onChange={(e) => setNewExpense({ ...newExpense, project: e.target.value })}
-                      >
+                      <select className="w-full border rounded-md px-3 py-2" value={newExpense.project} onChange={e=>setNewExpense({...newExpense, project:e.target.value})}>
                         <option value="">Select a project</option>
-                        {projectsData.map(p => (
-                          <option key={p.id} value={p.name}>{p.name}</option>
-                        ))}
+                        {projectsData.map(p=><option key={p.id} value={p.name}>{p.name}</option>)}
                       </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                      <select
-                        className="w-full border rounded-md px-3 py-2"
-                        value={newExpense.category}
-                        onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
-                      >
+                      <select className="w-full border rounded-md px-3 py-2" value={newExpense.category} onChange={e=>setNewExpense({...newExpense, category:e.target.value})}>
                         <option value="">Select a category</option>
-                        <option>Materials</option>
-                        <option>Labor</option>
-                        <option>Permits</option>
-                        <option>Tools</option>
-                        <option>Misc.</option>
+                        <option>Materials</option><option>Labor</option><option>Permits</option><option>Tools</option><option>Misc.</option>
                       </select>
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                    <textarea
-                      className="w-full border rounded-md px-3 py-2"
-                      rows="3"
-                      placeholder="Optional details..."
-                      value={newExpense.notes}
-                      onChange={(e) => setNewExpense({ ...newExpense, notes: e.target.value })}
-                    ></textarea>
+                    <textarea className="w-full border rounded-md px-3 py-2" rows="3" placeholder="Optional details..." value={newExpense.notes} onChange={e=>setNewExpense({...newExpense, notes:e.target.value})}></textarea>
                   </div>
                 </div>
                 <div className="p-4 border-t flex items-center justify-end gap-2">
-                  <button className="px-4 py-2 rounded border" onClick={() => setShowAddExpenseModal(false)}>Cancel</button>
-                  <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" onClick={submitNewExpense}>
-                    Save Expense
-                  </button>
+                  <button className="px-4 py-2 rounded border" onClick={()=>setShowAddExpenseModal(false)}>Cancel</button>
+                  <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" onClick={submitNewExpense}>Save Expense</button>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Expense Details Modal */}
           {showExpenseDetailsModal && selectedExpense && (
             <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center p-4">
               <div className="w-full max-w-lg bg-white rounded-xl shadow-xl border border-gray-200">
                 <div className="flex items-center justify-between p-4 border-b">
                   <h4 className="text-base font-semibold text-gray-900">Expense Details</h4>
-                  <button className="p-2" onClick={() => setShowExpenseDetailsModal(false)}>
-                    <X className="w-5 h-5" />
+                  <button className="p-2" onClick={()=>setShowExpenseDetailsModal(false)}>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
                   </button>
                 </div>
                 <div className="p-4 space-y-2 text-sm">
@@ -586,22 +465,19 @@
                   <div className="flex justify-between"><span className="text-gray-600">Amount</span><span className="font-semibold text-gray-900">${selectedExpense.amount.toFixed(2)}</span></div>
                 </div>
                 <div className="p-4 border-t flex items-center justify-end">
-                  <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" onClick={() => setShowExpenseDetailsModal(false)}>
-                    Close
-                  </button>
+                  <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" onClick={()=>setShowExpenseDetailsModal(false)}>Close</button>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Report Modal */}
           {showReportModal && (
             <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center p-4">
               <div className="w-full max-w-2xl bg-white rounded-xl shadow-xl border border-gray-200">
                 <div className="flex items-center justify-between p-4 border-b">
                   <h4 className="text-base font-semibold text-gray-900">Budget Report (Preview)</h4>
-                  <button className="p-2" onClick={() => setShowReportModal(false)}>
-                    <X className="w-5 h-5" />
+                  <button className="p-2" onClick={()=>setShowReportModal(false)}>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
                   </button>
                 </div>
                 <div className="p-4">
@@ -622,7 +498,7 @@
                         </tr>
                       </thead>
                       <tbody className="divide-y">
-                        {allExpenses.map(e => (
+                        {allExpenses.map(e=>(
                           <tr key={e.id} className="hover:bg-gray-50">
                             <td className="px-3 py-2">{e.date}</td>
                             <td className="px-3 py-2">{e.project}</td>
@@ -636,10 +512,8 @@
                   </div>
                 </div>
                 <div className="p-4 border-t flex items-center justify-end gap-2">
-                  <button className="px-4 py-2 rounded border" onClick={() => setShowReportModal(false)}>Close</button>
-                  <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" onClick={downloadCSV}>
-                    Download CSV
-                  </button>
+                  <button className="px-4 py-2 rounded border" onClick={()=>setShowReportModal(false)}>Close</button>
+                  <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" onClick={downloadCSV}>Download CSV</button>
                 </div>
               </div>
             </div>
@@ -652,3 +526,4 @@
   </script>
 </body>
 </html>
+
