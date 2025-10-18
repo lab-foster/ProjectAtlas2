@@ -44,7 +44,7 @@
     .month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border-light)}
     .calendar-day{background:var(--bg-secondary);min-height:120px;padding:var(--space-sm);position:relative;transition:all var(--transition-fast);cursor:pointer}
     .calendar-day:hover{background:var(--app-primary-lighter)}
-    .calendar-day.other-month{background:var(--gray-100);opacity:.5}
+    .calendar-day.other-month{background:var(--gray-100);opacity:.6}
     .calendar-day.today{background:var(--app-primary-lighter);border:2px solid var(--app-primary)}
     .day-number{font-weight:600;color:var(--text-primary);font-size:.875rem;margin-bottom:var(--space-xs)}
     .calendar-day.other-month .day-number{color:var(--text-tertiary)}
@@ -260,13 +260,6 @@
     function showUserMenu(){
       if(window.atlas && typeof window.atlas.showUserMenu === 'function'){ window.atlas.showUserMenu(); }
     }
-    function handleKeyPress(event, fnName, arg){
-      if(event.key === 'Enter' || event.key === ' '){
-        event.preventDefault();
-        const fn = window[fnName];
-        if(typeof fn === 'function'){ typeof arg !== 'undefined' ? fn(arg) : fn(); }
-      }
-    }
 
     /* ---------------- Utils ---------------- */
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Los_Angeles';
@@ -279,7 +272,9 @@
     function endOfWeek(d){ const s = startOfWeek(d); const e = new Date(s); e.setDate(e.getDate()+6); e.setHours(23,59,59,999); return e; }
     function startOfMonth(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
     function endOfMonth(d){ return new Date(d.getFullYear(), d.getMonth()+1, 0, 23,59,59,999); }
-    function slugify(s){ return (s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+    function titleCase(s){ return (s||'').replace(/\b\w/g,c=>c.toUpperCase()); }
+    function projectClass(p){ return p === 'kitchen' ? 'kitchen' : p === 'bathroom' ? 'bathroom' : p === 'basement' ? 'basement' : ''; }
+    function typeIs(o,t){ return (o.type||'').toLowerCase()===t; }
 
     function toast(msg){
       let t = document.getElementById('atlas-toast');
@@ -292,7 +287,7 @@
       t.textContent = msg; t.style.opacity = '1'; setTimeout(()=>t.style.opacity='0', 1400);
     }
 
-    /* ---------------- Modal (fallback if atlas modal not present) ---------------- */
+    /* ---------------- Modal (no inline <script> to avoid template breakage) ---------------- */
     function openModal(title, html, footerHtml){
       if(window.atlas && typeof window.atlas.openModal === 'function'){ window.atlas.openModal(title, html, footerHtml); return; }
       const modalRoot = document.getElementById("modalRoot");
@@ -327,36 +322,30 @@
       ensureSeed(){
         const have = this.read();
         if(have.length) return;
-        // Seed from the original mock (dates adapted to November 2024)
         const seed = [
-          {id:"evt-1", title:"Material delivery",      project:"kitchen",  type:"work", start:"2024-11-02", allDay:true, notes:""},
-          {id:"evt-2", title:"Contractor meeting",     project:"basement", type:"meeting", start:"2024-11-04T10:00", end:"2024-11-04T11:00", allDay:false, notes:"Scope review"},
-          {id:"evt-3", title:"Plumbing inspection",    project:"bathroom", type:"inspection", start:"2024-11-06T13:00", end:"2024-11-06T14:00", allDay:false, notes:"City inspector"},
-          {id:"evt-4", title:"Backsplash work",        project:"kitchen",  type:"work", start:"2024-11-09", end:"2024-11-10", allDay:true, notes:"Herringbone pattern"},
-          {id:"evt-5", title:"Permit application",     project:"basement", type:"milestone", start:"2024-11-12", allDay:true, notes:"Submit online"},
-          {id:"evt-6", title:"Vanity installation",    project:"bathroom", type:"work", start:"2024-11-14", allDay:true, notes:"Matte black hardware"},
-          {id:"evt-7", title:"Final kitchen cleanup",  project:"kitchen",  type:"work", start:"2024-11-18", allDay:true, notes:"Deep clean"},
-          {id:"evt-8", title:"Material shopping",      project:"basement", type:"work", start:"2024-11-23", allDay:true, notes:"Framing supplies"},
-          {id:"evt-9", title:"Kitchen project deadline", project:"kitchen", type:"deadline", start:"2024-11-25", allDay:true, notes:"Close out"},
-          {id:"evt-10",title:"Basement work begins",   project:"basement", type:"work", start:"2024-11-30", allDay:true, notes:"Framing day 1"},
+          {id:"evt-1", title:"Material delivery",      project:"kitchen",  type:"work", start:"2025-10-02", allDay:true, notes:""},
+          {id:"evt-2", title:"Contractor meeting",     project:"basement", type:"meeting", start:"2025-10-04T10:00", end:"2025-10-04T11:00", allDay:false, notes:"Scope review"},
+          {id:"evt-3", title:"Plumbing inspection",    project:"bathroom", type:"inspection", start:"2025-10-06T13:00", end:"2025-10-06T14:00", allDay:false, notes:"City inspector"},
+          {id:"evt-4", title:"Backsplash work",        project:"kitchen",  type:"work", start:"2025-10-09", end:"2025-10-10", allDay:true, notes:"Herringbone pattern"},
+          {id:"evt-5", title:"Permit application",     project:"basement", type:"milestone", start:"2025-10-12", allDay:true, notes:"Submit online"},
+          {id:"evt-6", title:"Vanity installation",    project:"bathroom", type:"work", start:"2025-10-14", allDay:true, notes:"Matte black hardware"},
+          {id:"evt-7", title:"Final kitchen cleanup",  project:"kitchen",  type:"work", start:"2025-10-18", allDay:true, notes:"Deep clean"},
+          {id:"evt-8", title:"Material shopping",      project:"basement", type:"work", start:"2025-10-23", allDay:true, notes:"Framing supplies"},
+          {id:"evt-9", title:"Kitchen project deadline", project:"kitchen", type:"deadline", start:"2025-10-25", allDay:true, notes:"Close out"},
+          {id:"evt-10",title:"Basement work begins",   project:"basement", type:"work", start:"2025-10-30", allDay:true, notes:"Framing day 1"}
         ];
         this.write(seed);
       }
     };
     CalendarStore.ensureSeed();
 
-    /* ---------------- State ---------------- */
-    const state = {
-      view: 'month', // 'month' | 'week' | 'day'
-      cursor: new Date(),          // date anchor for month/week/day
-      projectFilter: 'all',
-    };
-
-    /* ---------------- Rendering ---------------- */
+    /* ---------------- State & Elements ---------------- */
+    const state = { view: 'month', cursor: new Date(), projectFilter: 'all' };
     const elMonthLabel = document.getElementById('monthLabel');
     const elViewRoot   = document.getElementById('calendarViewRoot');
     const elUpcoming   = document.getElementById('upcomingList');
 
+    /* ---------------- Rendering ---------------- */
     function setMonthLabel(d){
       elMonthLabel.textContent = fmtMonth.format(d);
       elMonthLabel.setAttribute('datetime', d.toISOString().slice(0,7));
@@ -367,12 +356,7 @@
           : `Agenda for ${fmtDayShort.format(d)}`;
       elViewRoot.setAttribute('aria-label', ariaLabel);
     }
-
-    function filterByProject(evts){
-      if(state.projectFilter === 'all') return evts;
-      return evts.filter(e => e.project === state.projectFilter);
-    }
-
+    function filterByProject(evts){ return state.projectFilter==='all' ? evts : evts.filter(e=> e.project===state.projectFilter); }
     function eventsInRange(start, end){
       const evts = filterByProject(CalendarStore.read());
       return evts.filter(e=>{
@@ -381,9 +365,6 @@
         return (s <= end && eend >= start);
       }).sort((a,b)=> new Date(a.start) - new Date(b.start));
     }
-
-    function projectClass(p){ return p === 'kitchen' ? 'kitchen' : p === 'bathroom' ? 'bathroom' : p === 'basement' ? 'basement' : ''; }
-    function typeIs(o,t){ return (o.type||'').toLowerCase()===t; }
 
     function render(){
       setMonthLabel(state.cursor);
@@ -400,7 +381,7 @@
       elViewRoot.innerHTML = '';
       const first = startOfMonth(state.cursor);
       const start = startOfWeek(first);
-      const cells = 42; // 6 weeks grid
+      const cells = 42; // 6 rows
       const todayISO = fmtDateISO(new Date());
 
       for(let i=0;i<cells;i++){
@@ -428,10 +409,10 @@
           cell.appendChild(t);
         }
 
-        // Events for the day
-        const evts = eventsInRange(new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,0,0,0),
-                                   new Date(d.getFullYear(),d.getMonth(),d.getDate(),23,59,59,999))
-                      .filter(e => e.allDay || new Date(e.start).toDateString() === d.toDateString());
+        const evts = eventsInRange(
+          new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,0,0,0),
+          new Date(d.getFullYear(),d.getMonth(),d.getDate(),23,59,59,999)
+        ).filter(e => e.allDay || new Date(e.start).toDateString() === d.toDateString());
 
         const maxShow = 3;
         evts.slice(0,maxShow).forEach(e=>{
@@ -460,10 +441,8 @@
     /* ---- Week view ---- */
     function renderWeek(){
       const weekStart = startOfWeek(state.cursor);
-      const weekEnd   = endOfWeek(state.cursor);
-      elViewRoot.className = 'month-grid'; // keep card chrome; inside, we render seven columns
+      elViewRoot.className = 'month-grid';
       elViewRoot.innerHTML = '';
-
       for(let i=0;i<7;i++){
         const d = new Date(weekStart); d.setDate(d.getDate()+i);
         const col = document.createElement('div');
@@ -476,9 +455,11 @@
         head.textContent = fmtDayShort.format(d);
         col.appendChild(head);
 
-        const list = document.createElement('div');
-        const todays = eventsInRange(new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,0,0,0),
-                                     new Date(d.getFullYear(),d.getMonth(),d.getDate(),23,59,59,999));
+        const todays = eventsInRange(
+          new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,0,0,0),
+          new Date(d.getFullYear(),d.getMonth(),d.getDate(),23,59,59,999)
+        );
+
         todays.forEach(e=>{
           const btn = document.createElement('div');
           btn.className = `event ${projectClass(e.project)} ${typeIs(e,'deadline')?'deadline':''}`;
@@ -486,9 +467,9 @@
           btn.onclick = (ev)=>{ ev.stopPropagation(); showEventDetails(e.id); };
           const timeLabel = e.allDay ? 'All day' : new Date(e.start).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
           btn.innerHTML = `<div class="event-title">${timeLabel} • ${e.title}</div>`;
-          list.appendChild(btn);
+          col.appendChild(btn);
         });
-        col.appendChild(list);
+
         elViewRoot.appendChild(col);
       }
     }
@@ -531,13 +512,11 @@
       elViewRoot.appendChild(colSlots);
     }
 
-    /* ---- Sidebar: upcoming week ---- */
+    /* ---- Sidebar ---- */
     function renderUpcoming(){
       elUpcoming.innerHTML = '';
       const now = new Date();
-      const start = startOfWeek(now);
-      const end   = endOfWeek(now);
-      const items = eventsInRange(start, end).slice(0, 7);
+      const items = eventsInRange(startOfWeek(now), endOfWeek(now)).slice(0, 7);
 
       if(!items.length){
         elUpcoming.innerHTML = `<p class="text-tertiary">No events scheduled this week.</p>`;
@@ -562,22 +541,15 @@
       });
     }
 
-    function titleCase(s){ return (s||'').replace(/\b\w/g,c=>c.toUpperCase()); }
-
     /* ---- Stats (this month) ---- */
     function renderStats(){
       const mStart = startOfMonth(state.cursor);
       const mEnd   = endOfMonth(state.cursor);
       const list = eventsInRange(mStart,mEnd);
-      const total = list.length;
-      const inspections = list.filter(e=> e.type==='inspection').length;
-      const deadlines   = list.filter(e=> e.type==='deadline').length;
-      const meetings    = list.filter(e=> e.type==='meeting').length;
-
-      document.getElementById('statTotal').textContent = String(total);
-      document.getElementById('statInspections').textContent = String(inspections);
-      document.getElementById('statDeadlines').textContent = String(deadlines);
-      document.getElementById('statMeetings').textContent = String(meetings);
+      document.getElementById('statTotal').textContent = String(list.length);
+      document.getElementById('statInspections').textContent = String(list.filter(e=> e.type==='inspection').length);
+      document.getElementById('statDeadlines').textContent   = String(list.filter(e=> e.type==='deadline').length);
+      document.getElementById('statMeetings').textContent    = String(list.filter(e=> e.type==='meeting').length);
     }
 
     /* ---------------- Interactions ---------------- */
@@ -592,11 +564,13 @@
     }
     function handleProjectFilter(v){ state.projectFilter = v; render(); }
 
-    /* ---- Day modal (quick add / list) ---- */
+    /* ---- Day modal ---- */
     function openDayModal(dateObj){
       const dateISO = fmtDateISO(dateObj);
-      const list = eventsInRange(new Date(dateObj.getFullYear(),dateObj.getMonth(),dateObj.getDate(),0,0,0,0),
-                                 new Date(dateObj.getFullYear(),dateObj.getMonth(),dateObj.getDate(),23,59,59,999));
+      const list = eventsInRange(
+        new Date(dateObj.getFullYear(),dateObj.getMonth(),dateObj.getDate(),0,0,0,0),
+        new Date(dateObj.getFullYear(),dateObj.getMonth(),dateObj.getDate(),23,59,59,999)
+      );
       const items = list.map(e => `
         <li style="margin-bottom:8px">
           <button class="btn-link" onclick="showEventDetails('${e.id}')">${e.allDay?'All day':new Date(e.start).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} • ${e.title}</button>
@@ -615,11 +589,11 @@
     /* ---- Add / Edit Events ---- */
     function openAddEventModal(prefillDate){
       const d = prefillDate || fmtDateISO(state.cursor);
-      const defaultTime = '09:00';
       openModal('Schedule Task / Event', `
         <div class="form-grid">
           <label for="ev_title">Title *</label>
           <input id="ev_title" class="input" placeholder="e.g., Schedule plumbing inspection"/>
+
           <div class="form-row">
             <div>
               <label for="ev_project">Project</label>
@@ -640,6 +614,7 @@
               </select>
             </div>
           </div>
+
           <div class="form-row">
             <div>
               <label for="ev_date">Date</label>
@@ -653,31 +628,31 @@
               </select>
             </div>
           </div>
+
           <div id="ev_timeRow" class="form-row" style="display:none">
             <div>
               <label for="ev_time">Start</label>
-              <input id="ev_time" type="time" class="input" value="${defaultTime}"/>
+              <input id="ev_time" type="time" class="input" value="09:00"/>
             </div>
             <div>
               <label for="ev_time_end">End</label>
               <input id="ev_time_end" type="time" class="input" value="10:00"/>
             </div>
           </div>
+
           <label for="ev_notes">Notes</label>
           <textarea id="ev_notes" class="input" placeholder="Additional context"></textarea>
         </div>
-        <script>
-          (function(){
-            const sel = document.getElementById('ev_allDay');
-            const row = document.getElementById('ev_timeRow');
-            function toggle(){ row.style.display = sel.value==='no' ? '' : 'none'; }
-            sel.addEventListener('change', toggle); toggle();
-          })();
-        </script>
       `, `
         <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
         <button class="btn" onclick="createEventFromModal()">Create</button>
       `);
+
+      // wire up all-day toggle (no inline <script>)
+      const sel = document.getElementById('ev_allDay');
+      const row = document.getElementById('ev_timeRow');
+      function toggle(){ row.style.display = sel.value==='no' ? '' : 'none'; }
+      sel.addEventListener('change', toggle); toggle();
     }
 
     function createEventFromModal(){
@@ -758,19 +733,17 @@
 
           <p class="text-tertiary" style="margin-top:8px">${dStr}</p>
         </div>
-        <script>
-          (function(){
-            const sel = document.getElementById('ed_allDay');
-            const row = document.getElementById('ed_timeRow');
-            function toggle(){ row.style.display = sel.value==='no' ? '' : 'none'; }
-            sel.addEventListener('change', toggle); toggle();
-          })();
-        </script>
       `, `
         <button class="btn btn-secondary" onclick="closeModal()">Close</button>
         <button class="btn btn-secondary" onclick="deleteEvent('${ev.id}')">Delete</button>
         <button class="btn" onclick="saveEventEdits('${ev.id}')">Save</button>
       `);
+
+      // wire up edit all-day toggle
+      const sel = document.getElementById('ed_allDay');
+      const row = document.getElementById('ed_timeRow');
+      function toggle(){ row.style.display = sel.value==='no' ? '' : 'none'; }
+      sel.addEventListener('change', toggle); toggle();
     }
 
     function saveEventEdits(id){
@@ -809,7 +782,6 @@
 
     /* ---------------- Init ---------------- */
     (function init(){
-      // Default to month view anchored on "today"
       state.cursor = new Date();
       render();
     })();
@@ -819,3 +791,4 @@
   <script src="atlas-interactive.js"></script>
 </body>
 </html>
+
