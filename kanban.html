@@ -18,9 +18,9 @@
     .board-title h2{margin-bottom:6px}
     .muted{color:var(--text-secondary)}
 
-    /* Unified toolbar (inline with other pages) */
+    /* Toolbar (aligned with Calendar/Documents) */
     .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--bg-elevated);border:1px solid var(--border-light);border-radius:14px;padding:10px 12px;margin-bottom:24px}
-    .toolbar .search{position:relative;flex:1 1 360px}
+    .toolbar .search{position:relative;flex:1 1 420px}
     .toolbar .search input{width:100%;padding:9px 34px 9px 10px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:10px}
     .toolbar .search .icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);opacity:.6}
     .toolbar .select{min-width:200px}
@@ -29,38 +29,58 @@
     .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:10px;padding:8px 12px;cursor:pointer;transition:all .15s}
     .btn:hover{border-color:var(--app-primary);background:var(--app-primary-lighter);color:var(--app-primary)}
 
-    /* Board grid – full page, no inner scroll panes */
-    .kanban{--gap:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--gap)}
-    .k-col{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:16px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
-    .k-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px;border-bottom:1px solid var(--border-light)}
+    /* --- Jira-like board: long/narrow columns with horizontal scrolling --- */
+    .kanban{
+      display:flex;
+      gap:16px;
+      align-items:flex-start;
+      overflow-x:auto;
+      padding-bottom:8px;
+    }
+    .kanban::-webkit-scrollbar{height:10px}
+    .kanban::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:10px}
+
+    .k-col{
+      flex:0 0 320px;               /* fixed narrow columns */
+      width:320px;
+      background:var(--bg-secondary);
+      border:1px solid var(--border-default);
+      border-radius:16px;
+      box-shadow:var(--shadow-sm);
+      display:flex;flex-direction:column;min-height:120px
+    }
+    .k-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px;border-bottom:1px solid var(--border-light);position:sticky;top:0;background:var(--bg-secondary);z-index:1}
     .k-title{font-weight:700}
     .k-count{color:var(--text-secondary);font-size:.85rem}
     .k-add{font-size:.85rem;color:var(--app-primary);cursor:pointer}
     .k-list{display:flex;flex-direction:column;gap:12px;padding:12px;min-height:80px}
 
-    /* Cards */
+    /* Cards (compact polish) */
     .k-card{background:var(--bg-secondary);border:1px solid var(--border-light);border-radius:14px;padding:12px;box-shadow:var(--shadow-xs);cursor:grab}
     .k-card:active{cursor:grabbing}
     .k-card .title{font-weight:700;margin-bottom:4px}
     .k-card .sub{color:var(--text-secondary);font-size:.92rem}
-    .k-card .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;color:var(--text-secondary);font-size:.8rem}
-    .chip{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border:1px solid var(--border-light);border-radius:999px}
+    .k-card .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;color:var(--text-secondary);font-size:.78rem}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border:1px solid var(--border-light);border-radius:999px;white-space:nowrap}
     .dot{width:8px;height:8px;border-radius:999px;display:inline-block}
     .proj-kitchen{background:#1d73e8}.proj-bathroom{background:#ff9800}.proj-basement{background:#43a047}.proj-garden{background:#66bb6a}.proj-admin{background:#9c27b0}
 
     .k-placeholder{border:2px dashed var(--border-default);border-radius:12px;height:58px}
 
-    /* Modal primitives */
+    /* Modal primitives (detail-rich like Jira card) */
     .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .15s;z-index:1000}
     .modal-backdrop.show{opacity:1;pointer-events:auto}
     .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .15s;z-index:1001}
     .modal.open{opacity:1;pointer-events:auto}
-    .modal-panel{width:min(820px,96vw);max-height:90vh;background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:16px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow:hidden}
-    .modal-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border-light)}
-    .modal-body{padding:16px;overflow:auto}
-    .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .modal-panel{width:min(960px,96vw);max-height:92vh;background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:16px;box-shadow:var(--shadow-lg);display:grid;grid-template-columns:1.2fr .8fr;gap:0;overflow:hidden}
+    .modal-header{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border-light)}
+    .modal-body{display:grid;grid-template-columns:1fr;gap:14px;padding:16px;overflow:auto}
+    .modal-aside{border-left:1px solid var(--border-light);padding:16px;overflow:auto}
     .modal-body input,.modal-body textarea,.modal-body select{width:100%;padding:9px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:10px}
-    .modal-footer{padding:12px 16px;border-top:1px solid var(--border-light);display:flex;gap:8px;justify-content:flex-end}
+    .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .aside-block{margin-bottom:14px}
+    .aside-block h4{margin-bottom:8px}
+    .modal-footer{grid-column:1/3;padding:12px 16px;border-top:1px solid var(--border-light);display:flex;gap:8px;justify-content:flex-end}
     .btn-primary{background:var(--app-primary);border-color:var(--app-primary);color:white}
     .btn-primary:hover{filter:brightness(1.05)}
     .btn-danger{border-color:#d32f2f;color:#d32f2f}
@@ -96,11 +116,11 @@
     <section class="board-header">
       <div class="board-title">
         <h2>Kanban Board</h2>
-        <div class="muted">Drag cards between columns. Click a card to view &amp; edit details.</div>
+        <div class="muted">Drag cards between columns. Click a card for a full detail panel.</div>
       </div>
     </section>
 
-    <!-- Unified toolbar: Search | Assignee | Project | +Task | Columns -->
+    <!-- Toolbar: Search | Assignee | Project | +Task | Columns -->
     <div class="toolbar" role="region" aria-label="Board tools">
       <div class="search">
         <input id="searchInput" placeholder="Search by title, description, or tags…" aria-label="Search tasks"/>
@@ -122,7 +142,7 @@
       </div>
     </div>
 
-    <!-- Kanban board -->
+    <!-- Board -->
     <section id="board" class="kanban" aria-label="Kanban board"></section>
   </main>
 
@@ -134,7 +154,7 @@
   <div id="toast" style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#111;color:#fff;padding:.55rem .8rem;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.28);opacity:0;pointer-events:none;z-index:1100;"></div>
 
   <script>
-    // Mobile nav
+    /* Mobile nav */
     function toggleMobileMenu(){
       const nav = document.getElementById('mainNav');
       const btn = document.querySelector('.mobile-menu-toggle');
@@ -145,7 +165,7 @@
     /* --------------------------
        Storage & Defaults
        -------------------------- */
-    const STORAGE_KEY = 'atlas-kanban-v3'; // bump to avoid stale data
+    const STORAGE_KEY = 'atlas-kanban-v4'; // bump to avoid stale data during dev
     const defaultState = {
       columns: [
         { id:'col-backlog',     name:'Backlog',      order:0 },
@@ -155,14 +175,14 @@
         { id:'col-done',        name:'Done',         order:4 },
       ],
       tasks: [
-        { id:'t1', title:'Sketch permit set', desc:'Upload PDF to city portal.', project:'admin',    assignee:'Assignee A', due:'2025-10-18', column:'col-backlog',    tags:['permit'],     priority:'high' },
-        { id:'t2', title:'Order bathroom vanity', desc:'36" oak, matte hardware.', project:'bathroom', assignee:'Assignee B', due:'2025-10-15', column:'col-backlog',    tags:['purchase'],   priority:'medium' },
-        { id:'t3', title:'Countertop template', desc:'Schedule template after cabinet alignment.', project:'kitchen',  assignee:'Assignee C', due:'2025-10-10', column:'col-review',     tags:['contractor'], priority:'low' },
-        { id:'t4', title:'Research countertop materials', desc:'Compare quartz vs. granite; shortlist local fabricators.', project:'kitchen',  assignee:'Assignee A', due:'2025-10-20', column:'col-inprogress', tags:['research'],   priority:'medium' },
-        { id:'t5', title:'Install backsplash', desc:'Herringbone layout; use leveling clips.', project:'kitchen',  assignee:'Assignee D', due:'2025-10-20', column:'col-blocked',    tags:['tile'],       priority:'high' },
-        { id:'t6', title:'Seal grout', desc:'After 72 hours, apply two coats.', project:'kitchen',  assignee:'Assignee A', due:'2025-10-22', column:'col-inprogress', tags:['finish'],     priority:'low' },
-        { id:'t7', title:'Greenhouse irrigation loop', desc:'Add timer and pressure regulator.', project:'garden',   assignee:'Assignee B', due:'2025-11-02', column:'col-backlog',    tags:['outdoor'],    priority:'medium' },
-        { id:'t8', title:'Close out punch list', desc:'Touch-up paint and hardware', project:'basement', assignee:'Assignee C', due:'2025-10-30', column:'col-done',       tags:['finish'],     priority:'low' }
+        { id:'t1', title:'Sketch permit set', desc:'Upload PDF to city portal.', project:'admin',    assignee:'Assignee A', due:'2025-10-18', column:'col-backlog',    tags:['permit'],     priority:'high',    createdAt: Date.now() },
+        { id:'t2', title:'Order bathroom vanity', desc:'36" oak, matte hardware.', project:'bathroom', assignee:'Assignee B', due:'2025-10-15', column:'col-backlog',    tags:['purchase'],   priority:'medium',  createdAt: Date.now() },
+        { id:'t3', title:'Countertop template', desc:'Schedule template after cabinet alignment.', project:'kitchen',  assignee:'Assignee C', due:'2025-10-10', column:'col-review',     tags:['contractor'], priority:'low',     createdAt: Date.now() },
+        { id:'t4', title:'Research countertop materials', desc:'Compare quartz vs. granite; shortlist local fabricators.', project:'kitchen',  assignee:'Assignee A', due:'2025-10-20', column:'col-inprogress', tags:['research'],   priority:'medium',  createdAt: Date.now() },
+        { id:'t5', title:'Install backsplash', desc:'Herringbone layout; use leveling clips.', project:'kitchen',  assignee:'Assignee D', due:'2025-10-20', column:'col-blocked',    tags:['tile'],       priority:'high',    createdAt: Date.now() },
+        { id:'t6', title:'Seal grout', desc:'After 72 hours, apply two coats.', project:'kitchen',  assignee:'Assignee A', due:'2025-10-22', column:'col-inprogress', tags:['finish'],     priority:'low',     createdAt: Date.now() },
+        { id:'t7', title:'Greenhouse irrigation loop', desc:'Add timer and pressure regulator.', project:'garden',   assignee:'Assignee B', due:'2025-11-02', column:'col-backlog',    tags:['outdoor'],    priority:'medium',  createdAt: Date.now() },
+        { id:'t8', title:'Close out punch list', desc:'Touch-up paint and hardware', project:'basement', assignee:'Assignee C', due:'2025-10-30', column:'col-done',       tags:['finish'],     priority:'low',     createdAt: Date.now() }
       ]
     };
     const state = loadState();
@@ -305,7 +325,7 @@
             if(idx>-1){ state.tasks.splice(idx,0,task); }
             else { state.tasks.push(task); }
           } else {
-            state.tasks.push(task); // append to end
+            state.tasks.push(task); // append to end of that column
           }
 
           saveState(); renderBoard(); toast('Task moved');
@@ -345,14 +365,14 @@
     function escClose(e){ if(e.key==='Escape') closeModal(); }
 
     /* --------------------------
-       Task modal
+       Task modal (detail-rich)
        -------------------------- */
     function openTaskModal(existing){
       const isEdit = existing && existing.id;
       const task = isEdit ? structuredClone(existing) : {
         id: 't'+crypto.randomUUID().slice(0,8),
         title:'', desc:'', project:'admin', assignee:'', due:'', column:(existing?.column || state.columns[0].id),
-        tags:[], priority:'medium'
+        tags:[], priority:'medium', createdAt: Date.now()
       };
 
       const colOpts = state.columns.sort((a,b)=>a.order-b.order).map(c=>`<option value="${c.id}" ${task.column===c.id?'selected':''}>${c.name}</option>`).join('');
@@ -361,12 +381,19 @@
           <h3>${isEdit?'Edit Task':'New Task'}</h3>
           <button class="btn" onclick="(${closeModal.toString()})()">✕</button>
         </header>
-        <div class="modal-body">
-          <div class="modal-grid">
-            <div>
-              <label>Title</label>
-              <input id="fTitle" value="${escapeHTML(task.title)}" placeholder="What needs doing?"/>
-            </div>
+
+        <section class="modal-body">
+          <div>
+            <label>Title</label>
+            <input id="fTitle" value="${escapeHTML(task.title)}" placeholder="What needs doing?"/>
+          </div>
+
+          <div>
+            <label>Description</label>
+            <textarea id="fDesc" rows="5" placeholder="Details, links, requirements...">${escapeHTML(task.desc)}</textarea>
+          </div>
+
+          <div class="meta-grid">
             <div>
               <label>Project</label>
               <select id="fProject">
@@ -397,16 +424,32 @@
               <label>Column</label>
               <select id="fColumn">${colOpts}</select>
             </div>
-            <div style="grid-column:1/-1">
-              <label>Description</label>
-              <textarea id="fDesc" rows="4" placeholder="Details, links, requirements...">${escapeHTML(task.desc)}</textarea>
-            </div>
-            <div style="grid-column:1/-1">
+            <div>
               <label>Tags (comma separated)</label>
               <input id="fTags" value="${escapeHTML((task.tags||[]).join(', '))}" placeholder="materials, vendor, paint"/>
             </div>
           </div>
-        </div>
+        </section>
+
+        <aside class="modal-aside">
+          <div class="aside-block">
+            <h4>Status</h4>
+            <div>${state.columns.find(c=>c.id===task.column)?.name || ''}</div>
+          </div>
+          <div class="aside-block">
+            <h4>Created</h4>
+            <div>${new Date(task.createdAt||Date.now()).toLocaleString()}</div>
+          </div>
+          <div class="aside-block">
+            <h4>Quick actions</h4>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn" onclick="document.getElementById('fColumn').value='col-inprogress'">Start</button>
+              <button class="btn" onclick="document.getElementById('fColumn').value='col-review'">Send to Review</button>
+              <button class="btn" onclick="document.getElementById('fColumn').value='col-done'">Mark Done</button>
+            </div>
+          </div>
+        </aside>
+
         <footer class="modal-footer">
           ${isEdit?`<button class="btn btn-danger" id="deleteBtn">Delete</button>`:''}
           <button class="btn" onclick="(${closeModal.toString()})()">Cancel</button>
@@ -450,17 +493,18 @@
     function escapeHTML(s){ return (s||'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
 
     /* --------------------------
-       Columns dialog
+       Columns dialog (insert near target, not bottom)
        -------------------------- */
     function openColumnsDialog(){
       const rows = state.columns.sort((a,b)=>a.order-b.order).map(c=>`
         <tr data-id="${c.id}">
           <td><input value="${escapeHTML(c.name)}" data-field="name"/></td>
-          <td style="width:80px;text-align:center">
+          <td style="width:154px;text-align:center;display:flex;gap:6px;justify-content:center">
             <button class="btn" data-move="up">▲</button>
             <button class="btn" data-move="down">▼</button>
+            <button class="btn" data-insert="after">+ Insert Below</button>
           </td>
-          <td style="width:80px;text-align:center">
+          <td style="width:90px;text-align:center">
             <button class="btn btn-danger" data-remove="1">Remove</button>
           </td>
         </tr>`).join('');
@@ -470,12 +514,14 @@
           <h3>Configure Columns</h3>
           <button class="btn" onclick="(${closeModal.toString()})()">✕</button>
         </header>
-        <div class="modal-body">
+        <div class="modal-body" style="grid-column:1/3">
           <table class="data-list" style="width:100%;border-collapse:separate;border-spacing:0 8px">
-            <thead><tr><th>Name</th><th>Order</th><th></th></tr></thead>
+            <thead><tr><th>Name</th><th style="text-align:center">Order / Insert</th><th></th></tr></thead>
             <tbody id="colTbody">${rows}</tbody>
           </table>
-          <button class="btn" id="addCol">+ Add Column</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" id="addColSmart">+ Add Column (before Done)</button>
+          </div>
         </div>
         <footer class="modal-footer">
           <button class="btn" onclick="(${closeModal.toString()})()">Close</button>
@@ -487,26 +533,37 @@
       tbody.addEventListener('click',e=>{
         const tr = e.target.closest('tr'); if(!tr) return;
         const id = tr.dataset.id;
+
         if(e.target.dataset.move==='up' || e.target.dataset.move==='down'){
           const dir = e.target.dataset.move==='up' ? -1 : 1;
-          const idx = state.columns.findIndex(c=>c.id===id);
-          const swapIdx = idx+dir;
-          if(swapIdx<0||swapIdx>=state.columns.length) return;
-          const a = state.columns[idx], b = state.columns[swapIdx];
-          const ao=a.order; a.order=b.order; b.order=ao;
-          saveState(); openColumnsDialog(); // re-open to refresh
+          swapOrder(id, dir);
+          saveState(); openColumnsDialog();
         }
+
+        if(e.target.dataset.insert==='after'){
+          const idx = state.columns.findIndex(c=>c.id===id);
+          const newId='col-'+crypto.randomUUID().slice(0,6);
+          const newCol = { id:newId, name:'New Column', order: state.columns[idx].order + 0.1 };
+          state.columns.push(newCol);
+          normalizeColumnOrder();
+          saveState(); openColumnsDialog();
+        }
+
         if(e.target.dataset.remove){
           if(state.tasks.some(t=>t.column===id)){ toast('Column not empty'); return; }
           state.columns = state.columns.filter(c=>c.id!==id);
-          state.columns.forEach((c,i)=>c.order=i);
+          normalizeColumnOrder();
           saveState(); openColumnsDialog();
         }
       });
 
-      document.getElementById('addCol').onclick = ()=>{
-        const id='col-'+crypto.randomUUID().slice(0,6);
-        state.columns.push({ id, name:'New Column', order: state.columns.length });
+      document.getElementById('addColSmart').onclick = ()=>{
+        // Insert before Done if found; otherwise append
+        const doneIdx = state.columns.findIndex(c=>c.id==='col-done' || /done/i.test(c.name));
+        const insertOrder = doneIdx>-1 ? state.columns[doneIdx].order - 0.1 : (state.columns.at(-1)?.order ?? 0) + 1;
+        const newId='col-'+crypto.randomUUID().slice(0,6);
+        state.columns.push({ id:newId, name:'New Column', order: insertOrder });
+        normalizeColumnOrder();
         saveState(); openColumnsDialog();
       };
 
@@ -514,10 +571,27 @@
         [...tbody.querySelectorAll('tr')].forEach((tr,i)=>{
           const id=tr.dataset.id;
           const c = state.columns.find(x=>x.id===id);
-          if(c){ c.name = tr.querySelector('[data-field="name"]').value.trim() || c.name; c.order=i; }
+          if(c){ c.name = tr.querySelector('[data-field="name"]').value.trim() || c.name; }
         });
+        normalizeColumnOrder();
         saveState(); closeModal(); renderBoard(); toast('Columns saved');
       };
+    }
+
+    function swapOrder(id, dir){
+      const cols = state.columns.sort((a,b)=>a.order-b.order);
+      const idx = cols.findIndex(c=>c.id===id);
+      const j = idx + dir;
+      if(j<0 || j>=cols.length) return;
+      const ai = cols[idx].order;
+      cols[idx].order = cols[j].order;
+      cols[j].order = ai;
+      // write back
+      state.columns = cols;
+      normalizeColumnOrder();
+    }
+    function normalizeColumnOrder(){
+      state.columns.sort((a,b)=>a.order-b.order).forEach((c,i)=>c.order=i);
     }
 
     /* --------------------------
