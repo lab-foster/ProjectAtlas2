@@ -1,66 +1,152 @@
+<!-- File: about.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About - Project Atlas</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About - Project Atlas</title>
+
+  <link rel="stylesheet" href="styles.css"/>
+
+  <style>
+    :root{
+      --about-max: 1040px;
+      --gap: clamp(16px, 2.5vw, 24px);
+    }
+
+    /* Page background to match landing */
+    body.static-page{
+      min-height:100dvh;
+      background:
+        radial-gradient(1200px 800px at 10% 10%, rgba(255,255,255,.06) 0%, rgba(255,255,255,0) 60%),
+        linear-gradient(135deg,#1f3b82 0%, #243d8f 35%, #2f4eb3 100%);
+      color:#fff;
+    }
+
+    /* Top nav */
+    .static-header{padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.12)}
+    .static-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:18px;justify-content:center}
+    .static-nav a{color:rgba(255,255,255,.85);text-decoration:none;font-weight:600}
+    .static-nav a.active,.static-nav a:hover{color:#fff;text-decoration:underline}
+
+    /* Main */
+    .static-main{max-width:var(--about-max);margin:0 auto;padding:clamp(24px,5vw,56px) clamp(16px,3vw,28px) 72px}
+    .static-main h2{margin:.25rem 0 clamp(18px,2.6vw,28px);text-align:center;font-size:clamp(1.6rem,3.4vw,2.4rem)}
+
+    /* Card layout */
+    .about-grid{display:grid;gap:var(--gap)}
+    .about-card{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:16px;
+      padding:clamp(18px,2.8vw,28px);
+      box-shadow:0 10px 30px rgba(0,0,0,.15);
+      backdrop-filter:saturate(110%) blur(0px);
+    }
+
+    .about-card h3{
+      display:flex;align-items:center;gap:.6rem;
+      font-size:1.1rem;margin:.25rem 0 .5rem
+    }
+    .about-card p{color:rgba(255,255,255,.9);margin:.35rem 0}
+    .about-card ul{margin:.25rem 0 0 1rem}
+    .about-card li{margin:.25rem 0;color:rgba(255,255,255,.9)}
+    .muted{color:rgba(255,255,255,.75)}
+
+    /* CTA */
+    .cta-wrap{display:flex;justify-content:center;margin-top:clamp(16px,3vw,28px)}
+    .btn-get-started{
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.8rem 1.1rem;border-radius:999px;background:#2e77ff;color:#fff;
+      text-decoration:none;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.25);
+    }
+    .btn-get-started:hover{background:#3a83ff}
+
+    @media (min-width:880px){
+      .about-grid{
+        grid-template-columns:1fr 1fr;
+      }
+      /* Make the mission section span both columns on wide screens */
+      .about-card.span-2{grid-column:1 / -1}
+    }
+  </style>
 </head>
 <body class="static-page">
-    <header class="static-header">
-        <nav class="static-nav">
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html" class="active">About</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+  <header class="static-header">
+    <nav class="static-nav" aria-label="Secondary navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a class="active" href="about.html" aria-current="page">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <main class="static-main">
-        <h2>About Project Atlas</h2>
-        
-        <div class="static-content">
-            <h3>🏠 Our Mission</h3>
-            <p>Project Atlas is a purpose-built platform for managing home renovation projects, designed by homeowners who understand the challenges of coordinating complex improvement projects.</p>
-            <p>Look, after 3 years of homeownership and dealing with everything from "minor" bathroom updates that turned into full gut jobs to tracking down why the previous owner thought routing plumbing through electrical chases was acceptable, I'm convinced the home project management space is fundamentally broken.</p>
-        </div>
+  <main class="static-main" id="main-content">
+    <h2>About Project Atlas</h2>
 
-        <div class="static-content">
-            <h3>⚡ Why We Built Project Atlas</h3>
-            <p>I've tried Trello (too generic), actual Jira (overkill), spreadsheets (please no), and those cutesy home apps built by people who've clearly never spent a weekend installing subfloor. So I created Project Atlas - a platform that treats home improvement like the complex, interconnected system it actually is.</p>
-            <p>The core value proposition is simple: stop losing track of project context when you're juggling multiple renovation streams, capture tribal knowledge before you forget that weird trick that made the bathroom door hang properly, and make data-driven decisions instead of guessing whether the premium paint was worth it.</p>
-        </div>
+    <section class="about-grid" aria-label="About content">
+      <!-- Mission -->
+      <article class="about-card span-2">
+        <h3>🏠 Our Mission</h3>
+        <p>
+          Project Atlas helps homeowners manage renovation projects with clarity:
+          one place for scope, tasks, budget, and timing—so work moves forward without surprises.
+        </p>
+        <p class="muted">
+          The goal is simple: turn scattered notes and ad-hoc tools into a
+          purpose-built workflow that feels as reliable as a well-drawn plan set.
+        </p>
+      </article>
 
-        <div class="static-content">
-            <h3>🎯 Our Approach</h3>
-            <p>I'm borrowing workflow concepts from enterprise software development but mapping them to the reality of being your own PM, developer, QA tester, and budget holder. Think epic/story/task hierarchies applied to houses, with workflow states that actually matter:</p>
-            <ul>
-                <li><strong>Someday/Maybe:</strong> Backlog of dreams (and that Pinterest board you'll never admit to having)</li>
-                <li><strong>Research & Planning:</strong> The crucial research phase (where you discover everything costs 3x more than expected)</li>
-                <li><strong>Permitted & Ready:</strong> Permits and materials sorted (surprisingly satisfying when you finally get here)</li>
-                <li><strong>Active Work:</strong> Currently destroying something (and questioning all life choices)</li>
-                <li><strong>Waiting on External:</strong> Blocked by inspectors or deliveries (the most frustrating state)</li>
-                <li><strong>Done Done:</strong> Including cleanup, because it's not really done until tools are put away</li>
-            </ul>
-        </div>
+      <!-- Why we built it -->
+      <article class="about-card">
+        <h3>⚡ Why Atlas</h3>
+        <p>
+          General to-do apps miss the dependencies; heavyweight PM tools assume a team.
+          Atlas focuses on homes: permits, inspections, lead-times, and real-world blockers.
+        </p>
+        <ul>
+          <li>See the next critical step for each project</li>
+          <li>Catch blockers before they waste weekends</li>
+          <li>Keep a clean record of decisions and costs</li>
+        </ul>
+      </article>
 
-        <div class="static-content">
-            <h3>👨‍💻 Meet the Creator</h3>
-            <p><strong>Andrew Foster</strong> is the founder and lead developer of Project Atlas. With 10 years of experience as a Solutions Architect in the SaaS industry, I bring deep technical expertise in automation systems, workflow optimization, and user experience design.</p>
-            <p>The primary users are basically me and people like me - tech professionals who've spent years managing complex software projects but are now staring at their own houses going "why is this so much harder than shipping code?"</p>
-            <p>We're talking about homeowners in their 30s and 40s who understand the value of good tooling because we've lived through the pain of bad project management at work. But we're discovering that consumer home improvement apps are built like they're still 2010, and enterprise tools assume you have a dedicated project manager instead of trying to remember if you ordered the 2.5" or 3" screws while standing in your basement at 9 PM.</p>
-        </div>
+      <!-- Approach -->
+      <article class="about-card">
+        <h3>🎯 Our Approach</h3>
+        <p>
+          We adapt proven software workflows to home projects—lightweight, visual,
+          and tuned to the stages that matter.
+        </p>
+        <ul>
+          <li><strong>Backlog →</strong> research & ideas</li>
+          <li><strong>Ready →</strong> permits & materials in hand</li>
+          <li><strong>In Progress →</strong> active work on site</li>
+          <li><strong>Blocked →</strong> inspections or deliveries</li>
+          <li><strong>Done →</strong> finished & cleaned up</li>
+        </ul>
+      </article>
 
-        <div class="static-content">
-            <h3>🚀 Development Status</h3>
-            <p>Project Atlas is currently in active development with a focus on creating a domain-specific project management tool that actually understands home renovation workflows. From a technical architecture standpoint, I'm thinking of this as essentially a domain-specific Jira with key workflow modifications that make sense for home projects.</p>
-            <p>The system will include what I'm calling "dependency hell detection" where the platform actually understands that you can't tile the bathroom floor until the plumbing rough-in passes inspection, and it'll surface those blockers before you order materials. Because we've all been there.</p>
-        </div>
+      <!-- Development status -->
+      <article class="about-card span-2">
+        <h3>🚀 Where We’re Headed</h3>
+        <p>
+          Active development continues on smarter scheduling, dependency hints
+          (e.g., “tile after rough-in passes”), and tighter links among the Board,
+          Budget, and Documents pages.
+        </p>
+        <p class="muted">
+          If you’re juggling multiple rooms or phases, Atlas aims to be the
+          quiet assistant that keeps context and momentum.
+        </p>
+      </article>
+    </section>
 
-        <div class="cta-section">
-            <a href="dashboard.html" class="btn-get-started">Try Project Atlas</a>
-        </div>
-    </main>
+    <div class="cta-wrap">
+      <a href="dashboard.html" class="btn-get-started">Get Started →</a>
+    </div>
+  </main>
 </body>
 </html>
