@@ -14,8 +14,8 @@
     .dashboard-container{max-width:1200px;margin:0 auto;padding:var(--space-xl)}
     .dashboard-header{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--space-md);margin-bottom:var(--space-lg)}
     .dashboard-header h2{margin:0}
-    .quick-links{display:flex;gap:.5rem;flex-wrap:wrap}
-    .quick-links .btn{display:inline-flex;align-items:center;gap:.5rem}
+    .new-project-cta{display:flex;gap:.5rem;flex-wrap:wrap}
+    .new-project-cta .btn{display:inline-flex;align-items:center;gap:.5rem}
 
     .dashboard-grid{display:grid;grid-template-columns:1fr 340px;gap:var(--space-xl)}
     .project-overview,.widget{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
@@ -103,7 +103,7 @@
       </nav>
 
       <div class="user-menu">
-        <button class="btn btn-secondary" onclick="openNewProject()" aria-label="Create new project"><span aria-hidden="true">＋</span> New Project</button>
+        <!-- New Project button moved down into page header -->
         <button class="user-avatar" aria-label="User menu">AF</button>
       </div>
     </div>
@@ -115,14 +115,13 @@
       <section class="dashboard-header">
         <div>
           <h2>Welcome back</h2>
-          <p id="dashboardSummary" class="text-secondary">High-level snapshot with quick links into each area.</p>
+          <p id="dashboardSummary" class="text-secondary">High-level snapshot with direct links inside each card.</p>
         </div>
-        <div class="quick-links" aria-label="Quick links">
-          <a class="btn btn-secondary" href="projects.html">Open Projects</a>
-          <a class="btn btn-secondary" href="kanban.html">Open Kanban</a>
-          <a class="btn btn-secondary" href="budget.html">Open Budget</a>
-          <a class="btn btn-secondary" href="calendar.html">Open Calendar</a>
-          <a class="btn btn-secondary" href="documents.html">Open Documents</a>
+        <!-- New Project CTA lives here (replaces quick links) -->
+        <div class="new-project-cta">
+          <button class="btn btn-secondary" onclick="openNewProject()">
+            <span aria-hidden="true">＋</span> New Project
+          </button>
         </div>
       </section>
 
@@ -337,7 +336,7 @@
       document.body.classList.remove('atlas-modal-open');
     }
 
-    /* New Project (routes to Projects-style modal) */
+    /* New Project modal */
     function openNewProject(){
       openModal('Create New Project', `
         <div class="form-grid">
