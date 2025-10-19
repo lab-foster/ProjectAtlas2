@@ -71,8 +71,9 @@
     .input{width:100%;border:1px solid var(--border-default);border-radius:10px;padding:10px 12px;background:var(--bg-secondary)}
     .input:focus{outline:2px solid var(--app-primary-light);border-color:var(--app-primary)}
 
-    /* --- Kill any legacy bottom drawers injected by other scripts --- */
-    .task-details,.drawer.task-details,#taskDetails,.modal.task-details{display:none !important}
+    /* --- Hide any legacy bottom drawers injected by other scripts --- */
+    .task-details,.drawer.task-details,#taskDetails,.modal.task-details,
+    .project-details,.drawer.project-details,#projectDetails{display:none !important}
 
     @media (max-width:992px){.filter-actions{width:100%;justify-content:flex-end}}
     @media (max-width:768px){
@@ -142,7 +143,8 @@
         </select>
 
         <div class="filter-actions">
-          <button class="btn btn-secondary" onclick="showNewProjectModal()">
+          <!-- use a data attribute so we can capture the click and route to our namespaced function -->
+          <button class="btn btn-secondary" data-new-project>
             <span aria-hidden="true">＋</span> New Project
           </button>
         </div>
@@ -157,7 +159,7 @@
       <article class="stat-card"><span class="stat-number" id="statBudget">$75K</span><span class="stat-label">Total Budget</span></article>
     </section>
 
-    <!-- Project epics -->
+    <!-- Project epics (unchanged content) -->
     <section class="projects-list" aria-label="Projects list" id="projectsList">
       <!-- Kitchen -->
       <article class="project-epic" data-project-id="kitchen" data-status="in-progress">
@@ -377,45 +379,153 @@
     }
     document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 
-    /* ---------- Create/Edit Projects ---------- */
-    function showNewProjectModal(){ /* … unchanged … */ openModal('Create New Project', `
-      <div class="form-grid">
-        <label for="p_name">Project Name *</label>
-        <input id="p_name" class="input" placeholder="e.g., Kitchen Renovation Epic"/>
-        <div class="form-row">
-          <div><label for="p_budget">Budget (USD)</label><input id="p_budget" type="number" class="input" placeholder="e.g., 28000"/></div>
-          <div><label for="p_status">Initial Status</label>
-            <select id="p_status" class="input"><option>Someday</option><option>Planning</option><option selected>Ready</option><option>In Progress</option><option>Blocked</option><option>Done</option></select>
+    /* ---------- Create/Edit Projects (NAMESPACED) ---------- */
+    function atlasNewProjectModal(){
+      openModal('Create New Project', `
+        <div class="form-grid">
+          <label for="p_name">Project Name *</label>
+          <input id="p_name" class="input" placeholder="e.g., Kitchen Renovation Epic"/>
+
+          <div class="form-row">
+            <div>
+              <label for="p_budget">Budget (USD)</label>
+              <input id="p_budget" type="number" class="input" placeholder="e.g., 28000"/>
+            </div>
+            <div>
+              <label for="p_status">Initial Status</label>
+              <select id="p_status" class="input">
+                <option>Someday</option><option>Planning</option><option selected>Ready</option>
+                <option>In Progress</option><option>Blocked</option><option>Done</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="p_seed">Seed a starter task?</label>
+              <select id="p_seed" class="input"><option value="yes" selected>Yes</option><option value="no">No</option></select>
+            </div>
+            <div>
+              <label for="p_assignee">Default Assignee</label>
+              <select id="p_assignee" class="input">
+                <option>Assignee A</option><option>Assignee B</option><option>Contractor</option>
+              </select>
+            </div>
           </div>
         </div>
-        <div class="form-row">
-          <div><label for="p_seed">Seed a starter task?</label><select id="p_seed" class="input"><option value="yes" selected>Yes</option><option value="no">No</option></select></div>
-          <div><label for="p_assignee">Default Assignee</label><select id="p_assignee" class="input"><option>Assignee A</option><option>Assignee B</option><option>Contractor</option></select></div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn" onclick="createProject()">Create Project</button>
+      `);
+    }
+    function createProject(){
+      const name=document.getElementById('p_name').value.trim();
+      const budget=document.getElementById('p_budget').value.trim();
+      const status=document.getElementById('p_status').value;
+      const seed=document.getElementById('p_seed').value==='yes';
+      const assignee=document.getElementById('p_assignee').value;
+
+      if(!name){ toast('Project name is required.'); return; }
+      const id=slugify(name);
+      const projects=ProjectStore.read();
+      if(projects.some(p=>p.id===id)){ toast('A project with that name already exists.'); return; }
+
+      projects.push({id,name,budget:budget?Number(budget):null,createdAt:Date.now()});
+      ProjectStore.write(projects);
+
+      if(seed){
+        const tasks=KanbanStore.read();
+        tasks.push({id:'t'+Math.random().toString(36).slice(2,7), title:'Kickoff: outline scope', desc:'Define goals, rough budget, and timeline.', status, project:id, assignee, priority:'Medium', due:''});
+        KanbanStore.write(tasks);
+      }
+      closeModal(); toast('Project created.'); viewProject(id);
+    }
+    function editProject(projectId){
+      const projects=ProjectStore.read();
+      const p=projects.find(x=>x.id===projectId);
+      if(!p){ toast('Project not found.'); return; }
+      openModal('Edit Project', `
+        <div class="form-grid">
+          <label>Name</label>
+          <input id="ep_name" class="input" value="${escapeHtml(p.name)}"/>
+          <div class="form-row">
+            <div>
+              <label>Budget (USD)</label>
+              <input id="ep_budget" type="number" class="input" value="${p.budget??''}"/>
+            </div>
+            <div>
+              <label>Project ID (read-only)</label>
+              <input class="input" value="${escapeHtml(p.id)}" readonly/>
+            </div>
+          </div>
         </div>
-      </div>`,
-      `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn" onclick="createProject()">Create Project</button>`);}
-    function createProject(){ const name=document.getElementById('p_name').value.trim(); const budget=document.getElementById('p_budget').value.trim(); const status=document.getElementById('p_status').value; const seed=document.getElementById('p_seed').value==='yes'; const assignee=document.getElementById('p_assignee').value; if(!name){ toast('Project name is required.'); return; } const id=slugify(name); const projects=ProjectStore.read(); if(projects.some(p=>p.id===id)){ toast('A project with that name already exists.'); return; } projects.push({id,name,budget:budget?Number(budget):null,createdAt:Date.now()}); ProjectStore.write(projects); if(seed){ const tasks=KanbanStore.read(); tasks.push({id:'t'+Math.random().toString(36).slice(2,7), title:'Kickoff: outline scope', desc:'Define goals, rough budget, and timeline.', status, project:id, assignee, priority:'Medium', due:''}); KanbanStore.write(tasks);} closeModal(); toast('Project created.'); viewProject(id); }
-    function editProject(projectId){ const projects=ProjectStore.read(); const p=projects.find(x=>x.id===projectId); if(!p){ toast('Project not found.'); return; } openModal('Edit Project', `
-      <div class="form-grid">
-        <label>Name</label><input id="ep_name" class="input" value="${escapeHtml(p.name)}"/>
-        <div class="form-row">
-          <div><label>Budget (USD)</label><input id="ep_budget" type="number" class="input" value="${p.budget??''}"/></div>
-          <div><label>Project ID (read-only)</label><input class="input" value="${escapeHtml(p.id)}" readonly/></div>
-        </div>
-      </div>`,
-      `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveProject('${p.id}')">Save</button>`);}
-    function saveProject(id){ const projects=ProjectStore.read(); const i=projects.findIndex(x=>x.id===id); if(i<0){ toast('Project not found.'); return; } projects[i].name=document.getElementById('ep_name').value.trim()||projects[i].name; const b=document.getElementById('ep_budget').value.trim(); projects[i].budget=b?Number(b):null; ProjectStore.write(projects); toast('Project updated.'); closeModal(); }
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn" onclick="saveProject('${p.id}')">Save</button>
+      `);
+    }
+    function saveProject(id){
+      const projects=ProjectStore.read();
+      const i=projects.findIndex(x=>x.id===id);
+      if(i<0){ toast('Project not found.'); return; }
+      projects[i].name=document.getElementById('ep_name').value.trim()||projects[i].name;
+      const b=document.getElementById('ep_budget').value.trim();
+      projects[i].budget=b?Number(b):null;
+      ProjectStore.write(projects);
+      toast('Project updated.'); closeModal();
+    }
 
     /* ---------- Tasks ---------- */
-    function openAddTaskModal(projectId){ openModal('Add Task', `
-      <label for="at_title">Title *</label><input id="at_title" class="input" placeholder="e.g., Schedule inspection"/>
-      <label for="at_desc">Description</label><textarea id="at_desc" class="input" rows="3"></textarea>
-      <div class="form-row"><div><label for="at_status">Status</label><select id="at_status" class="input">${['Someday','Planning','Ready','In Progress','Blocked','Done'].map(s=>`<option>${s}</option>`).join('')}</select></div>
-      <div><label for="at_assignee">Assignee</label><select id="at_assignee" class="input"><option>Assignee A</option><option>Assignee B</option><option>Contractor</option></select></div></div>
-      <div class="form-row"><div><label for="at_priority">Priority</label><select id="at_priority" class="input"><option>Low</option><option selected>Medium</option><option>High</option></select></div>
-      <div><label for="at_due">Due</label><input id="at_due" type="date" class="input"/></div></div>`,
-      `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn" onclick="createTask('${projectId}')">Create Task</button>`);}
-    function createTask(projectId){ const title=document.getElementById('at_title').value.trim(); if(!title){ toast('Title is required.'); return; } const desc=document.getElementById('at_desc').value.trim(); const status=document.getElementById('at_status').value; const assignee=document.getElementById('at_assignee').value; const priority=document.getElementById('at_priority').value; const due=document.getElementById('at_due').value; const tasks=KanbanStore.read(); tasks.push({id:'t'+Math.random().toString(36).slice(2,7), title, desc, status, assignee, priority, due, project:projectId}); KanbanStore.write(tasks); closeModal(); toast('Task created.'); applyFilters(); }
+    function openAddTaskModal(projectId){
+      openModal('Add Task', `
+        <label for="at_title">Title *</label>
+        <input id="at_title" class="input" placeholder="e.g., Schedule inspection"/>
+
+        <label for="at_desc">Description</label>
+        <textarea id="at_desc" class="input" rows="3"></textarea>
+
+        <div class="form-row">
+          <div>
+            <label for="at_status">Status</label>
+            <select id="at_status" class="input">
+              ${['Someday','Planning','Ready','In Progress','Blocked','Done'].map(s=>`<option>${s}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label for="at_assignee">Assignee</label>
+            <select id="at_assignee" class="input"><option>Assignee A</option><option>Assignee B</option><option>Contractor</option></select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label for="at_priority">Priority</label>
+            <select id="at_priority" class="input"><option>Low</option><option selected>Medium</option><option>High</option></select>
+          </div>
+          <div>
+            <label for="at_due">Due</label>
+            <input id="at_due" type="date" class="input"/>
+          </div>
+        </div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn" onclick="createTask('${projectId}')">Create Task</button>
+      `);
+    }
+    function createTask(projectId){
+      const title=document.getElementById('at_title').value.trim();
+      if(!title){ toast('Title is required.'); return; }
+      const desc=document.getElementById('at_desc').value.trim();
+      const status=document.getElementById('at_status').value;
+      const assignee=document.getElementById('at_assignee').value;
+      const priority=document.getElementById('at_priority').value;
+      const due=document.getElementById('at_due').value;
+
+      const tasks=KanbanStore.read();
+      tasks.push({id:'t'+Math.random().toString(36).slice(2,7), title, desc, status, assignee, priority, due, project:projectId});
+      KanbanStore.write(tasks);
+      closeModal(); toast('Task created.'); applyFilters();
+    }
 
     function viewTask(taskId){
       const tasks=KanbanStore.read();
@@ -427,17 +537,59 @@
         t={id:taskId,title:(el?.textContent||'Untitled Task').trim(),desc:'',status:'Planning',project:pid,assignee:'Assignee A',priority:'Medium',due:''};
         tasks.push(t); KanbanStore.write(tasks);
       }
+
       openModal('Task Details', `
-        <label>Title</label><input id="td_title" class="input" value="${escapeHtml(t.title)}"/>
-        <label>Description</label><textarea id="td_desc" class="input" rows="4">${escapeHtml(t.desc)}</textarea>
-        <div class="form-row"><div><label>Status</label><select id="td_status" class="input">${['Someday','Planning','Ready','In Progress','Blocked','Done'].map(s=>`<option ${t.status===s?'selected':''}>${s}</option>`).join('')}</select></div>
-        <div><label>Assignee</label><select id="td_assignee" class="input">${['Assignee A','Assignee B','Contractor'].map(a=>`<option ${t.assignee===a?'selected':''}>${a}</option>`).join('')}</select></div></div>
-        <div class="form-row"><div><label>Priority</label><select id="td_priority" class="input">${['Low','Medium','High'].map(p=>`<option ${t.priority===p?'selected':''}>${p}</option>`).join('')}</select></div>
-        <div><label>Due</label><input id="td_due" type="date" class="input" value="${escapeHtml(t.due)}"/></div></div>`,
-        `<button class="btn btn-secondary" onclick="closeModal()">Close</button><button class="btn btn-secondary" onclick="openOnBoard('${t.project||'general'}')">Open on Board</button><button class="btn" onclick="saveTask('${t.id}')">Save Changes</button>`
-      );
+        <label>Title</label>
+        <input id="td_title" class="input" value="${escapeHtml(t.title)}"/>
+
+        <label>Description</label>
+        <textarea id="td_desc" class="input" rows="4">${escapeHtml(t.desc)}</textarea>
+
+        <div class="form-row">
+          <div>
+            <label>Status</label>
+            <select id="td_status" class="input">
+              ${['Someday','Planning','Ready','In Progress','Blocked','Done'].map(s=>`<option ${t.status===s?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label>Assignee</label>
+            <select id="td_assignee" class="input">
+              ${['Assignee A','Assignee B','Contractor'].map(a=>`<option ${t.assignee===a?'selected':''}>${a}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label>Priority</label>
+            <select id="td_priority" class="input">
+              ${['Low','Medium','High'].map(p=>`<option ${t.priority===p?'selected':''}>${p}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label>Due</label>
+            <input id="td_due" type="date" class="input" value="${escapeHtml(t.due)}"/>
+          </div>
+        </div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        <button class="btn btn-secondary" onclick="openOnBoard('${t.project||'general'}')">Open on Board</button>
+        <button class="btn" onclick="saveTask('${t.id}')">Save Changes</button>
+      `);
     }
-    function saveTask(id){ const tasks=KanbanStore.read(); const i=tasks.findIndex(x=>x.id===id); if(i===-1){ toast('Task not found.'); return; } tasks[i].title=document.getElementById('td_title').value.trim()||tasks[i].title; tasks[i].desc=document.getElementById('td_desc').value.trim(); tasks[i].status=document.getElementById('td_status').value; tasks[i].assignee=document.getElementById('td_assignee').value; tasks[i].priority=document.getElementById('td_priority').value; tasks[i].due=document.getElementById('td_due').value; KanbanStore.write(tasks); toast('Task updated.'); closeModal(); applyFilters(); }
+    function saveTask(id){
+      const tasks=KanbanStore.read();
+      const i=tasks.findIndex(x=>x.id===id);
+      if(i===-1){ toast('Task not found.'); return; }
+      tasks[i].title=document.getElementById('td_title').value.trim()||tasks[i].title;
+      tasks[i].desc=document.getElementById('td_desc').value.trim();
+      tasks[i].status=document.getElementById('td_status').value;
+      tasks[i].assignee=document.getElementById('td_assignee').value;
+      tasks[i].priority=document.getElementById('td_priority').value;
+      tasks[i].due=document.getElementById('td_due').value;
+      KanbanStore.write(tasks); toast('Task updated.'); closeModal(); applyFilters();
+    }
 
     /* ---------- Filters & Nav helpers ---------- */
     function viewProject(id){ window.location.href=`kanban.html?project=${id}`; }
@@ -445,8 +597,8 @@
 
     function mapStatus(val){ const m={ 'active':'in-progress', 'planning':'planning', 'on-hold':'blocked', 'completed':'done' }; return m[val]||null; }
     function applyFilters(){
-      const statusVal=document.getElementById('statusFilter').value;   // all | active | planning | on-hold | completed
-      const prioVal=document.getElementById('priorityFilter').value;   // all | high | medium | low
+      const statusVal=document.getElementById('statusFilter').value;
+      const prioVal=document.getElementById('priorityFilter').value;
       const wantedStatus = mapStatus(statusVal);
       const tasks = KanbanStore.read();
 
@@ -485,28 +637,40 @@
     })();
 
     /* ---------- Legacy drawer sweeper ---------- */
-    const legacySelectors = ['#taskDetails','.task-details','.drawer.task-details','.modal.task-details'];
+    const legacySelectors = [
+      '#taskDetails','.task-details','.drawer.task-details','.modal.task-details',
+      '#projectDetails','.project-details','.drawer.project-details'
+    ];
     function removeLegacyNow(){ legacySelectors.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.remove())); }
     document.addEventListener('DOMContentLoaded', ()=>{ removeLegacyNow(); applyFilters(); });
     const mo = new MutationObserver(()=>removeLegacyNow());
     mo.observe(document.body, {childList:true,subtree:true});
   </script>
 
-  <!-- ===== CRITICAL GUARD =====
-       Stop atlas-interactive's universal task handler from opening its own modal.
-       We capture earlier, open our modal, then stop propagation. -->
+  <!-- ===== CRITICAL GUARDS ===== -->
   <script>
+    // 1) Route New Project clicks to our namespaced function and stop others.
+    document.addEventListener('click', function(e){
+      const btn = e.target.closest('[data-new-project]');
+      if(!btn) return;
+      e.preventDefault();
+      if(typeof window.atlasNewProjectModal === 'function'){ window.atlasNewProjectModal(); }
+      else if(typeof window.atlasNewProjectModal === 'undefined'){ atlasNewProjectModal(); } // call directly
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+    }, true);
+
+    // 2) Prevent other scripts from opening their task drawer when clicking tasks.
     document.addEventListener('click', function(e){
       const target = e.target.closest('[data-task-id], .task-link');
       if(!target) return;
       const id = target.getAttribute('data-task-id') || (target.getAttribute('href')||'').replace('#','');
       if(!id) return;
-      // Use our modal:
-      if(typeof window.viewTask === 'function'){ e.preventDefault(); window.viewTask(id); }
-      // Block anyone else (including capture listeners registered later):
+      e.preventDefault();
+      if(typeof window.viewTask === 'function'){ window.viewTask(id); }
       e.stopImmediatePropagation();
       e.stopPropagation();
-    }, true); // capture
+    }, true);
   </script>
 
   <!-- Keep the main site script last -->
