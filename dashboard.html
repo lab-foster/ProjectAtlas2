@@ -1,705 +1,461 @@
+<!-- File: dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Project Atlas Dashboard - View and manage all your home improvement projects in one place" />
-    <meta name="robots" content="noindex, nofollow" />
-    <title>Dashboard - Project Atlas</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Dashboard - Project Atlas</title>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml"
-          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗂️</text></svg>"/>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="atlas-interactive.css" />
+  <style>
+    /* ——— Layout polish to match Projects/Kanban ——— */
+    .dashboard-container{max-width:1200px;margin:0 auto;padding:var(--space-xl)}
+    .dashboard-header{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--space-md);margin-bottom:var(--space-lg)}
+    .dashboard-header h2{margin:0}
+    .quick-links{display:flex;gap:.5rem;flex-wrap:wrap}
+    .quick-links .btn{display:inline-flex;align-items:center;gap:.5rem}
 
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="atlas-interactive.css" />
+    .dashboard-grid{display:grid;grid-template-columns:1fr 340px;gap:var(--space-xl)}
+    .project-overview,.widget{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+    .project-overview{padding:var(--space-lg)}
+    .project-overview>h3{margin:0 0 var(--space-md) 0}
+
+    .project-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--space-md)}
+    .project-card{border:1px solid var(--border-light);border-radius:14px;padding:var(--space-md);background:var(--bg-elevated)}
+    .project-header{display:flex;justify-content:space-between;gap:var(--space-sm);align-items:flex-start;margin-bottom:.5rem}
+    .project-header h4{margin:0;font-size:1rem}
+    .status-badge{font-size:.75rem;padding:.25rem .55rem;border-radius:999px;border:1px solid var(--border-light);background:#fff}
+    .in-progress{color:#0b5bd3;border-color:#cfe0ff;background:#eef5ff}
+    .planning{color:#8a6c00;border-color:#f7e3a0;background:#fff7d1}
+    .blocked{color:#b00020;border-color:#ffd1d6;background:#fff1f3}
+    .done{color:#2e7d32;border-color:#c8e6c9;background:#edf7ed}
+
+    .project-stats{display:grid;gap:.5rem}
+    .stat{display:grid;grid-template-columns:auto 1fr auto;gap:.6rem;align-items:center}
+    .stat-label{color:var(--text-tertiary);font-size:.8rem}
+    .stat-value{font-weight:600}
+    .progress-bar{height:8px;background:#e6eefc;border-radius:8px;overflow:hidden}
+    .progress-fill{height:100%;background:var(--app-primary)}
+
+    .project-actions{display:flex;gap:1rem;margin-top:.5rem}
+    .project-actions .btn-link{padding:0}
+
+    .sidebar-widgets{display:flex;flex-direction:column;gap:var(--space-md)}
+    .widget{padding:var(--space-lg)}
+    .widget h3{margin:0 0 .5rem 0}
+    .widget .btn-link{padding:0}
+
+    .budget-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem}
+    .budget-item{background:var(--bg-secondary);border:1px solid var(--border-light);border-radius:10px;padding:.6rem .7rem;text-align:center}
+    .budget-label{display:block;color:var(--text-tertiary);font-size:.8rem}
+    .budget-amount{font-weight:700}
+
+    .chart-bar{height:8px;background:var(--border-light);border-radius:8px;overflow:hidden;margin-top:.5rem}
+    .chart-fill{height:100%;background:var(--app-primary)}
+
+    /* Backdrop & modal (simple local version) */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(10,28,52,.35);opacity:0;pointer-events:none;transition:opacity .15s;z-index:1195}
+    .modal-backdrop.show{opacity:1;pointer-events:auto}
+    .modal{position:fixed;inset:0;display:none;place-items:center;z-index:1200}
+    .modal.open{display:grid}
+    .modal-panel{width:min(720px,92vw);background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border-light)}
+    .modal-title{margin:0}
+    .modal-body{padding:18px 20px;max-height:70vh;overflow:auto}
+    .modal-footer{padding:14px 20px;border-top:1px solid var(--border-light);display:flex;justify-content:flex-end;gap:12px}
+    .modal-close{border:none;background:transparent;font-size:1.5rem;cursor:pointer}
+    .atlas-modal-open{overflow:hidden}
+
+    .form-grid{display:grid;gap:12px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .input{width:100%;border:1px solid var(--border-default);border-radius:10px;padding:10px 12px;background:var(--bg-secondary)}
+    .input:focus{outline:2px solid var(--app-primary-light);border-color:var(--app-primary)}
+
+    @media (max-width:1024px){.dashboard-grid{grid-template-columns:1fr}}
+  </style>
 </head>
 <body class="app-page">
-    <!-- Skip to Main Content -->
-    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+  <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-    <!-- Application Header -->
-    <header class="app-header">
-        <div class="header-container">
-            <!-- Logo -->
-            <div class="logo">
-                <h1>Project <span class="atlas-blue">ATLAS</span></h1>
-                <span class="tagline">Home Project Management</span>
-            </div>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo">
+        <h1>Project <span class="atlas-blue">ATLAS</span></h1>
+        <span class="tagline">Home Project Management</span>
+      </div>
 
-            <!-- Mobile Menu Toggle -->
-            <button class="mobile-menu-toggle"
-                    onclick="toggleMobileMenu()"
-                    aria-label="Toggle navigation menu"
-                    aria-expanded="false"
-                    aria-controls="mainNav">
-                <span aria-hidden="true">☰</span>
-            </button>
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-expanded="false" aria-controls="mainNav" aria-label="Toggle navigation">
+        <span aria-hidden="true">☰</span>
+      </button>
 
-            <!-- Main Navigation -->
-            <nav class="main-nav" id="mainNav" aria-label="Main navigation">
-                <ul>
-                    <li><a href="dashboard.html" class="active" aria-current="page">Dashboard</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="kanban.html">Kanban Board</a></li>
-                    <li><a href="budget.html">Budget Tracker</a></li>
-                    <li><a href="calendar.html">Calendar</a></li>
-                    <li><a href="documents.html">Documents</a></li>
-                </ul>
-            </nav>
+      <nav class="main-nav" id="mainNav">
+        <ul>
+          <li><a href="dashboard.html" class="active" aria-current="page">Dashboard</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="kanban.html">Kanban Board</a></li>
+          <li><a href="budget.html">Budget Tracker</a></li>
+          <li><a href="calendar.html">Calendar</a></li>
+          <li><a href="documents.html">Documents</a></li>
+        </ul>
+      </nav>
 
-            <!-- User Menu -->
-            <div class="user-menu">
-                <button class="btn btn-secondary"
-                        onclick="if(window.atlas && window.atlas.showNewProjectModal){window.atlas.showNewProjectModal();}else{openBasicNewProject();}"
-                        aria-label="Create new project">
-                    <span aria-hidden="true">+</span> New Project
-                </button>
-                <button class="user-avatar"
-                        onclick="if(window.atlas && window.atlas.showUserMenu){window.atlas.showUserMenu();}"
-                        aria-label="User menu"
-                        title="User Menu">
-                    AF
-                </button>
-            </div>
+      <div class="user-menu">
+        <button class="btn btn-secondary" onclick="openNewProject()" aria-label="Create new project"><span aria-hidden="true">＋</span> New Project</button>
+        <button class="user-avatar" aria-label="User menu">AF</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="dashboard-main" id="main-content">
+    <div class="dashboard-container">
+      <section class="dashboard-header">
+        <div>
+          <h2>Welcome back</h2>
+          <p id="dashboardSummary" class="text-secondary">High-level snapshot with quick links into each area.</p>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="dashboard-main" id="main-content">
-        <div class="dashboard-container">
-            <!-- Dashboard Header -->
-            <section class="dashboard-header">
-                <h2>Welcome back, Andrew</h2>
-                <p id="dashboardSummary">You have <strong>3 active projects</strong> and <strong>2 items</strong> that need your attention</p>
-            </section>
-
-            <!-- Dashboard Grid -->
-            <div class="dashboard-grid">
-                <!-- Active Projects Section -->
-                <section class="project-overview" aria-labelledby="projects-heading">
-                    <h3 id="projects-heading">Active Projects</h3>
-
-                    <div class="project-cards" id="projectCardsContainer">
-                        <!-- Kitchen Renovation Project -->
-                        <article class="project-card status-in-progress" data-project-id="kitchen">
-                            <div class="project-header">
-                                <h4>Kitchen Renovation Epic</h4>
-                                <span class="status-badge in-progress" role="status">In Progress</span>
-                            </div>
-
-                            <div class="project-stats">
-                                <div class="stat">
-                                    <span class="stat-label">Progress</span>
-                                    <div class="progress-bar" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress: 65%">
-                                        <div class="progress-fill" style="width: 65%"></div>
-                                    </div>
-                                    <span class="stat-value">65%</span>
-                                </div>
-
-                                <div class="stat">
-                                    <span class="stat-label">Budget</span>
-                                    <span class="stat-value">$21,500 <span class="text-tertiary">/ $28,000</span></span>
-                                </div>
-
-                                <div class="stat">
-                                    <span class="stat-label">Next</span>
-                                    <span class="stat-value">Countertop template</span>
-                                </div>
-                            </div>
-
-                            <div class="project-actions">
-                                <button class="btn-link" onclick="viewProject('kitchen')" aria-label="View Kitchen Renovation Epic board">
-                                    View Epic Board
-                                </button>
-                                <button class="btn-link" onclick="openAddTaskModal('kitchen','Planning')" aria-label="Add tasks to Kitchen Renovation Epic">
-                                    Add Tasks
-                                </button>
-                            </div>
-                        </article>
-
-                        <!-- Basement Finishing Project -->
-                        <article class="project-card status-planning" data-project-id="basement">
-                            <div class="project-header">
-                                <h4>Basement Finishing Epic</h4>
-                                <span class="status-badge planning" role="status">Planning</span>
-                            </div>
-
-                            <div class="project-stats">
-                                <div class="stat">
-                                    <span class="stat-label">Progress</span>
-                                    <div class="progress-bar" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress: 15%">
-                                        <div class="progress-fill" style="width: 15%"></div>
-                                    </div>
-                                    <span class="stat-value">15%</span>
-                                </div>
-
-                                <div class="stat">
-                                    <span class="stat-label">Budget</span>
-                                    <span class="stat-value">$5,200 <span class="text-tertiary">/ $35,000</span></span>
-                                </div>
-
-                                <div class="stat">
-                                    <span class="stat-label">Next</span>
-                                    <span class="stat-value">Permit application</span>
-                                </div>
-                            </div>
-
-                            <div class="project-actions">
-                                <button class="btn-link" onclick="viewProject('basement')" aria-label="View Basement Finishing Epic board">
-                                    View Epic Board
-                                </button>
-                                <button class="btn-link" onclick="openAddTaskModal('basement','Planning')" aria-label="Add tasks to Basement Finishing Epic">
-                                    Add Tasks
-                                </button>
-                            </div>
-                        </article>
-
-                        <!-- Bathroom Update Project -->
-                        <article class="project-card status-blocked" data-project-id="bathroom">
-                            <div class="project-header">
-                                <h4>Bathroom Update Epic</h4>
-                                <span class="status-badge blocked" role="status">Blocked</span>
-                            </div>
-
-                            <div class="project-stats">
-                                <div class="stat">
-                                    <span class="stat-label">Progress</span>
-                                    <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress: 40%">
-                                        <div class="progress-fill" style="width: 40%"></div>
-                                    </div>
-                                    <span class="stat-value">40%</span>
-                                </div>
-
-                                <div class="stat">
-                                    <span class="stat-label">Budget</span>
-                                    <span class="stat-value">$8,100 <span class="text-tertiary">/ $12,000</span></span>
-                                </div>
-
-                                <div class="stat">
-                                    <span class="stat-label">Blocked by</span>
-                                    <span class="stat-value">Inspection pending</span>
-                                </div>
-                            </div>
-
-                            <div class="project-actions">
-                                <button class="btn-link" onclick="viewProject('bathroom')" aria-label="View Bathroom Update Epic board">
-                                    View Epic Board
-                                </button>
-                                <button class="btn-link" onclick="openAddTaskModal('bathroom','Planning')" aria-label="Add tasks to Bathroom Update Epic">
-                                    Add Tasks
-                                </button>
-                            </div>
-                        </article>
-                    </div>
-                </section>
-
-                <!-- Sidebar Widgets -->
-                <aside class="sidebar-widgets" aria-label="Dashboard widgets">
-                    <!-- Recent Activity Widget -->
-                    <section class="widget recent-activity" aria-labelledby="activity-heading">
-                        <h3 id="activity-heading">Recent Activity</h3>
-
-                        <ul class="activity-list" id="activityListContainer">
-                            <li class="activity-item"
-                                role="button"
-                                tabindex="0"
-                                onclick="viewActivityDetail('1')"
-                                onkeypress="handleKeyPress(event, 'viewActivityDetail', '1')">
-                                <span class="activity-icon" aria-hidden="true">🧰</span>
-                                <div class="activity-text">
-                                    <div class="activity-title">Added task “Install backsplash” to Kitchen</div>
-                                    <time class="activity-time" datetime="2025-10-12T14:00:00">2 hours ago</time>
-                                </div>
-                            </li>
-
-                            <li class="activity-item"
-                                role="button"
-                                tabindex="0"
-                                onclick="viewActivityDetail('2')"
-                                onkeypress="handleKeyPress(event, 'viewActivityDetail', '2')">
-                                <span class="activity-icon" aria-hidden="true">✅</span>
-                                <div class="activity-text">
-                                    <div class="activity-title">Marked “Order tile” as Done</div>
-                                    <time class="activity-time" datetime="2025-10-12T12:00:00">4 hours ago</time>
-                                </div>
-                            </li>
-
-                            <li class="activity-item"
-                                role="button"
-                                tabindex="0"
-                                onclick="viewActivityDetail('3')"
-                                onkeypress="handleKeyPress(event, 'viewActivityDetail', '3')">
-                                <span class="activity-icon" aria-hidden="true">📎</span>
-                                <div class="activity-text">
-                                    <div class="activity-title">Uploaded “Electrical permit approval”</div>
-                                    <time class="activity-time" datetime="2025-10-12T10:00:00">6 hours ago</time>
-                                </div>
-                            </li>
-                        </ul>
-                    </section>
-
-                    <!-- Upcoming Tasks Widget -->
-                    <section class="widget upcoming-tasks" aria-labelledby="tasks-heading">
-                        <h3 id="tasks-heading">Upcoming Tasks</h3>
-
-                        <ul class="task-list" id="upcomingTasksContainer">
-                            <li class="task-item priority-high"
-                                role="button"
-                                tabindex="0"
-                                onclick="viewTaskDetail('t9')"
-                                onkeypress="handleKeyPress(event, 'viewTaskDetail', 't9')">
-                                <span class="task-priority high" aria-label="High priority">!</span>
-                                <span class="task-text">Schedule plumbing inspection</span>
-                                <time class="task-due" datetime="2025-10-13">Due tomorrow</time>
-                            </li>
-
-                            <li class="task-item priority-medium"
-                                role="button"
-                                tabindex="0"
-                                onclick="viewTaskDetail('t11')"
-                                onkeypress="handleKeyPress(event, 'viewTaskDetail', 't11')">
-                                <span class="task-priority medium" aria-label="Medium priority">•</span>
-                                <span class="task-text">Order bathroom vanity</span>
-                                <time class="task-due" datetime="2025-10-15">Due Friday</time>
-                            </li>
-
-                            <li class="task-item priority-low"
-                                role="button"
-                                tabindex="0"
-                                onclick="viewTaskDetail('t8')"
-                                onkeypress="handleKeyPress(event, 'viewTaskDetail', 't8')">
-                                <span class="task-priority low" aria-label="Low priority">-</span>
-                                <span class="task-text">Research countertop materials</span>
-                                <time class="task-due" datetime="2025-10-18">Due next week</time>
-                            </li>
-                        </ul>
-                    </section>
-
-                    <!-- Budget Summary Widget -->
-                    <section class="widget budget-summary" aria-labelledby="budget-heading">
-                        <h3 id="budget-heading">Budget Overview</h3>
-
-                        <div class="budget-stats">
-                            <div class="budget-item">
-                                <span class="budget-label">Total Allocated</span>
-                                <span class="budget-amount">$75,000</span>
-                            </div>
-
-                            <div class="budget-item">
-                                <span class="budget-label">Total Spent</span>
-                                <span class="budget-amount spent">$36,700</span>
-                            </div>
-
-                            <div class="budget-item">
-                                <span class="budget-label">Remaining</span>
-                                <span class="budget-amount remaining">$38,300</span>
-                            </div>
-                        </div>
-
-                        <div class="budget-chart">
-                            <div class="chart-bar"
-                                 role="progressbar"
-                                 aria-valuenow="49"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100"
-                                 aria-label="Budget utilization: 49%">
-                                <div class="chart-fill" style="width: 49%"></div>
-                            </div>
-                            <p class="chart-label">49% budget utilized</p>
-                        </div>
-
-                        <a href="budget.html" class="btn-link" style="margin-top: var(--space-md); display: inline-block;">
-                            View Full Budget →
-                        </a>
-                    </section>
-                </aside>
-            </div>
+        <div class="quick-links" aria-label="Quick links">
+          <a class="btn btn-secondary" href="projects.html">Open Projects</a>
+          <a class="btn btn-secondary" href="kanban.html">Open Kanban</a>
+          <a class="btn btn-secondary" href="budget.html">Open Budget</a>
+          <a class="btn btn-secondary" href="calendar.html">Open Calendar</a>
+          <a class="btn btn-secondary" href="documents.html">Open Documents</a>
         </div>
-    </main>
+      </section>
 
-    <!-- Reusable Backdrop & Modal Root -->
-    <div id="backdrop" class="modal-backdrop"></div>
-    <div id="modalRoot" class="modal" aria-hidden="true"></div>
+      <div class="dashboard-grid">
+        <!-- Left: Active Projects -->
+        <section class="project-overview" aria-labelledby="projects-heading">
+          <h3 id="projects-heading">Active Projects</h3>
 
-    <!-- Scripts -->
-    <script>
-        // ---------- THEME UTIL ----------
-        function toast(msg){
-          let t = document.getElementById('atlas-toast');
-          if(!t){
-            t = document.createElement('div');
-            t.id='atlas-toast';
-            t.style.cssText='position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0b3a75;color:#fff;border-radius:10px;padding:10px 14px;box-shadow:0 8px 20px rgba(0,0,0,.2);z-index:1200;opacity:0;transition:opacity .15s ease';
-            document.body.appendChild(t);
-          }
-          t.textContent = msg;
-          t.style.opacity = '1';
-          setTimeout(()=>t.style.opacity='0', 1500);
-        }
-
-        // ---------- MOBILE NAV ----------
-        function toggleMobileMenu() {
-            const nav = document.getElementById('mainNav');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            const isExpanded = nav.classList.toggle('active');
-            toggle.setAttribute('aria-expanded', isExpanded);
-        }
-
-        // Keyboard accessibility helper
-        function handleKeyPress(event, functionName, id) {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                if (typeof window[functionName] === 'function') {
-                    if (typeof id !== 'undefined') {
-                        window[functionName](id);
-                    } else {
-                        window[functionName]();
-                    }
-                }
-            }
-        }
-
-        // ---------- STORAGE MODEL (aligned with kanban.html) ----------
-        const KanbanStore = {
-          keyTasks: 'atlas.kanban.tasks',
-          keyStatuses: 'atlas.kanban.statuses',
-          read(){ try { return JSON.parse(localStorage.getItem(this.keyTasks)) || []; } catch { return []; } },
-          write(list){ localStorage.setItem(this.keyTasks, JSON.stringify(list)); },
-          ensureSeed(){
-            // if kanban has no data, seed with defaults used in kanban.html
-            const existing = this.read();
-            if(existing.length) return;
-            const seed = [
-              {id:"t1", title:"Research countertop materials", desc:"Quartz vs granite. Look at Costco & local fabricators.", status:"Someday", project:"kitchen", assignee:"Andrew", priority:"Low",  due:"",          deps:[]},
-              {id:"t2", title:"Submit basement permit",       desc:"City of Woodinville online portal",                     status:"Planning", project:"basement", assignee:"Andrew", priority:"High", due:"2025-10-18", deps:[]},
-              {id:"t3", title:"Order bathroom vanity",        desc:"36” oak, matte black hardware – Home Depot",           status:"Ready",    project:"bathroom", assignee:"Katie",  priority:"Medium",due:"2025-10-15", deps:[]},
-              {id:"t4", title:"Install backsplash",           desc:"Subway tile herringbone. Use leveling clips.",         status:"In Progress", project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-20", deps:["t6"]},
-              {id:"t5", title:"Seal grout",                   desc:"After 72 hours, apply two coats.",                     status:"Blocked",  project:"kitchen", assignee:"Andrew", priority:"Low",  due:"",          deps:["t4"]},
-              {id:"t6", title:"Countertop template",          desc:"Schedule template after cabinet alignment.",           status:"Done",     project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-10", deps:[]},
-            ];
-            this.write(seed);
-          }
-        };
-        KanbanStore.ensureSeed();
-
-        function slugify(s){ return (s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
-        function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[m])); }
-
-        // ---------- SIMPLE MODAL (fallback when global atlas modal not present) ----------
-        function openBasicModal(title, html, footerHtml){
-          const modalRoot = document.getElementById("modalRoot");
-          const backdrop  = document.getElementById("backdrop");
-          modalRoot.innerHTML = `
-            <div class="modal-panel" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
-              <div class="modal-header">
-                <h3 class="modal-title">${escapeHtml(title)}</h3>
-                <button class="modal-close" aria-label="Close" onclick="closeBasicModal()">&times;</button>
+          <div class="project-cards" id="projectCardsContainer">
+            <!-- Kitchen -->
+            <article class="project-card status-in-progress" data-project-id="kitchen">
+              <div class="project-header">
+                <h4>Kitchen Renovation Epic</h4>
+                <span class="status-badge in-progress">IN PROGRESS</span>
               </div>
-              <div class="modal-body">${html}</div>
-              <div class="modal-footer">${footerHtml || '<button class="btn" onclick="closeBasicModal()">Close</button>'}</div>
-            </div>`;
-          backdrop.classList.add("show");
-          modalRoot.classList.add("open");
-          document.body.classList.add("atlas-modal-open");
-        }
-        function closeBasicModal(){
-          const modalRoot = document.getElementById("modalRoot");
-          const backdrop  = document.getElementById("backdrop");
-          modalRoot.classList.remove("open");
-          backdrop.classList.remove("show");
-          modalRoot.innerHTML = "";
-          document.body.classList.remove("atlas-modal-open");
-        }
-
-        // ---------- ROUTING ----------
-        function viewProject(projectId) {
-            window.location.href = `kanban.html?project=${projectId}`;
-        }
-
-        // ---------- NEW PROJECT (fixes: + New Project button did nothing) ----------
-        function openBasicNewProject(){
-          openBasicModal("Create New Project", `
-            <div class="form-grid">
-              <label for="np_name">Project Name *</label>
-              <input id="np_name" class="input" placeholder="e.g., Kitchen Renovation"/>
-
-              <label for="np_budget">Budget (USD)</label>
-              <input id="np_budget" type="number" class="input" placeholder="e.g., 28000"/>
-
-              <div class="form-row">
-                <div>
-                  <label for="np_status">Initial Status</label>
-                  <select id="np_status" class="input">
-                    <option>Someday</option>
-                    <option>Planning</option>
-                    <option selected>Ready</option>
-                    <option>In Progress</option>
-                    <option>Blocked</option>
-                    <option>Done</option>
-                  </select>
+              <div class="project-stats">
+                <div class="stat">
+                  <span class="stat-label">Progress</span>
+                  <div class="progress-bar" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" aria-label="Progress 65%">
+                    <div class="progress-fill" style="width:65%"></div>
+                  </div>
+                  <span class="stat-value">65%</span>
                 </div>
-                <div>
-                  <label for="np_seed">Seed a starter task?</label>
-                  <select id="np_seed" class="input">
-                    <option value="yes" selected>Yes</option>
-                    <option value="no">No</option>
-                  </select>
+                <div class="stat">
+                  <span class="stat-label">Budget</span>
+                  <span class="stat-value">$21,500 <span class="text-tertiary">/ $28,000</span></span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Next</span>
+                  <span class="stat-value">Countertop template</span>
                 </div>
               </div>
+              <div class="project-actions">
+                <a class="btn-link" href="kanban.html?project=kitchen">Open Board</a>
+                <button class="btn-link" onclick="openAddTaskModal('kitchen','Planning')">Add Task</button>
+              </div>
+            </article>
+
+            <!-- Basement -->
+            <article class="project-card status-planning" data-project-id="basement">
+              <div class="project-header">
+                <h4>Basement Finishing Epic</h4>
+                <span class="status-badge planning">PLANNING</span>
+              </div>
+              <div class="project-stats">
+                <div class="stat">
+                  <span class="stat-label">Progress</span>
+                  <div class="progress-bar" role="progressbar" aria-valuenow="15" aria-label="Progress 15%">
+                    <div class="progress-fill" style="width:15%"></div>
+                  </div>
+                  <span class="stat-value">15%</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Budget</span>
+                  <span class="stat-value">$5,200 <span class="text-tertiary">/ $35,000</span></span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Next</span>
+                  <span class="stat-value">Permit application</span>
+                </div>
+              </div>
+              <div class="project-actions">
+                <a class="btn-link" href="kanban.html?project=basement">Open Board</a>
+                <button class="btn-link" onclick="openAddTaskModal('basement','Planning')">Add Task</button>
+              </div>
+            </article>
+
+            <!-- Bathroom -->
+            <article class="project-card status-blocked" data-project-id="bathroom">
+              <div class="project-header">
+                <h4>Bathroom Update Epic</h4>
+                <span class="status-badge blocked">BLOCKED</span>
+              </div>
+              <div class="project-stats">
+                <div class="stat">
+                  <span class="stat-label">Progress</span>
+                  <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-label="Progress 40%">
+                    <div class="progress-fill" style="width:40%"></div>
+                  </div>
+                  <span class="stat-value">40%</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Budget</span>
+                  <span class="stat-value">$8,100 <span class="text-tertiary">/ $12,000</span></span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Blocked by</span>
+                  <span class="stat-value">Inspection pending</span>
+                </div>
+              </div>
+              <div class="project-actions">
+                <a class="btn-link" href="kanban.html?project=bathroom">Open Board</a>
+                <button class="btn-link" onclick="openAddTaskModal('bathroom','Planning')">Add Task</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Right: Widgets -->
+        <aside class="sidebar-widgets" aria-label="Dashboard widgets">
+          <section class="widget upcoming-tasks" aria-labelledby="tasks-heading">
+            <h3 id="tasks-heading">Upcoming Tasks</h3>
+            <ul class="task-list" id="upcomingTasksContainer">
+              <li class="task-item priority-high" role="button" tabindex="0" onclick="viewTaskDetail('t9')">
+                <span class="task-priority high" aria-label="High priority">!</span>
+                <span class="task-text">Schedule plumbing inspection</span>
+                <time class="task-due" datetime="2025-10-13">Due tomorrow</time>
+              </li>
+              <li class="task-item priority-medium" role="button" tabindex="0" onclick="viewTaskDetail('t11')">
+                <span class="task-priority medium" aria-label="Medium priority">•</span>
+                <span class="task-text">Order bathroom vanity</span>
+                <time class="task-due" datetime="2025-10-15">Due Friday</time>
+              </li>
+              <li class="task-item priority-low" role="button" tabindex="0" onclick="viewTaskDetail('t1')">
+                <span class="task-priority low" aria-label="Low priority">–</span>
+                <span class="task-text">Research countertop materials</span>
+                <time class="task-due" datetime="2025-10-18">Due next week</time>
+              </li>
+            </ul>
+            <a class="btn-link" href="kanban.html" style="margin-top:.5rem;display:inline-block">Open Kanban →</a>
+          </section>
+
+          <section class="widget budget-summary" aria-labelledby="budget-heading">
+            <h3 id="budget-heading">Budget Overview</h3>
+            <div class="budget-stats">
+              <div class="budget-item"><span class="budget-label">Total Allocated</span><span class="budget-amount">$75,000</span></div>
+              <div class="budget-item"><span class="budget-label">Total Spent</span><span class="budget-amount">$36,700</span></div>
+              <div class="budget-item"><span class="budget-label">Remaining</span><span class="budget-amount">$38,300</span></div>
             </div>
-          `, `
-            <button class="btn btn-secondary" onclick="closeBasicModal()">Cancel</button>
-            <button class="btn" onclick="createBasicProject()">Create Project</button>
-          `);
-        }
+            <div class="chart-bar" role="progressbar" aria-valuenow="49" aria-label="Budget utilized 49%"><div class="chart-fill" style="width:49%"></div></div>
+            <p class="text-tertiary" style="margin:.25rem 0 0">49% budget utilized</p>
+            <a class="btn-link" href="budget.html" style="margin-top:.5rem;display:inline-block">View Full Budget →</a>
+          </section>
 
-        function createBasicProject(){
-          const name   = document.getElementById('np_name').value.trim();
-          const budget = document.getElementById('np_budget').value.trim();
-          const status = document.getElementById('np_status').value;
-          const seed   = document.getElementById('np_seed').value === 'yes';
+          <section class="widget recent-activity" aria-labelledby="activity-heading">
+            <h3 id="activity-heading">Recent Activity</h3>
+            <ul class="activity-list" id="activityListContainer">
+              <li class="activity-item"><span class="activity-icon" aria-hidden="true">🧰</span><span class="activity-title">Added task “Install backsplash”</span><time class="activity-time">2h</time></li>
+              <li class="activity-item"><span class="activity-icon" aria-hidden="true">✅</span><span class="activity-title">Marked “Order tile” as Done</span><time class="activity-time">4h</time></li>
+              <li class="activity-item"><span class="activity-icon" aria-hidden="true">📎</span><span class="activity-title">Uploaded “Electrical permit approval”</span><time class="activity-time">6h</time></li>
+            </ul>
+            <a class="btn-link" href="documents.html" style="margin-top:.5rem;display:inline-block">Open Documents →</a>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </main>
 
-          if(!name){ toast("Project name is required."); return; }
+  <!-- Modal primitives -->
+  <div id="backdrop" class="modal-backdrop"></div>
+  <div id="modalRoot" class="modal" aria-hidden="true"></div>
 
-          // Store lightweight project list (for future Projects page)
-          const key = 'atlas.projects';
-          const projects = JSON.parse(localStorage.getItem(key) || '[]');
-          const id = slugify(name);
-          if(projects.some(p=>p.id===id)){ toast("Project already exists."); return; }
+  <script>
+    /* Nav */
+    function toggleMobileMenu(){
+      const nav=document.getElementById('mainNav');
+      const btn=document.querySelector('.mobile-menu-toggle');
+      const open=nav.classList.toggle('active');
+      btn.setAttribute('aria-expanded',open);
+    }
 
-          projects.push({ id, name, budget: budget? Number(budget): null, createdAt: Date.now() });
-          localStorage.setItem(key, JSON.stringify(projects));
+    /* Toast */
+    function toast(msg){
+      let t=document.getElementById('atlas-toast');
+      if(!t){
+        t=document.createElement('div');
+        t.id='atlas-toast';
+        t.style.cssText='position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0b3a75;color:#fff;border-radius:10px;padding:10px 14px;box-shadow:0 8px 20px rgba(0,0,0,.2);z-index:1200;opacity:0;transition:opacity .15s';
+        document.body.appendChild(t);
+      }
+      t.textContent=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0',1400);
+    }
 
-          // optional seed task so board is not empty
-          if(seed){
-            const tasks = KanbanStore.read();
-            tasks.push({
-              id: 't' + Math.random().toString(36).slice(2,7),
-              title: 'Kickoff: outline scope',
-              desc: 'Define goals, rough budget, and timeline.',
-              status: status,
-              project: id,
-              assignee: 'Andrew',
-              priority: 'Medium',
-              due: '',
-              deps: []
-            });
-            KanbanStore.write(tasks);
-          }
+    /* Storage model aligned with other pages; no real names */
+    const KanbanStore={
+      key:'atlas.kanban.tasks',
+      read(){try{return JSON.parse(localStorage.getItem(this.key))||[]}catch{return[]}},
+      write(v){localStorage.setItem(this.key,JSON.stringify(v))},
+      ensureSeed(){
+        const list=this.read(); if(list.length) return;
+        this.write([
+          {id:"t1", title:"Research countertop materials", desc:"Quartz vs. granite; shortlist vendors.", status:"Someday", project:"kitchen", assignee:"Assignee A", priority:"Low", due:""},
+          {id:"t2", title:"Submit basement permit", desc:"City online portal", status:"Planning", project:"basement", assignee:"Assignee A", priority:"High", due:"2025-10-18"},
+          {id:"t3", title:"Order bathroom vanity", desc:"36” oak, matte black hardware", status:"Ready", project:"bathroom", assignee:"Assignee B", priority:"Medium", due:"2025-10-15"},
+          {id:"t4", title:"Install backsplash", desc:"Herringbone layout; use leveling clips.", status:"In Progress", project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-20"},
+          {id:"t5", title:"Seal grout", desc:"After 72 hours, apply two coats.", status:"Blocked", project:"kitchen", assignee:"Assignee A", priority:"Low", due:""},
+          {id:"t6", title:"Countertop template", desc:"Schedule after cabinet alignment.", status:"Done", project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-10"}
+        ]);
+      }
+    };
+    KanbanStore.ensureSeed();
 
-          closeBasicModal();
-          toast("Project created.");
-          // Navigate straight to the new Kanban board
-          viewProject(id);
-        }
+    function escapeHtml(s){return (s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 
-        // ---------- ADD TASK (fixes: “Add Tasks” buttons did nothing) ----------
-        function openAddTaskModal(projectId, defaultStatus){
-          // Prefer app-level modal if present
-          if(window.atlas && typeof window.atlas.showAddTaskModal === 'function'){
-            window.atlas.showAddTaskModal(defaultStatus || 'Planning', projectId);
-            return;
-          }
+    /* Simple modal */
+    function openModal(title,body,footer){
+      const r=document.getElementById('modalRoot'), b=document.getElementById('backdrop');
+      r.innerHTML=`<div class="modal-panel" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
+        <div class="modal-header">
+          <h3 class="modal-title">${escapeHtml(title)}</h3>
+          <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">${body}</div>
+        <div class="modal-footer">${footer||'<button class="btn" onclick="closeModal()">Close</button>'}</div>
+      </div>`;
+      r.classList.add('open'); b.classList.add('show'); document.body.classList.add('atlas-modal-open');
+    }
+    function closeModal(){
+      document.getElementById('modalRoot').classList.remove('open');
+      document.getElementById('backdrop').classList.remove('show');
+      document.getElementById('modalRoot').innerHTML='';
+      document.body.classList.remove('atlas-modal-open');
+    }
 
-          openBasicModal("Add Task", `
-            <label for="at_title">Title *</label>
-            <input id="at_title" class="input" placeholder="e.g., Schedule plumbing inspection"/>
-
-            <label for="at_desc">Description</label>
-            <textarea id="at_desc" class="input" placeholder="Add context"></textarea>
-
-            <div class="form-row">
-              <div>
-                <label for="at_status">Status</label>
-                <select id="at_status" class="input">
-                  <option ${defaultStatus==='Someday'?'selected':''}>Someday</option>
-                  <option ${defaultStatus==='Planning'?'selected':''}>Planning</option>
-                  <option ${defaultStatus==='Ready'?'selected':''}>Ready</option>
-                  <option ${defaultStatus==='In Progress'?'selected':''}>In Progress</option>
-                  <option ${defaultStatus==='Blocked'?'selected':''}>Blocked</option>
-                  <option ${defaultStatus==='Done'?'selected':''}>Done</option>
-                </select>
-              </div>
-              <div>
-                <label for="at_assignee">Assignee</label>
-                <select id="at_assignee" class="input">
-                  <option>Andrew</option>
-                  <option>Katie</option>
-                  <option>Contractor</option>
-                </select>
-              </div>
+    /* New Project (routes to Projects-style modal) */
+    function openNewProject(){
+      openModal('Create New Project', `
+        <div class="form-grid">
+          <label for="np_name">Project Name *</label>
+          <input id="np_name" class="input" placeholder="e.g., Kitchen Renovation Epic"/>
+          <div class="form-row">
+            <div><label for="np_budget">Budget (USD)</label><input id="np_budget" type="number" class="input" placeholder="e.g., 28000"/></div>
+            <div><label for="np_status">Initial Status</label>
+              <select id="np_status" class="input"><option>Someday</option><option>Planning</option><option selected>Ready</option><option>In Progress</option><option>Blocked</option><option>Done</option></select>
             </div>
+          </div>
+          <div class="form-row">
+            <div><label for="np_seed">Seed a starter task?</label><select id="np_seed" class="input"><option value="yes" selected>Yes</option><option value="no">No</option></select></div>
+            <div><label for="np_assignee">Default Assignee</label><select id="np_assignee" class="input"><option>Assignee A</option><option>Assignee B</option><option>Contractor</option></select></div>
+          </div>
+        </div>`,
+        `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+         <button class="btn" onclick="createProject()">Create Project</button>`);
+    }
+    function slugify(s){return (s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')}
+    function createProject(){
+      const name=document.getElementById('np_name').value.trim();
+      const budget=document.getElementById('np_budget').value.trim();
+      const status=document.getElementById('np_status').value;
+      const seed=document.getElementById('np_seed').value==='yes';
+      const assignee=document.getElementById('np_assignee').value;
+      if(!name){toast('Project name is required.');return;}
+      const key='atlas.projects';
+      const projects=JSON.parse(localStorage.getItem(key)||'[]');
+      const id=slugify(name);
+      if(projects.some(p=>p.id===id)){toast('Project already exists.');return;}
+      projects.push({id,name,budget:budget?Number(budget):null,createdAt:Date.now()});
+      localStorage.setItem(key,JSON.stringify(projects));
+      if(seed){
+        const tasks=KanbanStore.read();
+        tasks.push({id:'t'+Math.random().toString(36).slice(2,7),title:'Kickoff: outline scope',desc:'Define goals, rough budget, and timeline.',status,project:id,assignee,priority:'Medium',due:''});
+        KanbanStore.write(tasks);
+      }
+      closeModal(); window.location.href=`kanban.html?project=${id}`;
+    }
 
-            <div class="form-row">
-              <div>
-                <label for="at_priority">Priority</label>
-                <select id="at_priority" class="input">
-                  <option>Low</option><option selected>Medium</option><option>High</option>
-                </select>
-              </div>
-              <div>
-                <label for="at_due">Due Date</label>
-                <input id="at_due" type="date" class="input"/>
-              </div>
-            </div>
-          `, `
-            <button class="btn btn-secondary" onclick="closeBasicModal()">Cancel</button>
-            <button class="btn" onclick="createTaskFromDashboard('${projectId || ''}')">Create Task</button>
-          `);
-        }
+    /* Add Task quick modal */
+    function openAddTaskModal(projectId, defaultStatus){
+      openModal('Add Task', `
+        <label for="at_title">Title *</label>
+        <input id="at_title" class="input" placeholder="e.g., Schedule inspection"/>
+        <label for="at_desc">Description</label>
+        <textarea id="at_desc" class="input" rows="3"></textarea>
+        <div class="form-row">
+          <div><label for="at_status">Status</label>
+            <select id="at_status" class="input">
+              ${['Someday','Planning','Ready','In Progress','Blocked','Done'].map(s=>`<option ${s===defaultStatus?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </div>
+          <div><label for="at_assignee">Assignee</label>
+            <select id="at_assignee" class="input"><option>Assignee A</option><option>Assignee B</option><option>Contractor</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div><label for="at_priority">Priority</label><select id="at_priority" class="input"><option>Low</option><option selected>Medium</option><option>High</option></select></div>
+          <div><label for="at_due">Due</label><input id="at_due" type="date" class="input"/></div>
+        </div>`,
+        `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+         <button class="btn" onclick="createTask('${projectId}')">Create Task</button>`);
+    }
+    function createTask(projectId){
+      const title=document.getElementById('at_title').value.trim();
+      if(!title){toast('Title is required.');return;}
+      const desc=document.getElementById('at_desc').value.trim();
+      const status=document.getElementById('at_status').value;
+      const assignee=document.getElementById('at_assignee').value;
+      const priority=document.getElementById('at_priority').value;
+      const due=document.getElementById('at_due').value;
+      const tasks=KanbanStore.read();
+      tasks.push({id:'t'+Math.random().toString(36).slice(2,7),title,desc,status,assignee,priority,due,project:projectId||'general'});
+      KanbanStore.write(tasks); closeModal(); toast('Task created.');
+    }
 
-        function createTaskFromDashboard(projectId){
-          const title    = document.getElementById('at_title').value.trim();
-          if(!title){ toast("Title is required."); return; }
-          const desc     = document.getElementById('at_desc').value.trim();
-          const status   = document.getElementById('at_status').value;
-          const assignee = document.getElementById('at_assignee').value;
-          const priority = document.getElementById('at_priority').value;
-          const due      = document.getElementById('at_due').value;
-
-          const tasks = KanbanStore.read();
-          tasks.push({
-            id: 't' + Math.random().toString(36).slice(2,7),
-            title, desc, status, assignee, priority, due,
-            deps: [],
-            project: projectId || 'general'
-          });
-          KanbanStore.write(tasks);
-          closeBasicModal();
-          toast("Task created.");
-        }
-
-        // ---------- UPCOMING TASKS CLICK (fixes: Upcoming list did nothing) ----------
-        function viewTaskDetail(taskId){
-          const listEl = [...document.querySelectorAll('#upcomingTasksContainer .task-item')].find(li =>
-            li.getAttribute('onclick')?.includes(`'${taskId}'`));
-
-          const titleFromDom = listEl ? listEl.querySelector('.task-text')?.textContent.trim() : '';
-
-          // Resolve to a task by id OR by title (back-compat)
-          const tasks = KanbanStore.read();
-          let task = tasks.find(t => t.id === taskId);
-          if(!task && titleFromDom){
-            task = tasks.find(t => t.title.toLowerCase() === titleFromDom.toLowerCase());
-          }
-
-          // If still not found, create a placeholder so the user can immediately edit/save it.
-          if(!task){
-            task = {
-              id: taskId,
-              title: titleFromDom || 'Untitled Task',
-              desc: '',
-              status: 'Ready',
-              project: 'kitchen',
-              assignee: 'Andrew',
-              priority: 'Medium',
-              due: (listEl?.querySelector('time')?.getAttribute('datetime')) || '',
-              deps: []
-            };
-            tasks.push(task);
-            KanbanStore.write(tasks);
-          }
-
-          // Prefer global atlas editor if present
-          if(window.atlas && typeof window.atlas.showTaskDetailModal === 'function'){
-            window.atlas.showTaskDetailModal(task);
-            return;
-          }
-
-          // Fallback editor
-          openBasicModal("Task Details", `
-            <label>Title</label>
-            <input id="td_title" class="input" value="${escapeHtml(task.title)}"/>
-
-            <label>Description</label>
-            <textarea id="td_desc" class="input">${escapeHtml(task.desc)}</textarea>
-
-            <div class="form-row">
-              <div>
-                <label>Status</label>
-                <select id="td_status" class="input">
-                  ${['Someday','Planning','Ready','In Progress','Blocked','Done'].map(s=>`<option ${task.status===s?'selected':''}>${s}</option>`).join('')}
-                </select>
-              </div>
-              <div>
-                <label>Assignee</label>
-                <select id="td_assignee" class="input">
-                  ${['Andrew','Katie','Contractor'].map(a=>`<option ${task.assignee===a?'selected':''}>${a}</option>`).join('')}
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div>
-                <label>Priority</label>
-                <select id="td_priority" class="input">
-                  ${['Low','Medium','High'].map(p=>`<option ${task.priority===p?'selected':''}>${p}</option>`).join('')}
-                </select>
-              </div>
-              <div>
-                <label>Due</label>
-                <input id="td_due" type="date" class="input" value="${escapeHtml(task.due)}"/>
-              </div>
-            </div>
-          `, `
-            <button class="btn btn-secondary" onclick="closeBasicModal()">Close</button>
-            <button class="btn btn-secondary" onclick="openTaskOnBoard('${task.project||'general'}')">Open on Board</button>
-            <button class="btn" onclick="saveTaskEdits('${task.id}')">Save Changes</button>
-          `);
-        }
-
-        function saveTaskEdits(id){
-          const tasks = KanbanStore.read();
-          const idx = tasks.findIndex(t => t.id === id);
-          if(idx === -1){ toast("Task not found."); return; }
-          tasks[idx].title    = document.getElementById('td_title').value.trim() || tasks[idx].title;
-          tasks[idx].desc     = document.getElementById('td_desc').value.trim();
-          tasks[idx].status   = document.getElementById('td_status').value;
-          tasks[idx].assignee = document.getElementById('td_assignee').value;
-          tasks[idx].priority = document.getElementById('td_priority').value;
-          tasks[idx].due      = document.getElementById('td_due').value;
-          KanbanStore.write(tasks);
-          toast("Task updated.");
-          closeBasicModal();
-        }
-
-        function openTaskOnBoard(projectId){
-          // Navigate to Kanban board filtered by project
-          closeBasicModal();
-          viewProject(projectId || 'general');
-        }
-
-        // ---------- ACTIVITY (simple preview) ----------
-        function viewActivityDetail(id){
-          const items = {
-            "1": { title:"Install backsplash", project:"kitchen", status:"In Progress" },
-            "2": { title:"Order tile", project:"kitchen", status:"Done" },
-            "3": { title:"Electrical permit approval", project:"kitchen", status:"Done" }
-          };
-          const a = items[id] || {title:"Activity", project:"general", status:""};
-          openBasicModal("Activity", `
-            <p><strong>${escapeHtml(a.title)}</strong></p>
-            <p>Project: ${escapeHtml(a.project)}</p>
-            <p>Status: ${escapeHtml(a.status)}</p>
-          `, `
-            <button class="btn btn-secondary" onclick="closeBasicModal()">Close</button>
-            <button class="btn" onclick="viewProject('${a.project}')">Open Project Board</button>
-          `);
-        }
-
-        // ---------- INIT: Upgrade "Add Tasks" buttons to call our modal if atlas not loaded ----------
-        (function initWiring(){
-          // Replace any legacy onclick that expected atlas.showAddTaskModal
-          document.querySelectorAll('.project-card .project-actions .btn-link').forEach(btn=>{
-            if(btn.textContent.trim() === 'Add Tasks' && !btn.getAttribute('onclick')?.includes('openAddTaskModal')){
-              const article = btn.closest('.project-card');
-              const projectId = article?.getAttribute('data-project-id') || 'general';
-              btn.setAttribute('onclick', `openAddTaskModal('${projectId}','Planning')`);
-            }
-          });
-        })();
-    </script>
+    /* Upcoming → quick editor */
+    function viewTaskDetail(taskId){
+      const tasks=KanbanStore.read();
+      let t=tasks.find(x=>x.id===taskId);
+      if(!t){ // fallback create
+        const li=[...document.querySelectorAll('#upcomingTasksContainer .task-item')].find(x=>x.onclick?.toString().includes(taskId));
+        t={id:taskId,title:li?.querySelector('.task-text')?.textContent?.trim()||'Untitled Task',desc:'',status:'Ready',project:'kitchen',assignee:'Assignee A',priority:'Medium',due:li?.querySelector('time')?.getAttribute('datetime')||''};
+        tasks.push(t); KanbanStore.write(tasks);
+      }
+      openModal('Task Details', `
+        <label>Title</label><input id="td_title" class="input" value="${escapeHtml(t.title)}"/>
+        <label>Description</label><textarea id="td_desc" class="input" rows="3">${escapeHtml(t.desc)}</textarea>
+        <div class="form-row">
+          <div><label>Status</label><select id="td_status" class="input">
+            ${['Someday','Planning','Ready','In Progress','Blocked','Done'].map(s=>`<option ${t.status===s?'selected':''}>${s}</option>`).join('')}
+          </select></div>
+          <div><label>Assignee</label><select id="td_assignee" class="input">
+            ${['Assignee A','Assignee B','Contractor'].map(a=>`<option ${t.assignee===a?'selected':''}>${a}</option>`).join('')}
+          </select></div>
+        </div>
+        <div class="form-row">
+          <div><label>Priority</label><select id="td_priority" class="input">
+            ${['Low','Medium','High'].map(p=>`<option ${t.priority===p?'selected':''}>${p}</option>`).join('')}
+          </select></div>
+          <div><label>Due</label><input id="td_due" type="date" class="input" value="${escapeHtml(t.due)}"/></div>
+        </div>`,
+        `<button class="btn btn-secondary" onclick="closeModal()">Close</button>
+         <button class="btn btn-secondary" onclick="location.href='kanban.html?project=${t.project||'general'}'">Open on Board</button>
+         <button class="btn" onclick="saveTask('${t.id}')">Save Changes</button>`);
+    }
+    function saveTask(id){
+      const tasks=KanbanStore.read(); const i=tasks.findIndex(x=>x.id===id); if(i<0){toast('Task not found.');return;}
+      tasks[i].title=document.getElementById('td_title').value.trim()||tasks[i].title;
+      tasks[i].desc=document.getElementById('td_desc').value.trim();
+      tasks[i].status=document.getElementById('td_status').value;
+      tasks[i].assignee=document.getElementById('td_assignee').value;
+      tasks[i].priority=document.getElementById('td_priority').value;
+      tasks[i].due=document.getElementById('td_due').value;
+      KanbanStore.write(tasks); closeModal(); toast('Task updated.');
+    }
+  </script>
 </body>
 </html>
