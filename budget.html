@@ -18,14 +18,13 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="atlas-interactive.css" />
 
-  <!-- React / Tailwind -->
+  <!-- React / Tailwind (Babel for inline JSX) -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* small polish */
     ::-webkit-scrollbar{width:8px;height:8px}
     ::-webkit-scrollbar-track{background:#f1f1f1}
     ::-webkit-scrollbar-thumb{background:#9aa4b2;border-radius:4px}
@@ -70,6 +69,7 @@
     <div id="root"></div>
   </main>
 
+  <!-- Keep this include; it adds small site-wide behaviors -->
   <script src="atlas-interactive.js"></script>
   <script>
     function toggleMobileMenu(){
@@ -80,6 +80,7 @@
     }
   </script>
 
+  <!-- React App -->
   <script type="text/babel">
     const { useState, useMemo } = React;
 
@@ -142,26 +143,10 @@
     /* Polished stat card */
     const StatCard = ({accent, title, hint, value, Icon}) => {
       const palette = {
-        indigo: {
-          ring: 'ring-indigo-200', border: 'border-indigo-200',
-          chip: 'bg-indigo-50 text-indigo-700',
-          grad: 'from-indigo-50 to-transparent'
-        },
-        rose: {
-          ring: 'ring-rose-200', border: 'border-rose-200',
-          chip: 'bg-rose-50 text-rose-700',
-          grad: 'from-rose-50 to-transparent'
-        },
-        emerald: {
-          ring: 'ring-emerald-200', border: 'border-emerald-200',
-          chip: 'bg-emerald-50 text-emerald-700',
-          grad: 'from-emerald-50 to-transparent'
-        },
-        amber: {
-          ring: 'ring-amber-200', border: 'border-amber-200',
-          chip: 'bg-amber-50 text-amber-700',
-          grad: 'from-amber-50 to-transparent'
-        }
+        indigo: { ring:'ring-indigo-200', border:'border-indigo-200', chip:'bg-indigo-50 text-indigo-700', grad:'from-indigo-50 to-transparent' },
+        rose:   { ring:'ring-rose-200',   border:'border-rose-200',   chip:'bg-rose-50 text-rose-700',     grad:'from-rose-50 to-transparent' },
+        emerald:{ ring:'ring-emerald-200',border:'border-emerald-200',chip:'bg-emerald-50 text-emerald-700',grad:'from-emerald-50 to-transparent' },
+        amber:  { ring:'ring-amber-200',  border:'border-amber-200',  chip:'bg-amber-50 text-amber-700',   grad:'from-amber-50 to-transparent' }
       }[accent];
 
       return (
@@ -188,12 +173,13 @@
     const BudgetTracker = () => {
       const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
       const [showExpenseDetailsModal, setShowExpenseDetailsModal] = useState(false);
+      the
       const [showReportModal, setShowReportModal] = useState(false);
       const [selectedExpense, setSelectedExpense] = useState(null);
       const [visibleExpenses, setVisibleExpenses] = useState(5);
       const [successMessage, setSuccessMessage] = useState('');
 
-      // New: filter by project for expenses
+      // Project filter for expenses
       const [expenseProjectFilter, setExpenseProjectFilter] = useState('all');
 
       const [projectsData, setProjectsData] = useState([
@@ -231,7 +217,7 @@
 
       const showSuccess = (msg)=>{ setSuccessMessage(msg); setTimeout(()=>setSuccessMessage(''),3000); };
       const viewExpense = (exp)=>{ setSelectedExpense(exp); setShowExpenseDetailsModal(true); };
-      const loadMore = ()=>{ if(visibleExpenses<allExpenses.length){ setVisibleExpenses(v=>Math.min(v+5, allExpenses.length)); showSuccess('Loaded more expenses'); } };
+      const loadMore = ()=>{ if(visibleExpenses<filteredExpenses().length){ setVisibleExpenses(v=>Math.min(v+5, filteredExpenses().length)); showSuccess('Loaded more expenses'); } };
       const downloadCSV = ()=>{
         let csv='Date,Project,Category,Description,Amount\n';
         filteredExpenses().forEach(e=>{ csv+=`${e.date},"${e.project}","${e.category}","${e.title}",${e.amount}\n`; });
@@ -338,7 +324,7 @@
             </div>
           </section>
 
-          {/* Projects Overview (unchanged) */}
+          {/* Projects Overview */}
           <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {projectsData.map(project => {
@@ -399,7 +385,7 @@
               </div>
             </div>
 
-            <!-- Project Filter for Expenses -->
+            {/* Project Filter for Expenses */}
             <div className="mb-3 flex items-center gap-3">
               <label className="text-sm text-gray-600">Filter by project:</label>
               <select
@@ -590,3 +576,4 @@
   </script>
 </body>
 </html>
+
