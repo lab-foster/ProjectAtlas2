@@ -18,7 +18,7 @@
     .board-title h2{margin-bottom:6px}
     .muted{color:var(--text-secondary)}
 
-    /* Unified toolbar (kept inline with Calendar/Documents) */
+    /* Unified toolbar (inline with other pages) */
     .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--bg-elevated);border:1px solid var(--border-light);border-radius:14px;padding:10px 12px;margin-bottom:24px}
     .toolbar .search{position:relative;flex:1 1 360px}
     .toolbar .search input{width:100%;padding:9px 34px 9px 10px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:10px}
@@ -50,7 +50,7 @@
 
     .k-placeholder{border:2px dashed var(--border-default);border-radius:12px;height:58px}
 
-    /* Modal primitives (compatible look & feel with other pages) */
+    /* Modal primitives */
     .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .15s;z-index:1000}
     .modal-backdrop.show{opacity:1;pointer-events:auto}
     .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .15s;z-index:1001}
@@ -70,7 +70,7 @@
 <body class="app-page">
   <a href="#main" class="skip-to-main">Skip to main content</a>
 
-  <!-- Global header (kept identical to other pages) -->
+  <!-- Global header -->
   <header class="app-header">
     <div class="header-container">
       <div class="logo">
@@ -100,7 +100,7 @@
       </div>
     </section>
 
-    <!-- Unified toolbar: Search | Assignee | +Task | Columns -->
+    <!-- Unified toolbar: Search | Assignee | Project | +Task | Columns -->
     <div class="toolbar" role="region" aria-label="Board tools">
       <div class="search">
         <input id="searchInput" placeholder="Search by title, description, or tags…" aria-label="Search tasks"/>
@@ -109,6 +109,11 @@
       <div class="select">
         <select id="assigneeSelect" aria-label="Filter by assignee">
           <option value="">All assignees</option>
+        </select>
+      </div>
+      <div class="select">
+        <select id="projectSelect" aria-label="Filter by project">
+          <option value="">All projects</option>
         </select>
       </div>
       <div class="actions">
@@ -138,23 +143,26 @@
     }
 
     /* --------------------------
-       Minimal local storage layer
+       Storage & Defaults
        -------------------------- */
-    const STORAGE_KEY = 'atlas-kanban-v2';
+    const STORAGE_KEY = 'atlas-kanban-v3'; // bump to avoid stale data
     const defaultState = {
       columns: [
-        { id:'col-someday', name:'Someday', order:0 },
-        { id:'col-ready',   name:'Ready',   order:1 },
-        { id:'col-blocked', name:'Blocked', order:2 },
+        { id:'col-backlog',     name:'Backlog',      order:0 },
+        { id:'col-inprogress',  name:'In Progress',  order:1 },
+        { id:'col-blocked',     name:'Blocked',      order:2 },
+        { id:'col-review',      name:'Review',       order:3 },
+        { id:'col-done',        name:'Done',         order:4 },
       ],
       tasks: [
-        { id:'t1', title:'Submit building sketch', desc:'Upload PDF to city portal.', project:'admin', assignee:'Assignee A', due:'2025-10-18', column:'col-someday', tags:['permit'], priority:'high' },
-        { id:'t2', title:'Order bathroom vanity', desc:'36" oak, matte hardware.', project:'bathroom', assignee:'Assignee B', due:'2025-10-15', column:'col-someday', tags:['purchase'], priority:'medium' },
-        { id:'t3', title:'Countertop template', desc:'Schedule template after cabinet alignment.', project:'kitchen', assignee:'Assignee C', due:'2025-10-10', column:'col-someday', tags:['contractor'], priority:'low' },
-        { id:'t4', title:'Research countertop materials', desc:'Compare quartz vs. granite; shortlist local fabricators.', project:'kitchen', assignee:'Assignee A', due:'2025-10-20', column:'col-blocked', tags:['research'], priority:'medium' },
-        { id:'t5', title:'Install backsplash', desc:'Herringbone layout; use leveling clips.', project:'kitchen', assignee:'Assignee D', due:'2025-10-20', column:'col-blocked', tags:['tile'], priority:'high' },
-        { id:'t6', title:'Seal grout', desc:'After 72 hours, apply two coats.', project:'kitchen', assignee:'Assignee A', due:'2025-10-22', column:'col-blocked', tags:['finish'], priority:'low' },
-        { id:'t7', title:'Greenhouse irrigation loop', desc:'Add timer and pressure regulator.', project:'garden', assignee:'Assignee B', due:'2025-11-02', column:'col-ready', tags:['outdoor'], priority:'medium' }
+        { id:'t1', title:'Sketch permit set', desc:'Upload PDF to city portal.', project:'admin',    assignee:'Assignee A', due:'2025-10-18', column:'col-backlog',    tags:['permit'],     priority:'high' },
+        { id:'t2', title:'Order bathroom vanity', desc:'36" oak, matte hardware.', project:'bathroom', assignee:'Assignee B', due:'2025-10-15', column:'col-backlog',    tags:['purchase'],   priority:'medium' },
+        { id:'t3', title:'Countertop template', desc:'Schedule template after cabinet alignment.', project:'kitchen',  assignee:'Assignee C', due:'2025-10-10', column:'col-review',     tags:['contractor'], priority:'low' },
+        { id:'t4', title:'Research countertop materials', desc:'Compare quartz vs. granite; shortlist local fabricators.', project:'kitchen',  assignee:'Assignee A', due:'2025-10-20', column:'col-inprogress', tags:['research'],   priority:'medium' },
+        { id:'t5', title:'Install backsplash', desc:'Herringbone layout; use leveling clips.', project:'kitchen',  assignee:'Assignee D', due:'2025-10-20', column:'col-blocked',    tags:['tile'],       priority:'high' },
+        { id:'t6', title:'Seal grout', desc:'After 72 hours, apply two coats.', project:'kitchen',  assignee:'Assignee A', due:'2025-10-22', column:'col-inprogress', tags:['finish'],     priority:'low' },
+        { id:'t7', title:'Greenhouse irrigation loop', desc:'Add timer and pressure regulator.', project:'garden',   assignee:'Assignee B', due:'2025-11-02', column:'col-backlog',    tags:['outdoor'],    priority:'medium' },
+        { id:'t8', title:'Close out punch list', desc:'Touch-up paint and hardware', project:'basement', assignee:'Assignee C', due:'2025-10-30', column:'col-done',       tags:['finish'],     priority:'low' }
       ]
     };
     const state = loadState();
@@ -164,21 +172,19 @@
         const raw = localStorage.getItem(STORAGE_KEY);
         if(!raw) return structuredClone(defaultState);
         const parsed = JSON.parse(raw);
-        // basic shape guard
         if(!parsed.columns || !parsed.tasks) return structuredClone(defaultState);
         return parsed;
-      } catch(e){
-        return structuredClone(defaultState);
-      }
+      } catch(e){ return structuredClone(defaultState); }
     }
     function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
     /* --------------------------
        Rendering
        -------------------------- */
-    const boardEl = document.getElementById('board');
-    const searchEl = document.getElementById('searchInput');
-    const assigneeEl = document.getElementById('assigneeSelect');
+    const boardEl     = document.getElementById('board');
+    const searchEl    = document.getElementById('searchInput');
+    const assigneeEl  = document.getElementById('assigneeSelect');
+    const projectEl   = document.getElementById('projectSelect');
 
     function projectDot(project){
       const map = { kitchen:'proj-kitchen', bathroom:'proj-bathroom', basement:'proj-basement', garden:'proj-garden', admin:'proj-admin' };
@@ -187,22 +193,29 @@
       return `<span class="chip"><span class="dot ${cls}"></span>${label}</span>`;
     }
 
-    function renderAssigneeFilter(){
-      const unique = Array.from(new Set(state.tasks.map(t=>t.assignee))).filter(Boolean).sort();
-      assigneeEl.innerHTML = `<option value="">All assignees</option>` + unique.map(a=>`<option value="${a}">${a}</option>`).join('');
+    function renderFilters(){
+      const assignees = Array.from(new Set(state.tasks.map(t=>t.assignee))).filter(Boolean).sort();
+      assigneeEl.innerHTML = `<option value="">All assignees</option>` + assignees.map(a=>`<option value="${a}">${a}</option>`).join('');
+
+      const projects = Array.from(new Set(state.tasks.map(t=>t.project))).filter(Boolean).sort();
+      projectEl.innerHTML = `<option value="">All projects</option>` + projects.map(p=>{
+        const label = p.charAt(0).toUpperCase()+p.slice(1);
+        return `<option value="${p}">${label}</option>`;
+      }).join('');
     }
 
     function renderBoard(){
-      // sort columns by order
       const cols = [...state.columns].sort((a,b)=>a.order-b.order);
-      const needle = (searchEl.value||'').trim().toLowerCase();
+      const needle   = (searchEl.value||'').trim().toLowerCase();
       const assignee = assigneeEl.value;
+      const project  = projectEl.value;
 
       boardEl.innerHTML = cols.map(col=>{
         const tasks = state.tasks.filter(t=>t.column===col.id).filter(t=>{
-          const hit = (t.title+t.desc+t.tags.join(' ')).toLowerCase().includes(needle);
-          const byAssignee = !assignee || t.assignee===assignee;
-          return hit && byAssignee;
+          const hit = (t.title+t.desc+(t.tags||[]).join(' ')).toLowerCase().includes(needle);
+          const okAssignee = !assignee || t.assignee===assignee;
+          const okProject  = !project  || t.project===project;
+          return hit && okAssignee && okProject;
         });
         return `
           <article class="k-col" data-col-id="${col.id}" aria-labelledby="${col.id}-title">
@@ -226,7 +239,7 @@
 
     function renderCard(t){
       const due = t.due ? `<span class="chip">📅 ${t.due}</span>` : '';
-      const pr = t.priority ? `<span class="chip">⚑ ${t.priority}</span>` : '';
+      const pr  = t.priority ? `<span class="chip">⚑ ${t.priority}</span>` : '';
       const asg = t.assignee ? `<span class="chip">👤 ${t.assignee}</span>` : '';
       const tags = (t.tags||[]).slice(0,3).map(s=>`<span class="chip">#${s}</span>`).join('');
       return `
@@ -241,7 +254,7 @@
     }
 
     /* --------------------------
-       Drag & Drop
+       Drag & Drop (no duplication)
        -------------------------- */
     function initDnD(){
       let draggingEl=null, placeholder=null;
@@ -269,32 +282,32 @@
           const after = getDragAfterElement(zone, e.clientY);
           if(after==null){ zone.appendChild(placeholder); } else { zone.insertBefore(placeholder, after); }
         });
+
         zone.addEventListener('drop',e=>{
           e.preventDefault();
           const id = e.dataTransfer.getData('text/plain');
-          const task = state.tasks.find(x=>x.id===id);
-          if(!task) return;
+          const srcIndex = state.tasks.findIndex(x=>x.id===id);
+          if(srcIndex===-1) return;
+
+          // Remove from array first to avoid duplicates
+          const task = state.tasks.splice(srcIndex,1)[0];
           task.column = zone.dataset.dropzone;
-          // compute new index within that column
-          const siblings = [...zone.querySelectorAll('.k-card')].filter(el=>el!==draggingEl);
+
+          // Determine insertion index relative to "before" sibling in current array
+          let beforeId = null;
           if(placeholder){
-            const idx = [...zone.children].indexOf(placeholder);
-            placeholder.remove();
-            placeholder=null;
-            // reorder in state to roughly match UI (stable: remove & reinsert)
-            const list = state.tasks.filter(x=>x.column===task.column && x.id!==task.id);
-            const beforeId = siblings[idx]?.dataset?.taskId;
-            const newList = [];
-            let inserted=false;
-            for(const s of list){
-              if(!inserted && s.id===beforeId){ newList.push(task); inserted=true; }
-              newList.push(s);
-            }
-            if(!inserted) newList.push(task);
-            // rebuild state order for that column
-            const others = state.tasks.filter(x=>x.column!==task.column || x.id===task.id);
-            state.tasks = others.concat(newList);
+            const next = placeholder.nextElementSibling;
+            beforeId = next && next.classList.contains('k-card') ? next.dataset.taskId : null;
+            placeholder.remove(); placeholder=null;
           }
+          if(beforeId){
+            const idx = state.tasks.findIndex(t=>t.id===beforeId);
+            if(idx>-1){ state.tasks.splice(idx,0,task); }
+            else { state.tasks.push(task); }
+          } else {
+            state.tasks.push(task); // append to end
+          }
+
           saveState(); renderBoard(); toast('Task moved');
         });
       });
@@ -317,11 +330,7 @@
     const backdrop = document.getElementById('backdrop');
 
     function openModal(html){
-      modalRoot.innerHTML = `
-        <div class="modal-panel" role="dialog" aria-modal="true">
-          ${html}
-        </div>
-      `;
+      modalRoot.innerHTML = `<div class="modal-panel" role="dialog" aria-modal="true">${html}</div>`;
       modalRoot.classList.add('open');
       backdrop.classList.add('show');
       backdrop.onclick = closeModal;
@@ -346,7 +355,7 @@
         tags:[], priority:'medium'
       };
 
-      const colOpts = state.columns.map(c=>`<option value="${c.id}" ${task.column===c.id?'selected':''}>${c.name}</option>`).join('');
+      const colOpts = state.columns.sort((a,b)=>a.order-b.order).map(c=>`<option value="${c.id}" ${task.column===c.id?'selected':''}>${c.name}</option>`).join('');
       openModal(`
         <header class="modal-header">
           <h3>${isEdit?'Edit Task':'New Task'}</h3>
@@ -426,13 +435,13 @@
           state.tasks.push(updated);
           toast('Task created');
         }
-        saveState(); closeModal(); renderAssigneeFilter(); renderBoard();
+        saveState(); closeModal(); renderFilters(); renderBoard();
       };
 
       if(isEdit){
         document.getElementById('deleteBtn').onclick = ()=>{
           state.tasks = state.tasks.filter(x=>x.id!==task.id);
-          saveState(); closeModal(); renderAssigneeFilter(); renderBoard(); toast('Task deleted');
+          saveState(); closeModal(); renderFilters(); renderBoard(); toast('Task deleted');
         };
       }
     }
@@ -512,12 +521,13 @@
     }
 
     /* --------------------------
-       Event wiring & filters
+       Events & filters
        -------------------------- */
     document.getElementById('addTaskBtn').onclick = ()=>openTaskModal();
     document.getElementById('columnsBtn').onclick = openColumnsDialog;
     searchEl.addEventListener('input', renderBoard);
     assigneeEl.addEventListener('change', renderBoard);
+    projectEl.addEventListener('change', renderBoard);
 
     boardEl.addEventListener('click',e=>{
       const card = e.target.closest('.k-card');
@@ -539,7 +549,7 @@
     /* --------------------------
        Boot
        -------------------------- */
-    renderAssigneeFilter();
+    renderFilters();
     renderBoard();
   </script>
 </body>
