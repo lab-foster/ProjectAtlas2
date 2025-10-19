@@ -4,83 +4,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Project Management - View and manage all your home improvement projects and tasks"/>
   <meta name="robots" content="noindex, nofollow"/>
   <title>Projects - Project Atlas</title>
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>"/>
-
-  <!-- Stylesheets -->
   <link rel="stylesheet" href="styles.css"/>
   <link rel="stylesheet" href="atlas-interactive.css"/>
 
   <style>
-    /* Page-local styles (complements styles.css / atlas-interactive.css) */
+    /* ---------- Page polish (kept light; consistent with other pages) ---------- */
     .projects-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xl);padding-bottom:var(--space-md);border-bottom:1px solid var(--border-default);gap:var(--space-lg)}
     .project-filters{display:flex;gap:var(--space-md);flex-wrap:wrap;align-items:center;width:100%}
-    .filter-select{padding:var(--space-sm) var(--space-md);border:1px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-secondary);color:var(--text-primary);font-size:.9375rem;cursor:pointer;transition:all var(--transition-fast)}
-    .filter-select:hover{border-color:var(--border-medium)}
+    .filter-select{padding:var(--space-sm) var(--space-md);border:1px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-secondary);color:var(--text-primary);font-size:.9375rem}
     .filter-select:focus{outline:0;border-color:var(--app-primary);box-shadow:0 0 0 3px var(--app-primary-light)}
     .filter-actions{margin-left:auto;display:flex;gap:var(--space-sm)}
     .filter-actions .btn{display:inline-flex;align-items:center;gap:.5rem}
+
     .projects-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--space-lg);margin-bottom:var(--space-xl)}
-    .stat-card{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:var(--space-lg);text-align:center;box-shadow:var(--shadow-sm);transition:all var(--transition-base)}
-    .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
-    .stat-number{font-size:2.25rem;font-weight:700;color:var(--app-primary);display:block;line-height:1.2}
-    .stat-label{color:var(--text-secondary);font-size:.875rem;margin-top:var(--space-sm);display:block}
+    .stat-card{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:var(--space-lg);text-align:center;box-shadow:var(--shadow-sm)}
+    .stat-number{font-size:2.2rem;font-weight:700;color:var(--app-primary);display:block}
+    .stat-label{color:var(--text-secondary);font-size:.875rem;margin-top:.25rem}
+
     .projects-list{display:flex;flex-direction:column;gap:var(--space-xl)}
-    .project-epic{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:var(--space-xl);box-shadow:var(--shadow-sm);transition:all var(--transition-base)}
-    .project-epic:hover{box-shadow:var(--shadow-md);border-color:var(--app-primary-light)}
+    .project-epic{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:var(--space-xl);box-shadow:var(--shadow-sm)}
     .epic-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--space-lg);gap:var(--space-md)}
-    .epic-actions{display:flex;gap:var(--space-sm);margin-top:var(--space-xs)}
+    .epic-actions{display:flex;gap:var(--space-sm);margin-top:.25rem}
+    .status-badge{font-size:.75rem;padding:.25rem .5rem;border-radius:999px;border:1px solid var(--border-light);background:var(--bg-elevated)}
+    .in-progress{color:#0b5bd3;border-color:#cfe0ff;background:#eef5ff}
+    .planning{color:#8a6c00;border-color:#f7e3a0;background:#fff7d1}
+    .blocked{color:#b00020;border-color:#ffd1d6;background:#fff1f3}
+
     .epic-progress{background:var(--app-primary-lighter);padding:var(--space-lg);border-radius:var(--radius-md);border:1px solid var(--app-primary-light)}
-    .progress-info{display:flex;justify-content:space-between;margin-bottom:var(--space-md);font-size:.875rem;color:var(--text-secondary);gap:var(--space-md);flex-wrap:wrap}
-    .epic-tasks{display:flex;flex-direction:column;gap:var(--space-sm)}
-    .epic-tasks-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md);padding-bottom:var(--space-sm);border-bottom:1px solid var(--border-light)}
-    .epic-tasks-header h4{font-size:.9375rem;color:var(--text-secondary);font-weight:600;margin:0;text-transform:uppercase;letter-spacing:.05em}
-    .task-item{display:flex;align-items:center;gap:var(--space-md);padding:var(--space-md);border-radius:var(--radius-md);transition:all var(--transition-fast);cursor:pointer;border:1px solid transparent}
+    .progress-info{display:flex;justify-content:space-between;gap:var(--space-md);flex-wrap:wrap;color:var(--text-secondary);font-size:.875rem;margin-bottom:.5rem}
+    .progress-bar{height:8px;background:#e6eefc;border-radius:8px;overflow:hidden}
+    .progress-fill{height:100%;background:var(--app-primary)}
+
+    .epic-tasks{display:flex;flex-direction:column;gap:.5rem;margin-top:var(--space-md)}
+    .epic-tasks-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;padding-bottom:.5rem;border-bottom:1px solid var(--border-light)}
+    .epic-tasks-header h4{margin:0;font-size:.95rem;color:var(--text-secondary);letter-spacing:.02em}
+
+    .task-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:10px;transition:background .12s,border-color .12s;cursor:pointer;border:1px solid transparent}
     .task-item:hover{background:var(--app-primary-lighter);border-color:var(--app-primary-light)}
-    .task-checkbox{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);font-size:.875rem;font-weight:600;flex-shrink:0}
+    .task-checkbox{width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:#f1f4f8;color:#667}
     .task-item.completed .task-checkbox{background:var(--status-success-bg);color:var(--status-success)}
     .task-item.active .task-checkbox{background:var(--status-info-bg);color:var(--status-info)}
     .task-item.blocked .task-checkbox{background:var(--status-error-bg);color:var(--status-error)}
-    .task-item.pending .task-checkbox{background:var(--gray-100);color:var(--text-tertiary)}
-    .task-name{flex:1;font-weight:500;color:var(--text-primary);font-size:.9375rem}
-    .task-status{font-size:.8125rem;color:var(--text-tertiary);font-weight:500;padding:var(--space-xs) var(--space-sm);background:var(--gray-100);border-radius:var(--radius-sm)}
-    .task-item.completed .task-name{text-decoration:line-through;color:var(--text-tertiary)}
-    .task-item.completed .task-status{background:var(--status-success-bg);color:var(--status-success)}
-    .task-item.active .task-status{background:var(--status-info-bg);color:var(--status-info)}
-    .task-item.blocked .task-status{background:var(--status-error-bg);color:var(--status-error)}
-    .view-all-tasks{margin-top:var(--space-md);text-align:center;padding:var(--space-md);color:var(--app-primary);font-weight:500;font-size:.875rem;cursor:pointer;border-radius:var(--radius-md);transition:all var(--transition-fast)}
-    .view-all-tasks:hover{background:var(--app-primary-lighter)}
+    .task-name{flex:1;font-weight:600;color:var(--text-primary);font-size:.95rem}
+    .task-status{font-size:.75rem;color:var(--text-tertiary);padding:.15rem .45rem;border:1px solid var(--border-light);border-radius:999px}
 
-    /* ===== Namespaced modal to avoid collisions ===== */
-    .atlas-backdrop{position:fixed;inset:0;background:rgba(10,28,52,.35);opacity:0;pointer-events:none;transition:opacity .15s ease;z-index:1195}
+    /* ---------- Namespaced modal (prevents collisions) ---------- */
+    .atlas-backdrop{position:fixed;inset:0;background:rgba(10,28,52,.35);opacity:0;pointer-events:none;transition:opacity .15s;z-index:1195}
     .atlas-backdrop.show{opacity:1;pointer-events:auto}
     .atlas-modal-root{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1200}
     .atlas-modal-root.open{display:flex}
-    .atlas-modal-panel{width:min(720px,92vw);background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden;border:1px solid var(--border)}
-    .atlas-modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+    .atlas-modal-panel{width:min(720px,92vw);background:var(--bg-secondary);border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden;border:1px solid var(--border-default)}
+    .atlas-modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border-light)}
     .atlas-modal-title{margin:0;font-size:1.15rem}
     .atlas-modal-body{padding:18px 20px;max-height:70vh;overflow:auto}
-    .atlas-modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:12px}
-    .atlas-modal-close{border:none;background:transparent;font-size:1.5rem;cursor:pointer;color:var(--ink-600)}
+    .atlas-modal-footer{padding:14px 20px;border-top:1px solid var(--border-light);display:flex;justify-content:flex-end;gap:12px}
+    .atlas-modal-close{border:none;background:transparent;font-size:1.5rem;cursor:pointer}
     .atlas-modal-open{overflow:hidden}
 
     .form-grid{display:grid;gap:12px}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .input{width:100%;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font:inherit;background:#fff}
-    .input:focus{outline:2px solid var(--focus);border-color:var(--focus)}
+    .input{width:100%;border:1px solid var(--border-default);border-radius:10px;padding:10px 12px;background:var(--bg-secondary)}
+    .input:focus{outline:2px solid var(--app-primary-light);border-color:var(--app-primary)}
 
-    @media (max-width:992px){
-      .filter-actions{width:100%;justify-content:flex-end}
-    }
+    /* --- Hide any legacy bottom drawers if a theme script injected them --- */
+    .task-details,.drawer.task-details,#taskDetails,.modal.task-details{display:none !important}
+
+    @media (max-width:992px){.filter-actions{width:100%;justify-content:flex-end}}
     @media (max-width:768px){
       .projects-header{flex-direction:column;align-items:stretch}
-      .projects-stats{grid-template-columns:repeat(2,1fr);gap:var(--space-md)}
-      .progress-info{flex-direction:column;gap:var(--space-xs)}
+      .projects-stats{grid-template-columns:repeat(2,1fr)}
+      .progress-info{flex-direction:column;gap:.25rem}
       .epic-header{flex-direction:column;align-items:flex-start}
       .form-row{grid-template-columns:1fr}
     }
@@ -117,9 +113,7 @@
         </ul>
       </nav>
 
-      <div class="user-menu">
-        <button class="user-avatar" aria-label="User menu" title="User Menu">AF</button>
-      </div>
+      <div class="user-menu"><button class="user-avatar" aria-label="User menu">AF</button></div>
     </div>
   </header>
 
@@ -127,11 +121,9 @@
   <main class="dashboard-main" id="main-content">
     <div class="projects-header">
       <h2>Project Management</h2>
-
-      <!-- Filters + New Project -->
       <div class="project-filters" role="group" aria-label="Project filters">
         <label for="statusFilter" class="sr-only">Filter by status</label>
-        <select class="filter-select" id="statusFilter" aria-label="Filter by status" onchange="handleStatusFilter(this.value)">
+        <select class="filter-select" id="statusFilter" onchange="handleStatusFilter(this.value)">
           <option value="all">All Status</option>
           <option value="active">Active</option>
           <option value="planning">Planning</option>
@@ -140,7 +132,7 @@
         </select>
 
         <label for="priorityFilter" class="sr-only">Filter by priority</label>
-        <select class="filter-select" id="priorityFilter" aria-label="Filter by priority" onchange="handlePriorityFilter(this.value)">
+        <select class="filter-select" id="priorityFilter" onchange="handlePriorityFilter(this.value)">
           <option value="all">All Priorities</option>
           <option value="high">High Priority</option>
           <option value="medium">Medium Priority</option>
@@ -148,8 +140,8 @@
         </select>
 
         <div class="filter-actions">
-          <button class="btn btn-secondary" onclick="showNewProjectModal()" aria-label="Create new project">
-            <span aria-hidden="true">+</span> New Project
+          <button class="btn btn-secondary" onclick="showNewProjectModal()">
+            <span aria-hidden="true">＋</span> New Project
           </button>
         </div>
       </div>
@@ -163,8 +155,9 @@
       <article class="stat-card"><span class="stat-number" id="statBudget">$75K</span><span class="stat-label">Total Budget</span></article>
     </section>
 
-    <!-- Example epics (unchanged from previous message) -->
-    <section class="projects-list" aria-label="Active projects" id="projectsList">
+    <!-- Project epics -->
+    <section class="projects-list" aria-label="Projects list" id="projectsList">
+      <!-- Kitchen -->
       <article class="project-epic" data-project-id="kitchen" data-status="in-progress">
         <header class="epic-header">
           <div>
@@ -175,24 +168,22 @@
               <button class="btn-link" onclick="openAddTaskModal('kitchen')">Add Task</button>
             </div>
           </div>
-          <span class="status-badge in-progress" role="status">In Progress</span>
+          <span class="status-badge in-progress">IN PROGRESS</span>
         </header>
 
-        <div class="epic-meta">
-          <div class="epic-progress">
-            <div class="progress-info">
-              <span><strong>Progress:</strong> 65%</span>
-              <span><strong>Budget:</strong> $23,400 / $28,000</span>
-              <span><strong>Timeline:</strong> Week 6 of 10</span>
-            </div>
-            <div class="progress-bar" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress: 65%">
-              <div class="progress-fill" style="width:65%"></div>
-            </div>
+        <div class="epic-progress">
+          <div class="progress-info">
+            <span><strong>Progress:</strong> 65%</span>
+            <span><strong>Budget:</strong> $23,400 / $28,000</span>
+            <span><strong>Timeline:</strong> Week 6 of 10</span>
+          </div>
+          <div class="progress-bar" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress: 65%">
+            <div class="progress-fill" style="width:65%"></div>
           </div>
         </div>
 
         <div class="epic-tasks">
-          <div class="epic-tasks-header"><h4>Tasks (examples)</h4><span class="text-sm text-tertiary">Click to open details</span></div>
+          <div class="epic-tasks-header"><h4>Tasks</h4><span class="text-sm text-tertiary">Click to open details</span></div>
 
           <div class="task-item completed" data-task-id="t0" role="button" tabindex="0"
                onclick="viewTask('t0','Demo existing kitchen')" onkeypress="handleKeyPress(event,'viewTask','t0')">
@@ -217,6 +208,7 @@
         </div>
       </article>
 
+      <!-- Basement -->
       <article class="project-epic" data-project-id="basement" data-status="planning">
         <header class="epic-header">
           <div>
@@ -227,24 +219,22 @@
               <button class="btn-link" onclick="openAddTaskModal('basement')">Add Task</button>
             </div>
           </div>
-          <span class="status-badge planning" role="status">Planning</span>
+          <span class="status-badge planning">PLANNING</span>
         </header>
 
-        <div class="epic-meta">
-          <div class="epic-progress">
-            <div class="progress-info">
-              <span><strong>Progress:</strong> 15%</span>
-              <span><strong>Budget:</strong> $5,200 / $35,000</span>
-              <span><strong>Timeline:</strong> Planning Phase</span>
-            </div>
-            <div class="progress-bar" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress: 15%">
-              <div class="progress-fill" style="width:15%"></div>
-            </div>
+        <div class="epic-progress">
+          <div class="progress-info">
+            <span><strong>Progress:</strong> 15%</span>
+            <span><strong>Budget:</strong> $5,200 / $35,000</span>
+            <span><strong>Timeline:</strong> Planning Phase</span>
+          </div>
+          <div class="progress-bar" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress: 15%">
+            <div class="progress-fill" style="width:15%"></div>
           </div>
         </div>
 
         <div class="epic-tasks">
-          <div class="epic-tasks-header"><h4>Tasks (examples)</h4><span class="text-sm text-tertiary">Click to open details</span></div>
+          <div class="epic-tasks-header"><h4>Tasks</h4><span class="text-sm text-tertiary">Click to open details</span></div>
 
           <div class="task-item completed" data-task-id="t2" role="button" tabindex="0"
                onclick="viewTask('t2','Submit basement permit')" onkeypress="handleKeyPress(event,'viewTask','t2')">
@@ -262,6 +252,7 @@
         </div>
       </article>
 
+      <!-- Bathroom -->
       <article class="project-epic" data-project-id="bathroom" data-status="blocked">
         <header class="epic-header">
           <div>
@@ -272,24 +263,22 @@
               <button class="btn-link" onclick="openAddTaskModal('bathroom')">Add Task</button>
             </div>
           </div>
-          <span class="status-badge blocked" role="status">Blocked</span>
+          <span class="status-badge blocked">BLOCKED</span>
         </header>
 
-        <div class="epic-meta">
-          <div class="epic-progress">
-            <div class="progress-info">
-              <span><strong>Progress:</strong> 40%</span>
-              <span><strong>Budget:</strong> $8,100 / $12,000</span>
-              <span><strong>Blocked:</strong> Inspection pending</span>
-            </div>
-            <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress: 40%">
-              <div class="progress-fill" style="width:40%"></div>
-            </div>
+        <div class="epic-progress">
+          <div class="progress-info">
+            <span><strong>Progress:</strong> 40%</span>
+            <span><strong>Budget:</strong> $8,100 / $12,000</span>
+            <span><strong>Blocked:</strong> Inspection pending</span>
+          </div>
+          <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Project progress: 40%">
+            <div class="progress-fill" style="width:40%"></div>
           </div>
         </div>
 
         <div class="epic-tasks">
-          <div class="epic-tasks-header"><h4>Tasks (examples)</h4><span class="text-sm text-tertiary">Click to open details</span></div>
+          <div class="epic-tasks-header"><h4>Tasks</h4><span class="text-sm text-tertiary">Click to open details</span></div>
 
           <div class="task-item blocked" data-task-id="t9" role="button" tabindex="0"
                onclick="viewTask('t9','Schedule plumbing inspection')" onkeypress="handleKeyPress(event,'viewTask','t9')">
@@ -309,26 +298,21 @@
     </section>
   </main>
 
-  <!-- Namespaced Backdrop & Modal Root (no collisions) -->
+  <!-- Namespaced modal root -->
   <div id="atlasBackdrop" class="atlas-backdrop"></div>
   <div id="atlasModalRoot" class="atlas-modal-root" aria-hidden="true"></div>
 
   <script>
-    /* --------- Accessibility & Nav --------- */
+    /* ---------- Nav ---------- */
     function toggleMobileMenu(){
       const nav=document.getElementById('mainNav');
       const toggle=document.querySelector('.mobile-menu-toggle');
       const isExpanded=nav.classList.toggle('active');
       toggle.setAttribute('aria-expanded',isExpanded);
     }
-    function handleKeyPress(event,fn,id){
-      if(event.key==='Enter'||event.key===' '){
-        event.preventDefault();
-        if(typeof window[fn]==='function'){ window[fn](id); }
-      }
-    }
+    function handleKeyPress(e,fn,id){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if(typeof window[fn]==='function') window[fn](id); } }
 
-    /* --------- Utilities --------- */
+    /* ---------- Utilities ---------- */
     function slugify(s){return (s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');}
     function escapeHtml(s){return (s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
     function toast(msg){
@@ -339,10 +323,10 @@
         el.style.cssText='position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#0b3a75;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 18px rgba(0,0,0,.2);z-index:1300;opacity:0;transition:opacity .15s';
         document.body.appendChild(el);
       }
-      el.textContent=msg; el.style.opacity='1'; setTimeout(()=>el.style.opacity='0',1500);
+      el.textContent=msg; el.style.opacity='1'; setTimeout(()=>el.style.opacity='0',1400);
     }
 
-    /* --------- Storage (simple) --------- */
+    /* ---------- Storage ---------- */
     const ProjectStore={ key:'atlas.projects',
       read(){try{return JSON.parse(localStorage.getItem(this.key))||[];}catch{return[]}},
       write(v){localStorage.setItem(this.key,JSON.stringify(v));}
@@ -353,19 +337,19 @@
       ensureSeed(){
         const list=this.read(); if(list.length) return;
         this.write([
-          {id:"t1", title:"Research countertop materials", desc:"Quartz vs granite. Check local fabricators.", status:"Someday", project:"kitchen", assignee:"Assignee A", priority:"Low", due:"", deps:[]},
-          {id:"t2", title:"Submit basement permit", desc:"City online portal", status:"Planning", project:"basement", assignee:"Assignee A", priority:"High", due:"2025-10-18", deps:[]},
-          {id:"t3", title:"Order bathroom vanity", desc:"36” oak, matte black hardware – retailer", status:"Ready", project:"bathroom", assignee:"Assignee B", priority:"Medium", due:"2025-10-15", deps:[]},
-          {id:"t4", title:"Install backsplash", desc:"Herringbone subway tile; use leveling clips.", status:"In Progress", project:"kitchen", assignee:"Assignee D", priority:"High", due:"2025-10-20", deps:["t6"]},
-          {id:"t5", title:"Seal grout", desc:"After 72 hours, two coats.", status:"Blocked", project:"kitchen", assignee:"Assignee A", priority:"Low", due:"", deps:["t4"]},
-          {id:"t6", title:"Countertop template", desc:"Schedule after cabinet alignment.", status:"Done", project:"kitchen", assignee:"Assignee C", priority:"High", due:"2025-10-10", deps:[]},
-          {id:"t9", title:"Schedule plumbing inspection", desc:"Book with city inspector", status:"Blocked", project:"bathroom", assignee:"Assignee A", priority:"High", due:"2025-10-13", deps:[]}
+          {id:"t1", title:"Research countertop materials", desc:"Quartz vs granite. Check local fabricators.", status:"Someday", project:"kitchen", assignee:"Assignee A", priority:"Low", due:""},
+          {id:"t2", title:"Submit basement permit", desc:"City of Woodinville online portal", status:"Someday", project:"basement", assignee:"Assignee A", priority:"High", due:"2025-10-18"},
+          {id:"t3", title:"Order bathroom vanity", desc:"36” oak, matte hardware", status:"Ready", project:"bathroom", assignee:"Assignee B", priority:"Medium", due:"2025-10-15"},
+          {id:"t4", title:"Install backsplash", desc:"Herringbone layout; use leveling clips.", status:"In Progress", project:"kitchen", assignee:"Assignee D", priority:"High", due:"2025-10-20"},
+          {id:"t5", title:"Seal grout", desc:"After 72 hours, two coats.", status:"Blocked", project:"kitchen", assignee:"Assignee A", priority:"Low", due:""},
+          {id:"t6", title:"Countertop template", desc:"Schedule after cabinet alignment.", status:"Done", project:"kitchen", assignee:"Assignee C", priority:"High", due:"2025-10-10"},
+          {id:"t9", title:"Schedule plumbing inspection", desc:"Book with city inspector", status:"Blocked", project:"bathroom", assignee:"Assignee A", priority:"High", due:"2025-10-13"}
         ]);
       }
     };
     KanbanStore.ensureSeed();
 
-    /* --------- Namespaced Modal (no CSS collisions) --------- */
+    /* ---------- Namespaced modal ---------- */
     function openModal(title,bodyHtml,footerHtml){
       const backdrop=document.getElementById('atlasBackdrop');
       const root=document.getElementById('atlasModalRoot');
@@ -385,16 +369,15 @@
       setTimeout(()=>{const f=root.querySelector('input,select,textarea,button'); if(f) f.focus();},0);
     }
     function closeModal(){
-      const backdrop=document.getElementById('atlasBackdrop');
+      document.getElementById('atlasBackdrop').classList.remove('show');
       const root=document.getElementById('atlasModalRoot');
-      root.classList.remove('open'); root.setAttribute('aria-hidden','true');
-      backdrop.classList.remove('show'); root.innerHTML=''; document.body.classList.remove('atlas-modal-open');
+      root.classList.remove('open'); root.setAttribute('aria-hidden','true'); root.innerHTML='';
+      document.body.classList.remove('atlas-modal-open');
     }
     document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 
-    /* --------- New Project (in filters) --------- */
+    /* ---------- Create/Edit Projects ---------- */
     function showNewProjectModal(){
-      if(window.atlas?.showNewProjectModal){ window.atlas.showNewProjectModal(); return; }
       openModal('Create New Project', `
         <div class="form-grid">
           <label for="p_name">Project Name *</label>
@@ -432,7 +415,6 @@
         <button class="btn" onclick="createProject()">Create Project</button>
       `);
     }
-
     function createProject(){
       const name=document.getElementById('p_name').value.trim();
       const budget=document.getElementById('p_budget').value.trim();
@@ -450,30 +432,14 @@
 
       if(seed){
         const tasks=KanbanStore.read();
-        tasks.push({
-          id:'t'+Math.random().toString(36).slice(2,7),
-          title:'Kickoff: outline scope',
-          desc:'Define goals, rough budget, and timeline.',
-          status,
-          project:id,
-          assignee,
-          priority:'Medium',
-          due:'',
-          deps:[]
-        });
+        tasks.push({id:'t'+Math.random().toString(36).slice(2,7), title:'Kickoff: outline scope', desc:'Define goals, rough budget, and timeline.', status, project:id, assignee, priority:'Medium', due:''});
         KanbanStore.write(tasks);
       }
-
-      closeModal();
-      toast('Project created.');
-      viewProject(id);
+      closeModal(); toast('Project created.'); viewProject(id);
     }
-
-    /* --------- Edit Project --------- */
     function editProject(projectId){
       const projects=ProjectStore.read();
       const p=projects.find(x=>x.id===projectId);
-      if(window.atlas?.showEditProjectModal){ window.atlas.showEditProjectModal(projectId); return; }
       if(!p){ toast('Project not found.'); return; }
       openModal('Edit Project', `
         <div class="form-grid">
@@ -506,9 +472,8 @@
       toast('Project updated.'); closeModal();
     }
 
-    /* --------- Add Task --------- */
+    /* ---------- Tasks ---------- */
     function openAddTaskModal(projectId){
-      if(window.atlas?.showAddTaskModal){ window.atlas.showAddTaskModal('Planning',projectId); return; }
       openModal('Add Task', `
         <label for="at_title">Title *</label>
         <input id="at_title" class="input" placeholder="e.g., Schedule inspection"/>
@@ -554,29 +519,20 @@
       const due=document.getElementById('at_due').value;
 
       const tasks=KanbanStore.read();
-      tasks.push({id:'t'+Math.random().toString(36).slice(2,7), title, desc, status, assignee, priority, due, deps:[], project:projectId});
+      tasks.push({id:'t'+Math.random().toString(36).slice(2,7), title, desc, status, assignee, priority, due, project:projectId});
       KanbanStore.write(tasks);
       closeModal(); toast('Task created.');
     }
 
-    /* --------- Task Details (uses namespaced modal) --------- */
     function viewTask(taskId){
-      const el=document.querySelector(`[data-task-id="${taskId}"] .task-name`);
-      const fallbackTitle=el?el.textContent.trim():'';
-
       const tasks=KanbanStore.read();
       let t=tasks.find(x=>x.id===taskId);
-      if(!t && fallbackTitle){
-        t=tasks.find(x=>x.title.toLowerCase()===fallbackTitle.toLowerCase());
-      }
       if(!t){
-        const parentArticle=el?.closest('.project-epic');
-        const projectId=parentArticle?.getAttribute('data-project-id')||'general';
-        t={id:taskId||('t'+Math.random().toString(36).slice(2,7)),title:fallbackTitle||'Untitled Task',desc:'',status:'Planning',project:projectId,assignee:'Assignee A',priority:'Medium',due:'',deps:[]};
+        // Fallback: synthesize from DOM if needed
+        const el=document.querySelector(`[data-task-id="${taskId}"] .task-name`);
+        t={id:taskId,title:(el?.textContent||'Untitled Task').trim(),desc:'',status:'Planning',project:'general',assignee:'Assignee A',priority:'Medium',due:''};
         tasks.push(t); KanbanStore.write(tasks);
       }
-
-      if(window.atlas?.showTaskDetailModal){ window.atlas.showTaskDetailModal(t); return; }
 
       openModal('Task Details', `
         <label>Title</label>
@@ -620,40 +576,45 @@
     }
     function saveTask(id){
       const tasks=KanbanStore.read();
-      const idx=tasks.findIndex(x=>x.id===id);
-      if(idx===-1){ toast('Task not found.'); return; }
-      tasks[idx].title=document.getElementById('td_title').value.trim()||tasks[idx].title;
-      tasks[idx].desc=document.getElementById('td_desc').value.trim();
-      tasks[idx].status=document.getElementById('td_status').value;
-      tasks[idx].assignee=document.getElementById('td_assignee').value;
-      tasks[idx].priority=document.getElementById('td_priority').value;
-      tasks[idx].due=document.getElementById('td_due').value;
+      const i=tasks.findIndex(x=>x.id===id);
+      if(i===-1){ toast('Task not found.'); return; }
+      tasks[i].title=document.getElementById('td_title').value.trim()||tasks[i].title;
+      tasks[i].desc=document.getElementById('td_desc').value.trim();
+      tasks[i].status=document.getElementById('td_status').value;
+      tasks[i].assignee=document.getElementById('td_assignee').value;
+      tasks[i].priority=document.getElementById('td_priority').value;
+      tasks[i].due=document.getElementById('td_due').value;
       KanbanStore.write(tasks); toast('Task updated.'); closeModal();
     }
 
-    /* --------- Navigation helpers --------- */
+    /* ---------- Filters & Nav helpers ---------- */
+    function handleStatusFilter(v){ if(window.atlas?.filterByStatus) window.atlas.filterByStatus(v); }
+    function handlePriorityFilter(v){ if(window.atlas?.filterByPriority) window.atlas.filterByPriority(v); }
     function viewProject(id){ window.location.href=`kanban.html?project=${id}`; }
     function openOnBoard(projectId){ closeModal(); viewProject(projectId); }
 
-    /* --------- Filters (hooks) --------- */
-    function handleStatusFilter(v){ if(window.atlas?.filterByStatus) window.atlas.filterByStatus(v); }
-    function handlePriorityFilter(v){ if(window.atlas?.filterByPriority) window.atlas.filterByPriority(v); }
-
-    /* --------- Stats --------- */
+    /* ---------- Stats ---------- */
     (function hydrateStats(){
       const tasks=KanbanStore.read();
-      const totalTasks=tasks.length;
-      const done=tasks.filter(t=>t.status==='Done').length;
-      const avg = totalTasks ? Math.round((done/totalTasks)*100) : 0;
+      const totalTasks=tasks.length, done=tasks.filter(t=>t.status==='Done').length;
       document.getElementById('statTasks').textContent=totalTasks.toString();
-      document.getElementById('statAvg').textContent=avg+'%';
+      document.getElementById('statAvg').textContent=(totalTasks?Math.round(done/totalTasks*100):0)+'%';
       const projects=ProjectStore.read();
-      document.getElementById('statActive').textContent = (projects?.length||3).toString();
+      document.getElementById('statActive').textContent=(projects?.length||3).toString();
     })();
+
+    /* ---------- Remove any legacy bottom “Task Details” elements ---------- */
+    function cleanupLegacyTaskDrawer(){
+      // Anything that looks like a task-details drawer but isn't ours
+      document.querySelectorAll('[role="dialog"]').forEach(el=>{
+        if(!el.closest('#atlasModalRoot')){ el.remove(); }
+      });
+      const suspects=['#taskDetails','.task-details','.drawer.task-details','.modal.task-details'];
+      suspects.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.remove()));
+    }
+    document.addEventListener('DOMContentLoaded', cleanupLegacyTaskDrawer);
   </script>
 
-  <!-- Keep your main interactive script -->
   <script src="atlas-interactive.js"></script>
 </body>
 </html>
-
