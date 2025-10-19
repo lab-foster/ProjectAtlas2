@@ -2,101 +2,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Project Atlas – Kanban board with dependencies, drag & drop, editable task modal, and configurable columns."/>
   <meta name="robots" content="noindex, nofollow"/>
   <title>Kanban Board - Project Atlas</title>
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗂️</text></svg>"/>
-
-  <!-- Shared styles -->
+  <!-- Shared theme -->
   <link rel="stylesheet" href="styles.css"/>
   <link rel="stylesheet" href="atlas-interactive.css"/>
 
   <style>
-    /* Page container */
+    /* Page scaffold */
     .page-wrap{padding:var(--space-xl);max-width:1600px;margin:0 auto}
-
-    /* Header */
-    .board-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-lg);margin-bottom:var(--space-md);padding-bottom:var(--space-sm);border-bottom:1px solid var(--border-default)}
+    .board-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
     .board-title h2{margin-bottom:6px}
-    .subtle{color:var(--text-secondary);font-size:.95rem}
+    .muted{color:var(--text-secondary)}
 
-    /* Toolbar (align with Calendar/Documents pages) */
-    .toolbar{
-      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-      background:var(--bg-elevated);border:1px solid var(--border-light);
-      border-radius:var(--radius-lg);padding:10px 12px;margin-bottom:var(--space-xl)
-    }
-    .toolbar .search{position:relative;flex:1;min-width:240px}
-    .toolbar .search input{min-width:0;width:100%;padding:8px 34px 8px 10px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:var(--radius-md)}
+    /* Unified toolbar (kept inline with Calendar/Documents) */
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--bg-elevated);border:1px solid var(--border-light);border-radius:14px;padding:10px 12px;margin-bottom:24px}
+    .toolbar .search{position:relative;flex:1 1 360px}
+    .toolbar .search input{width:100%;padding:9px 34px 9px 10px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:10px}
     .toolbar .search .icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);opacity:.6}
-    .toolbar .filter{min-width:200px}
-    .toolbar select{width:100%;padding:8px 10px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:var(--radius-md)}
+    .toolbar .select{min-width:200px}
+    .toolbar select{width:100%;padding:9px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:10px}
     .toolbar .actions{display:flex;gap:8px;margin-left:auto}
-    .btn-icon{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:var(--radius-md);cursor:pointer;transition:all var(--transition-fast)}
-    .btn-icon:hover{border-color:var(--app-primary);background:var(--app-primary-lighter);color:var(--app-primary)}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:10px;padding:8px 12px;cursor:pointer;transition:all .15s}
+    .btn:hover{border-color:var(--app-primary);background:var(--app-primary-lighter);color:var(--app-primary)}
 
-    /* Board layout – full width, columns wrap (no inner scroll panes) */
-    .kanban{
-      --col-gap:16px;
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-      gap:var(--col-gap);
-      align-items:start;
-    }
-
-    /* Column */
-    .k-col{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;min-height:120px}
-    .k-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border-light)}
+    /* Board grid – full page, no inner scroll panes */
+    .kanban{--gap:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--gap)}
+    .k-col{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:16px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
+    .k-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px;border-bottom:1px solid var(--border-light)}
     .k-title{font-weight:700}
     .k-count{color:var(--text-secondary);font-size:.85rem}
-    .k-list{display:flex;flex-direction:column;gap:10px;padding:12px}
+    .k-add{font-size:.85rem;color:var(--app-primary);cursor:pointer}
+    .k-list{display:flex;flex-direction:column;gap:12px;padding:12px;min-height:80px}
 
-    /* Card polish */
-    .k-card{background:var(--bg-secondary);border:1px solid var(--border-light);border-radius:12px;box-shadow:var(--shadow-xs);padding:10px 12px;cursor:grab}
+    /* Cards */
+    .k-card{background:var(--bg-secondary);border:1px solid var(--border-light);border-radius:14px;padding:12px;box-shadow:var(--shadow-xs);cursor:grab}
     .k-card:active{cursor:grabbing}
     .k-card .title{font-weight:700;margin-bottom:4px}
-    .k-card .sub{color:var(--text-secondary);font-size:.9rem}
-    .k-card .meta{display:flex;align-items:center;gap:10px;margin-top:8px;color:var(--text-secondary);font-size:.8rem}
+    .k-card .sub{color:var(--text-secondary);font-size:.92rem}
+    .k-card .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;color:var(--text-secondary);font-size:.8rem}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border:1px solid var(--border-light);border-radius:999px}
+    .dot{width:8px;height:8px;border-radius:999px;display:inline-block}
+    .proj-kitchen{background:#1d73e8}.proj-bathroom{background:#ff9800}.proj-basement{background:#43a047}.proj-garden{background:#66bb6a}.proj-admin{background:#9c27b0}
 
-    /* Project color dots */
-    .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
-    .kitchen{background:#1d73e8}
-    .bathroom{background:#ff9800}
-    .basement{background:#43a047}
+    .k-placeholder{border:2px dashed var(--border-default);border-radius:12px;height:58px}
 
-    /* Drag placeholder */
-    .k-placeholder{border:2px dashed var(--border-default);border-radius:12px;height:56px}
-
-    /* Modal roots used by atlas-interactive.js */
-    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .15s ease;z-index:1000}
+    /* Modal primitives (compatible look & feel with other pages) */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .15s;z-index:1000}
     .modal-backdrop.show{opacity:1;pointer-events:auto}
-    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .15s ease;z-index:1001}
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .15s;z-index:1001}
     .modal.open{opacity:1;pointer-events:auto}
-    .modal-panel{width:min(800px,94vw);max-height:90vh;background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow:hidden}
+    .modal-panel{width:min(820px,96vw);max-height:90vh;background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:16px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow:hidden}
     .modal-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border-light)}
     .modal-body{padding:16px;overflow:auto}
-    .modal-footer{padding:12px 16px;border-top:1px solid var(--border-light);display:flex;gap:10px;justify-content:flex-end}
+    .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .modal-body input,.modal-body textarea,.modal-body select{width:100%;padding:9px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:10px}
+    .modal-footer{padding:12px 16px;border-top:1px solid var(--border-light);display:flex;gap:8px;justify-content:flex-end}
+    .btn-primary{background:var(--app-primary);border-color:var(--app-primary);color:white}
+    .btn-primary:hover{filter:brightness(1.05)}
+    .btn-danger{border-color:#d32f2f;color:#d32f2f}
+    .btn-danger:hover{background:#ffebee}
   </style>
 </head>
 <body class="app-page">
   <a href="#main" class="skip-to-main">Skip to main content</a>
 
-  <!-- Global header (matches other pages) -->
+  <!-- Global header (kept identical to other pages) -->
   <header class="app-header">
     <div class="header-container">
       <div class="logo">
         <h1>Project <span class="atlas-blue">ATLAS</span></h1>
         <span class="tagline">Home Project Management</span>
       </div>
-
-      <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mainNav"
-              onclick="toggleMobileMenu()"><span aria-hidden="true">☰</span></button>
-
+      <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mainNav" onclick="toggleMobileMenu()"><span aria-hidden="true">☰</span></button>
       <nav id="mainNav" class="main-nav" aria-label="Main navigation">
         <ul>
           <li><a href="dashboard.html">Dashboard</a></li>
@@ -107,60 +88,48 @@
           <li><a href="documents.html">Documents</a></li>
         </ul>
       </nav>
-
-      <div class="user-menu">
-        <button class="user-avatar" title="User Menu">AF</button>
-      </div>
+      <div class="user-menu"><button class="user-avatar">AF</button></div>
     </div>
   </header>
 
-  <!-- Main -->
-  <main id="main" class="page-wrap" aria-label="Kanban">
-    <!-- Page title -->
+  <main id="main" class="page-wrap">
     <section class="board-header">
       <div class="board-title">
         <h2>Kanban Board</h2>
-        <div class="subtle">Drag cards between columns. Click a card to view &amp; edit details.</div>
+        <div class="muted">Drag cards between columns. Click a card to view &amp; edit details.</div>
       </div>
     </section>
 
-    <!-- Unified toolbar: Search • Assignee • Actions (+ Task / Columns) -->
+    <!-- Unified toolbar: Search | Assignee | +Task | Columns -->
     <div class="toolbar" role="region" aria-label="Board tools">
       <div class="search">
-        <input id="searchTasks" aria-label="Search tasks" placeholder="Search by title, description, or tags…" oninput="applyFilters()"/>
+        <input id="searchInput" placeholder="Search by title, description, or tags…" aria-label="Search tasks"/>
         <span class="icon" aria-hidden="true">🔎</span>
       </div>
-
-      <div class="filter">
-        <select id="assigneeFilter" aria-label="Filter by assignee" onchange="applyFilters()">
+      <div class="select">
+        <select id="assigneeSelect" aria-label="Filter by assignee">
           <option value="">All assignees</option>
-          <!-- Intentionally no personal names in mock data -->
         </select>
       </div>
-
       <div class="actions">
-        <button class="btn-icon" onclick="openCreateTask()" aria-label="Add task">+ Task</button>
-        <button class="btn-icon" onclick="openColumnsDialog()" aria-label="Configure columns">Columns</button>
+        <button class="btn" id="addTaskBtn" aria-label="Add task">+ Task</button>
+        <button class="btn" id="columnsBtn" aria-label="Configure columns">Columns</button>
       </div>
     </div>
 
-    <!-- Board -->
-    <section id="kanban" class="kanban" aria-label="Kanban board">
-      <!-- Columns and cards are injected by atlas-interactive.js -->
-    </section>
+    <!-- Kanban board -->
+    <section id="board" class="kanban" aria-label="Kanban board"></section>
   </main>
 
-  <!-- Backdrop & Modal Root (compat with existing modal system) -->
-  <div id="backdrop" class="modal-backdrop"></div>
+  <!-- Modal + Backdrop -->
+  <div id="backdrop" class="modal-backdrop" aria-hidden="true"></div>
   <div id="modalRoot" class="modal" aria-hidden="true"></div>
 
   <!-- Toast -->
-  <div id="toast" style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#111;color:#fff;padding:.6rem .8rem;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.25);opacity:0;pointer-events:none;z-index:1100;"></div>
+  <div id="toast" style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#111;color:#fff;padding:.55rem .8rem;border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.28);opacity:0;pointer-events:none;z-index:1100;"></div>
 
-  <!-- Scripts -->
-  <script src="atlas-interactive.js"></script>
   <script>
-    // Mobile nav (kept consistent with other pages)
+    // Mobile nav
     function toggleMobileMenu(){
       const nav = document.getElementById('mainNav');
       const btn = document.querySelector('.mobile-menu-toggle');
@@ -168,23 +137,410 @@
       if(btn) btn.setAttribute('aria-expanded', on ? 'true' : 'false');
     }
 
-    // Optional: if the JS populates assignees, avoid showing personal names by mapping to generic labels.
-    // If your dataset already avoids names, this is a no-op.
-    (function anonymizeAssigneeOptions(){
-      const sel = document.getElementById('assigneeFilter');
-      if(!sel) return;
-      // atlas-interactive.js may inject options; we observe and map if needed.
-      const observer = new MutationObserver(() => {
-        [...sel.options].forEach((opt, i) => {
-          if(i === 0) return; // "All assignees"
-          // Replace any human names with neutral labels
-          if(/\w+/.test(opt.textContent)) {
-            opt.textContent = `Assignee ${i}`;
-          }
+    /* --------------------------
+       Minimal local storage layer
+       -------------------------- */
+    const STORAGE_KEY = 'atlas-kanban-v2';
+    const defaultState = {
+      columns: [
+        { id:'col-someday', name:'Someday', order:0 },
+        { id:'col-ready',   name:'Ready',   order:1 },
+        { id:'col-blocked', name:'Blocked', order:2 },
+      ],
+      tasks: [
+        { id:'t1', title:'Submit building sketch', desc:'Upload PDF to city portal.', project:'admin', assignee:'Assignee A', due:'2025-10-18', column:'col-someday', tags:['permit'], priority:'high' },
+        { id:'t2', title:'Order bathroom vanity', desc:'36" oak, matte hardware.', project:'bathroom', assignee:'Assignee B', due:'2025-10-15', column:'col-someday', tags:['purchase'], priority:'medium' },
+        { id:'t3', title:'Countertop template', desc:'Schedule template after cabinet alignment.', project:'kitchen', assignee:'Assignee C', due:'2025-10-10', column:'col-someday', tags:['contractor'], priority:'low' },
+        { id:'t4', title:'Research countertop materials', desc:'Compare quartz vs. granite; shortlist local fabricators.', project:'kitchen', assignee:'Assignee A', due:'2025-10-20', column:'col-blocked', tags:['research'], priority:'medium' },
+        { id:'t5', title:'Install backsplash', desc:'Herringbone layout; use leveling clips.', project:'kitchen', assignee:'Assignee D', due:'2025-10-20', column:'col-blocked', tags:['tile'], priority:'high' },
+        { id:'t6', title:'Seal grout', desc:'After 72 hours, apply two coats.', project:'kitchen', assignee:'Assignee A', due:'2025-10-22', column:'col-blocked', tags:['finish'], priority:'low' },
+        { id:'t7', title:'Greenhouse irrigation loop', desc:'Add timer and pressure regulator.', project:'garden', assignee:'Assignee B', due:'2025-11-02', column:'col-ready', tags:['outdoor'], priority:'medium' }
+      ]
+    };
+    const state = loadState();
+
+    function loadState(){
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return structuredClone(defaultState);
+        const parsed = JSON.parse(raw);
+        // basic shape guard
+        if(!parsed.columns || !parsed.tasks) return structuredClone(defaultState);
+        return parsed;
+      } catch(e){
+        return structuredClone(defaultState);
+      }
+    }
+    function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+    /* --------------------------
+       Rendering
+       -------------------------- */
+    const boardEl = document.getElementById('board');
+    const searchEl = document.getElementById('searchInput');
+    const assigneeEl = document.getElementById('assigneeSelect');
+
+    function projectDot(project){
+      const map = { kitchen:'proj-kitchen', bathroom:'proj-bathroom', basement:'proj-basement', garden:'proj-garden', admin:'proj-admin' };
+      const cls = map[project] || 'proj-admin';
+      const label = project.charAt(0).toUpperCase()+project.slice(1);
+      return `<span class="chip"><span class="dot ${cls}"></span>${label}</span>`;
+    }
+
+    function renderAssigneeFilter(){
+      const unique = Array.from(new Set(state.tasks.map(t=>t.assignee))).filter(Boolean).sort();
+      assigneeEl.innerHTML = `<option value="">All assignees</option>` + unique.map(a=>`<option value="${a}">${a}</option>`).join('');
+    }
+
+    function renderBoard(){
+      // sort columns by order
+      const cols = [...state.columns].sort((a,b)=>a.order-b.order);
+      const needle = (searchEl.value||'').trim().toLowerCase();
+      const assignee = assigneeEl.value;
+
+      boardEl.innerHTML = cols.map(col=>{
+        const tasks = state.tasks.filter(t=>t.column===col.id).filter(t=>{
+          const hit = (t.title+t.desc+t.tags.join(' ')).toLowerCase().includes(needle);
+          const byAssignee = !assignee || t.assignee===assignee;
+          return hit && byAssignee;
+        });
+        return `
+          <article class="k-col" data-col-id="${col.id}" aria-labelledby="${col.id}-title">
+            <header class="k-head">
+              <div><span class="k-title" id="${col.id}-title">${col.name}</span> <span class="k-count">• ${tasks.length}</span></div>
+              <button class="k-add btn" data-action="add-task" data-col="${col.id}">+ Task</button>
+            </header>
+            <div class="k-list" data-dropzone="${col.id}">
+              ${tasks.map(renderCard).join('')}
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      // wire drag & drop and actions
+      initDnD();
+      boardEl.querySelectorAll('[data-action="add-task"]').forEach(btn=>{
+        btn.addEventListener('click',()=>openTaskModal({ column: btn.dataset.col }));
+      });
+    }
+
+    function renderCard(t){
+      const due = t.due ? `<span class="chip">📅 ${t.due}</span>` : '';
+      const pr = t.priority ? `<span class="chip">⚑ ${t.priority}</span>` : '';
+      const asg = t.assignee ? `<span class="chip">👤 ${t.assignee}</span>` : '';
+      const tags = (t.tags||[]).slice(0,3).map(s=>`<span class="chip">#${s}</span>`).join('');
+      return `
+        <div class="k-card" draggable="true" data-task-id="${t.id}" aria-label="${t.title}">
+          <div class="title">${t.title}</div>
+          ${t.desc ? `<div class="sub">${t.desc}</div>`:''}
+          <div class="meta">
+            ${projectDot(t.project)} ${due} ${asg} ${pr} ${tags}
+          </div>
+        </div>
+      `;
+    }
+
+    /* --------------------------
+       Drag & Drop
+       -------------------------- */
+    function initDnD(){
+      let draggingEl=null, placeholder=null;
+
+      boardEl.querySelectorAll('.k-card').forEach(card=>{
+        card.addEventListener('dragstart',e=>{
+          draggingEl = card;
+          e.dataTransfer.setData('text/plain', card.dataset.taskId);
+          e.dataTransfer.effectAllowed='move';
+          setTimeout(()=>card.style.opacity='.4');
+        });
+        card.addEventListener('dragend',()=>{
+          if(draggingEl) draggingEl.style.opacity='';
+          draggingEl=null;
+          if(placeholder) placeholder.remove();
+          placeholder=null;
         });
       });
-      observer.observe(sel, { childList: true });
-    })();
+
+      boardEl.querySelectorAll('.k-list').forEach(zone=>{
+        zone.addEventListener('dragover',e=>{
+          e.preventDefault();
+          e.dataTransfer.dropEffect='move';
+          if(!placeholder){ placeholder = document.createElement('div'); placeholder.className='k-placeholder'; }
+          const after = getDragAfterElement(zone, e.clientY);
+          if(after==null){ zone.appendChild(placeholder); } else { zone.insertBefore(placeholder, after); }
+        });
+        zone.addEventListener('drop',e=>{
+          e.preventDefault();
+          const id = e.dataTransfer.getData('text/plain');
+          const task = state.tasks.find(x=>x.id===id);
+          if(!task) return;
+          task.column = zone.dataset.dropzone;
+          // compute new index within that column
+          const siblings = [...zone.querySelectorAll('.k-card')].filter(el=>el!==draggingEl);
+          if(placeholder){
+            const idx = [...zone.children].indexOf(placeholder);
+            placeholder.remove();
+            placeholder=null;
+            // reorder in state to roughly match UI (stable: remove & reinsert)
+            const list = state.tasks.filter(x=>x.column===task.column && x.id!==task.id);
+            const beforeId = siblings[idx]?.dataset?.taskId;
+            const newList = [];
+            let inserted=false;
+            for(const s of list){
+              if(!inserted && s.id===beforeId){ newList.push(task); inserted=true; }
+              newList.push(s);
+            }
+            if(!inserted) newList.push(task);
+            // rebuild state order for that column
+            const others = state.tasks.filter(x=>x.column!==task.column || x.id===task.id);
+            state.tasks = others.concat(newList);
+          }
+          saveState(); renderBoard(); toast('Task moved');
+        });
+      });
+
+      function getDragAfterElement(container, y){
+        const els = [...container.querySelectorAll('.k-card:not(.dragging)')];
+        return els.reduce((closest, child)=>{
+          const box = child.getBoundingClientRect();
+          const offset = y - box.top - box.height/2;
+          if(offset<0 && offset>closest.offset){ return { offset, element: child }; }
+          else { return closest; }
+        }, {offset: Number.NEGATIVE_INFINITY}).element;
+      }
+    }
+
+    /* --------------------------
+       Modal helpers
+       -------------------------- */
+    const modalRoot = document.getElementById('modalRoot');
+    const backdrop = document.getElementById('backdrop');
+
+    function openModal(html){
+      modalRoot.innerHTML = `
+        <div class="modal-panel" role="dialog" aria-modal="true">
+          ${html}
+        </div>
+      `;
+      modalRoot.classList.add('open');
+      backdrop.classList.add('show');
+      backdrop.onclick = closeModal;
+      document.addEventListener('keydown', escClose);
+    }
+    function closeModal(){
+      modalRoot.classList.remove('open');
+      backdrop.classList.remove('show');
+      modalRoot.innerHTML='';
+      document.removeEventListener('keydown', escClose);
+    }
+    function escClose(e){ if(e.key==='Escape') closeModal(); }
+
+    /* --------------------------
+       Task modal
+       -------------------------- */
+    function openTaskModal(existing){
+      const isEdit = existing && existing.id;
+      const task = isEdit ? structuredClone(existing) : {
+        id: 't'+crypto.randomUUID().slice(0,8),
+        title:'', desc:'', project:'admin', assignee:'', due:'', column:(existing?.column || state.columns[0].id),
+        tags:[], priority:'medium'
+      };
+
+      const colOpts = state.columns.map(c=>`<option value="${c.id}" ${task.column===c.id?'selected':''}>${c.name}</option>`).join('');
+      openModal(`
+        <header class="modal-header">
+          <h3>${isEdit?'Edit Task':'New Task'}</h3>
+          <button class="btn" onclick="(${closeModal.toString()})()">✕</button>
+        </header>
+        <div class="modal-body">
+          <div class="modal-grid">
+            <div>
+              <label>Title</label>
+              <input id="fTitle" value="${escapeHTML(task.title)}" placeholder="What needs doing?"/>
+            </div>
+            <div>
+              <label>Project</label>
+              <select id="fProject">
+                <option value="admin" ${task.project==='admin'?'selected':''}>Admin</option>
+                <option value="kitchen" ${task.project==='kitchen'?'selected':''}>Kitchen</option>
+                <option value="bathroom" ${task.project==='bathroom'?'selected':''}>Bathroom</option>
+                <option value="basement" ${task.project==='basement'?'selected':''}>Basement</option>
+                <option value="garden" ${task.project==='garden'?'selected':''}>Garden</option>
+              </select>
+            </div>
+            <div>
+              <label>Assignee (no personal names)</label>
+              <input id="fAssignee" value="${escapeHTML(task.assignee)}" placeholder="e.g., Assignee A"/>
+            </div>
+            <div>
+              <label>Due date</label>
+              <input id="fDue" type="date" value="${task.due||''}"/>
+            </div>
+            <div>
+              <label>Priority</label>
+              <select id="fPriority">
+                <option ${task.priority==='low'?'selected':''} value="low">Low</option>
+                <option ${task.priority==='medium'?'selected':''} value="medium">Medium</option>
+                <option ${task.priority==='high'?'selected':''} value="high">High</option>
+              </select>
+            </div>
+            <div>
+              <label>Column</label>
+              <select id="fColumn">${colOpts}</select>
+            </div>
+            <div style="grid-column:1/-1">
+              <label>Description</label>
+              <textarea id="fDesc" rows="4" placeholder="Details, links, requirements...">${escapeHTML(task.desc)}</textarea>
+            </div>
+            <div style="grid-column:1/-1">
+              <label>Tags (comma separated)</label>
+              <input id="fTags" value="${escapeHTML((task.tags||[]).join(', '))}" placeholder="materials, vendor, paint"/>
+            </div>
+          </div>
+        </div>
+        <footer class="modal-footer">
+          ${isEdit?`<button class="btn btn-danger" id="deleteBtn">Delete</button>`:''}
+          <button class="btn" onclick="(${closeModal.toString()})()">Cancel</button>
+          <button class="btn btn-primary" id="saveBtn">${isEdit?'Save':'Create'}</button>
+        </footer>
+      `);
+
+      document.getElementById('saveBtn').onclick = ()=>{
+        const updated = {
+          ...task,
+          title: val('fTitle').trim(),
+          project: val('fProject'),
+          assignee: val('fAssignee').trim(),
+          due: val('fDue'),
+          priority: val('fPriority'),
+          column: val('fColumn'),
+          desc: val('fDesc').trim(),
+          tags: val('fTags').split(',').map(s=>s.trim()).filter(Boolean)
+        };
+        if(!updated.title){ toast('Please add a title'); return; }
+        if(isEdit){
+          const idx = state.tasks.findIndex(x=>x.id===task.id);
+          if(idx>-1) state.tasks[idx]=updated;
+          toast('Task updated');
+        } else {
+          state.tasks.push(updated);
+          toast('Task created');
+        }
+        saveState(); closeModal(); renderAssigneeFilter(); renderBoard();
+      };
+
+      if(isEdit){
+        document.getElementById('deleteBtn').onclick = ()=>{
+          state.tasks = state.tasks.filter(x=>x.id!==task.id);
+          saveState(); closeModal(); renderAssigneeFilter(); renderBoard(); toast('Task deleted');
+        };
+      }
+    }
+
+    function val(id){ return document.getElementById(id).value; }
+    function escapeHTML(s){ return (s||'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+
+    /* --------------------------
+       Columns dialog
+       -------------------------- */
+    function openColumnsDialog(){
+      const rows = state.columns.sort((a,b)=>a.order-b.order).map(c=>`
+        <tr data-id="${c.id}">
+          <td><input value="${escapeHTML(c.name)}" data-field="name"/></td>
+          <td style="width:80px;text-align:center">
+            <button class="btn" data-move="up">▲</button>
+            <button class="btn" data-move="down">▼</button>
+          </td>
+          <td style="width:80px;text-align:center">
+            <button class="btn btn-danger" data-remove="1">Remove</button>
+          </td>
+        </tr>`).join('');
+
+      openModal(`
+        <header class="modal-header">
+          <h3>Configure Columns</h3>
+          <button class="btn" onclick="(${closeModal.toString()})()">✕</button>
+        </header>
+        <div class="modal-body">
+          <table class="data-list" style="width:100%;border-collapse:separate;border-spacing:0 8px">
+            <thead><tr><th>Name</th><th>Order</th><th></th></tr></thead>
+            <tbody id="colTbody">${rows}</tbody>
+          </table>
+          <button class="btn" id="addCol">+ Add Column</button>
+        </div>
+        <footer class="modal-footer">
+          <button class="btn" onclick="(${closeModal.toString()})()">Close</button>
+          <button class="btn btn-primary" id="saveCols">Save</button>
+        </footer>
+      `);
+
+      const tbody = document.getElementById('colTbody');
+      tbody.addEventListener('click',e=>{
+        const tr = e.target.closest('tr'); if(!tr) return;
+        const id = tr.dataset.id;
+        if(e.target.dataset.move==='up' || e.target.dataset.move==='down'){
+          const dir = e.target.dataset.move==='up' ? -1 : 1;
+          const idx = state.columns.findIndex(c=>c.id===id);
+          const swapIdx = idx+dir;
+          if(swapIdx<0||swapIdx>=state.columns.length) return;
+          const a = state.columns[idx], b = state.columns[swapIdx];
+          const ao=a.order; a.order=b.order; b.order=ao;
+          saveState(); openColumnsDialog(); // re-open to refresh
+        }
+        if(e.target.dataset.remove){
+          if(state.tasks.some(t=>t.column===id)){ toast('Column not empty'); return; }
+          state.columns = state.columns.filter(c=>c.id!==id);
+          state.columns.forEach((c,i)=>c.order=i);
+          saveState(); openColumnsDialog();
+        }
+      });
+
+      document.getElementById('addCol').onclick = ()=>{
+        const id='col-'+crypto.randomUUID().slice(0,6);
+        state.columns.push({ id, name:'New Column', order: state.columns.length });
+        saveState(); openColumnsDialog();
+      };
+
+      document.getElementById('saveCols').onclick = ()=>{
+        [...tbody.querySelectorAll('tr')].forEach((tr,i)=>{
+          const id=tr.dataset.id;
+          const c = state.columns.find(x=>x.id===id);
+          if(c){ c.name = tr.querySelector('[data-field="name"]').value.trim() || c.name; c.order=i; }
+        });
+        saveState(); closeModal(); renderBoard(); toast('Columns saved');
+      };
+    }
+
+    /* --------------------------
+       Event wiring & filters
+       -------------------------- */
+    document.getElementById('addTaskBtn').onclick = ()=>openTaskModal();
+    document.getElementById('columnsBtn').onclick = openColumnsDialog;
+    searchEl.addEventListener('input', renderBoard);
+    assigneeEl.addEventListener('change', renderBoard);
+
+    boardEl.addEventListener('click',e=>{
+      const card = e.target.closest('.k-card');
+      if(!card) return;
+      const t = state.tasks.find(x=>x.id===card.dataset.taskId);
+      if(t) openTaskModal(t);
+    });
+
+    /* --------------------------
+       Toast
+       -------------------------- */
+    function toast(msg){
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.style.opacity='1';
+      setTimeout(()=>el.style.opacity='0', 1300);
+    }
+
+    /* --------------------------
+       Boot
+       -------------------------- */
+    renderAssigneeFilter();
+    renderBoard();
   </script>
 </body>
 </html>
