@@ -1,4 +1,4 @@
-<!-- FILE: projects.html -->
+<!-- File: projects.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,10 +19,12 @@
   <style>
     /* Page-local styles (non-destructive; complements styles.css / atlas-interactive.css) */
     .projects-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xl);padding-bottom:var(--space-md);border-bottom:1px solid var(--border-default);gap:var(--space-lg)}
-    .project-filters{display:flex;gap:var(--space-md);flex-wrap:wrap}
+    .project-filters{display:flex;gap:var(--space-md);flex-wrap:wrap;align-items:center;width:100%}
     .filter-select{padding:var(--space-sm) var(--space-md);border:1px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-secondary);color:var(--text-primary);font-size:.9375rem;cursor:pointer;transition:all var(--transition-fast)}
     .filter-select:hover{border-color:var(--border-medium)}
     .filter-select:focus{outline:0;border-color:var(--app-primary);box-shadow:0 0 0 3px var(--app-primary-light)}
+    .filter-actions{margin-left:auto;display:flex;gap:var(--space-sm)}
+    .filter-actions .btn{display:inline-flex;align-items:center;gap:.5rem}
     .projects-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--space-lg);margin-bottom:var(--space-xl)}
     .stat-card{background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:var(--space-lg);text-align:center;box-shadow:var(--shadow-sm);transition:all var(--transition-base)}
     .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
@@ -71,6 +73,9 @@
     .input:focus{outline:2px solid var(--focus);border-color:var(--focus)}
     .atlas-modal-open{overflow:hidden}
 
+    @media (max-width:992px){
+      .filter-actions{width:100%;justify-content:flex-end}
+    }
     @media (max-width:768px){
       .projects-header{flex-direction:column;align-items:stretch}
       .projects-stats{grid-template-columns:repeat(2,1fr);gap:var(--space-md)}
@@ -117,11 +122,7 @@
 
       <!-- User Menu -->
       <div class="user-menu">
-        <button class="btn btn-secondary"
-                onclick="showNewProjectModal()"
-                aria-label="Create new project">
-          <span aria-hidden="true">+</span> New Project
-        </button>
+        <!-- New Project moved into filters; user menu keeps only avatar -->
         <button class="user-avatar"
                 onclick="showUserMenu()"
                 aria-label="User menu"
@@ -136,7 +137,7 @@
     <div class="projects-header">
       <h2>Project Management</h2>
 
-      <!-- Filters -->
+      <!-- Filters (+ New Project moved here) -->
       <div class="project-filters" role="group" aria-label="Project filters">
         <label for="statusFilter" class="sr-only">Filter by status</label>
         <select class="filter-select" id="statusFilter" aria-label="Filter by status" onchange="handleStatusFilter(this.value)">
@@ -154,6 +155,12 @@
           <option value="medium">Medium Priority</option>
           <option value="low">Low Priority</option>
         </select>
+
+        <div class="filter-actions">
+          <button class="btn btn-secondary" onclick="showNewProjectModal()" aria-label="Create new project">
+            <span aria-hidden="true">+</span> New Project
+          </button>
+        </div>
       </div>
     </div>
 
@@ -177,7 +184,7 @@
       </article>
     </section>
 
-    <!-- Projects List (STATIC CONTENT KEPT; wired to storage for task clicks) -->
+    <!-- Projects List -->
     <section class="projects-list" aria-label="Active projects" id="projectsList">
       <!-- Kitchen Renovation Epic -->
       <article class="project-epic" data-project-id="kitchen" data-status="in-progress">
@@ -390,19 +397,19 @@
       ensureSeed(){
         const list=this.read(); if(list.length) return;
         this.write([
-          {id:"t1", title:"Research countertop materials", desc:"Quartz vs granite. Check local fabricators.", status:"Someday", project:"kitchen", assignee:"Andrew", priority:"Low", due:"", deps:[]},
-          {id:"t2", title:"Submit basement permit", desc:"City online portal", status:"Planning", project:"basement", assignee:"Andrew", priority:"High", due:"2025-10-18", deps:[]},
-          {id:"t3", title:"Order bathroom vanity", desc:"36” oak, matte black hardware – Home Depot", status:"Ready", project:"bathroom", assignee:"Katie", priority:"Medium", due:"2025-10-15", deps:[]},
+          {id:"t1", title:"Research countertop materials", desc:"Quartz vs granite. Check local fabricators.", status:"Someday", project:"kitchen", assignee:"Assignee A", priority:"Low", due:"", deps:[]},
+          {id:"t2", title:"Submit basement permit", desc:"City online portal", status:"Planning", project:"basement", assignee:"Assignee A", priority:"High", due:"2025-10-18", deps:[]},
+          {id:"t3", title:"Order bathroom vanity", desc:"36” oak, matte black hardware – Home Depot", status:"Ready", project:"bathroom", assignee:"Assignee B", priority:"Medium", due:"2025-10-15", deps:[]},
           {id:"t4", title:"Install backsplash", desc:"Herringbone subway tile; use leveling clips.", status:"In Progress", project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-20", deps:["t6"]},
-          {id:"t5", title:"Seal grout", desc:"After 72 hours, two coats.", status:"Blocked", project:"kitchen", assignee:"Andrew", priority:"Low", due:"", deps:["t4"]},
+          {id:"t5", title:"Seal grout", desc:"After 72 hours, two coats.", status:"Blocked", project:"kitchen", assignee:"Assignee A", priority:"Low", due:"", deps:["t4"]},
           {id:"t6", title:"Countertop template", desc:"Schedule after cabinet alignment.", status:"Done", project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-10", deps:[]},
-          {id:"t9", title:"Schedule plumbing inspection", desc:"Book with city inspector", status:"Blocked", project:"bathroom", assignee:"Andrew", priority:"High", due:"2025-10-13", deps:[]}
+          {id:"t9", title:"Schedule plumbing inspection", desc:"Book with city inspector", status:"Blocked", project:"bathroom", assignee:"Assignee A", priority:"High", due:"2025-10-13", deps:[]}
         ]);
       }
     };
     KanbanStore.ensureSeed();
 
-    /* ---------- Modal (fallback if window.atlas modal not present) ---------- */
+    /* ---------- Modal (fallback if window.atlas modal isn't present) ---------- */
     function openModal(title,bodyHtml,footerHtml){
       const backdrop=document.getElementById('backdrop');
       const root=document.getElementById('modalRoot');
@@ -429,7 +436,7 @@
     }
     document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 
-    /* ---------- New Project (fix: +New Project shows as blank fields at bottom) ---------- */
+    /* ---------- New Project (now launched from Filters) ---------- */
     function showNewProjectModal(){
       if(window.atlas?.showNewProjectModal){ window.atlas.showNewProjectModal(); return; }
       openModal('Create New Project', `
@@ -461,7 +468,7 @@
             <div>
               <label for="p_assignee">Default Assignee</label>
               <select id="p_assignee" class="input">
-                <option>Andrew</option><option>Katie</option><option>Contractor</option>
+                <option>Assignee A</option><option>Assignee B</option><option>Contractor</option>
               </select>
             </div>
           </div>
@@ -509,7 +516,7 @@
       viewProject(id);
     }
 
-    /* ---------- Edit Project (non-destructive enhancement) ---------- */
+    /* ---------- Edit Project ---------- */
     function editProject(projectId){
       const projects=ProjectStore.read();
       const p=projects.find(x=>x.id===projectId);
@@ -565,7 +572,7 @@
           </div>
           <div>
             <label for="at_assignee">Assignee</label>
-            <select id="at_assignee" class="input"><option>Andrew</option><option>Katie</option><option>Contractor</option></select>
+            <select id="at_assignee" class="input"><option>Assignee A</option><option>Assignee B</option><option>Contractor</option></select>
           </div>
         </div>
 
@@ -599,9 +606,8 @@
       closeModal(); toast('Task created.');
     }
 
-    /* ---------- Task Details (fix: clicking tasks said "task not found") ---------- */
+    /* ---------- Task Details ---------- */
     function viewTask(taskId){
-      // Derive title from the DOM if available (back-compat for static markup)
       const el=document.querySelector(`[data-task-id="${taskId}"] .task-name`);
       const fallbackTitle=el?el.textContent.trim():'';
 
@@ -611,7 +617,6 @@
         t=tasks.find(x=>x.title.toLowerCase()===fallbackTitle.toLowerCase());
       }
       if(!t){
-        // Create a placeholder task so the user can immediately edit/save
         const parentArticle=el?.closest('.project-epic');
         const projectId=parentArticle?.getAttribute('data-project-id')||'general';
         t={
@@ -620,7 +625,7 @@
           desc:'',
           status:'Planning',
           project:projectId,
-          assignee:'Andrew',
+          assignee:'Assignee A',
           priority:'Medium',
           due:'',
           deps:[]
@@ -647,7 +652,7 @@
           <div>
             <label>Assignee</label>
             <select id="td_assignee" class="input">
-              ${['Andrew','Katie','Contractor'].map(a=>`<option ${t.assignee===a?'selected':''}>${a}</option>`).join('')}
+              ${['Assignee A','Assignee B','Contractor'].map(a=>`<option ${t.assignee===a?'selected':''}>${a}</option>`).join('')}
             </select>
           </div>
         </div>
@@ -687,7 +692,7 @@
     function viewProject(id){ window.location.href=`kanban.html?project=${id}`; }
     function openOnBoard(projectId){ closeModal(); viewProject(projectId); }
 
-    /* ---------- Filters (no-op unless atlas-interactive provides advanced filtering) ---------- */
+    /* ---------- Filters (hookable for atlas-interactive) ---------- */
     function handleStatusFilter(v){ if(window.atlas?.filterByStatus) window.atlas.filterByStatus(v); }
     function handlePriorityFilter(v){ if(window.atlas?.filterByPriority) window.atlas.filterByPriority(v); }
 
