@@ -1,100 +1,118 @@
 # Project Atlas
 
-Home improvement project management that actually works.
+**Home improvement project management that actually works.**
 
-## About
+A purpose-built platform for managing home renovation projects with the clarity and control you need—without the bloat of enterprise tools or the limitations of generic task apps.
 
-Project Atlas is a purpose-built platform for managing home renovation projects. Built for homeowners who understand good tooling but are frustrated with existing home project management apps.
+## Live Demo
 
-After years of trying generic kanban boards, overkill enterprise tools, and cutesy apps built by people who've clearly never spent a weekend installing subfloor, I decided to create something that treats home improvement like the complex, interconnected system it actually is.
+**https://lab-foster.github.io/ProjectAtlas/**
+
+---
 
 ## Features
 
-- **Interactive Kanban Board** - Drag-and-drop task management with real-time updates
-- **Project Tracking** - Keep all your home projects organized in one place with live status updates
-- **Smart Planning** - Get help planning your renovation projects step by step  
-- **Budget Control** - Track costs and stay within your renovation budget
-- **Task Management** - Add, edit, delete, and organize tasks across projects
-- **Persistent Storage** - All changes are saved locally using browser localStorage
+### Core Functionality
 
-## New in Version 1.5 - JavaScript Interactivity
+**Kanban Board** - Jira-style drag-and-drop task management across five workflow stages (Backlog → Ready → In Progress → Blocked → Done). Move tasks between columns, filter by project and priority, and add tasks directly from any column.
 
-### Kanban Board Features
-- **Drag & Drop**: Move tasks between columns by dragging cards
-- **Task Filtering**: Filter tasks by project and priority level
-- **Add New Tasks**: Click "+ Add task" buttons to create new tasks in any column
-- **Task Details**: Click any task card to view full details, edit, or delete
-- **Status Notifications**: Visual feedback when tasks change status
-- **Real-time Updates**: Task counts update automatically as you move cards
+**Dashboard** - Real-time overview of all active projects with status tracking, recent activity feed, and quick access to tasks and milestones.
 
-### Cross-Page Functionality
-- **Dashboard Enhancements**: Click activity items for details
-- **Projects Page**: Interactive task items with click handlers
-- **Persistent Data**: All task changes sync across pages and persist in browser storage
+**Projects** - Organize work across multiple renovation projects. Each project tracks scope, timeline, budget allocation, and associated tasks with visual progress indicators.
 
-### Technical Implementation
-- Vanilla JavaScript (no dependencies)
-- LocalStorage for data persistence
-- Modal system for forms and details
-- Smooth animations and transitions
-- Mobile-responsive drag-and-drop
-- Accessible keyboard navigation
+**Calendar** - Month view of scheduled tasks and project milestones with filtering by project. Navigate between months and see deadlines at a glance.
 
-## Development Status
+**Budget Tracking** - Monitor project costs with expense categorization, actual vs. planned comparisons, and visual spending breakdowns.
 
-🚀 Active Development - Now with full JavaScript interactivity!
+**Documents** - Centralized storage and organization for contracts, permits, invoices, and project photos with search and category filtering.
 
-## Current Status
+### Interactive Features
 
-**Live Demo:** https://lab-foster.github.io/ProjectAtlas/
+- **Full drag-and-drop** task management with touch support
+- **Real-time filtering** by project, priority, and status
+- **Modal-based task editing** with inline validation
+- **Cross-page data sync** using localStorage and pub/sub events
+- **Responsive design** optimized for desktop, tablet, and mobile
+- **Keyboard navigation** with accessibility support (ARIA labels, focus management)
+- **Contact form** with validation and beta signup
 
-### What's Working
-- ✅ Fully functional drag-and-drop Kanban board
-- ✅ Task creation, editing, and deletion
-- ✅ Project and priority filtering
-- ✅ Real-time status updates and notifications
-- ✅ Data persistence across page reloads
-- ✅ Interactive dashboard with activity tracking
-- ✅ Responsive modal system for task management
-- ✅ Landing page with project overview
-- ✅ About page explaining the vision
-- ✅ Contact form for feedback and beta interest
+### Data Persistence
 
-### In Development
-- Calendar integration with task deadlines
-- Budget tracking with expense management
-- Document upload and organization
-- Multi-user collaboration features
-- Advanced reporting and analytics
+All changes save automatically to browser localStorage and sync across tabs in real-time. No backend required—your data stays private and local.
 
-## Core Philosophy
-
-I'm borrowing workflow concepts from enterprise software development but mapping them to the reality of being your own PM, developer, QA tester, and budget holder. The platform understands that you can't tile the bathroom floor until the plumbing rough-in passes inspection, and it'll surface those blockers before you order materials.
+---
 
 ## Tech Stack
 
-- HTML5/CSS3 with CSS Grid and Flexbox
-- Vanilla JavaScript (ES6+)
-- CSS custom properties for theming
-- localStorage API for data persistence
-- Drag and Drop API for Kanban functionality
-- Mobile-first responsive design
+- **HTML5/CSS3** - Semantic markup, CSS Grid, Flexbox, custom properties
+- **Vanilla JavaScript (ES6+)** - No framework dependencies, ~1100 lines of interactive logic
+- **localStorage API** - Client-side data persistence
+- **Drag and Drop API** - Native browser drag-and-drop with custom styling
+- **PHP** - Optional contact form processing (server-side)
+
+---
+
+## Philosophy
+
+Project Atlas treats home improvement like the complex, interconnected system it is. The platform understands that you can't tile the bathroom until the plumbing rough-in passes inspection—and surfaces those blockers before you order materials.
+
+Built for homeowners who understand good tooling but are frustrated with existing apps: too simplistic, too bloated, or clearly designed by people who've never installed subfloor.
+
+---
+
+## Development Status
+
+🚀 **Active Development**
+
+### Current (v1.8)
+- ✅ Fully interactive Kanban board with drag-and-drop
+- ✅ Task creation, editing, deletion across all views
+- ✅ Multi-project management with filtering
+- ✅ Calendar view with task scheduling
+- ✅ Budget tracking with expense management
+- ✅ Document organization system
+- ✅ Real-time cross-tab synchronization
+- ✅ Responsive mobile-first design
+- ✅ Contact form with beta signup
+
+### Roadmap
+- Advanced dependency tracking (visual task chains)
+- Permit and inspection workflow
+- Contractor contact management
+- File upload and cloud storage integration
+- Multi-user collaboration
+- Export/import project data
+- Advanced reporting and analytics
+
+---
 
 ## Contributing
 
-If you're interested in contributing or beta testing, please use the contact form on the site. I'm particularly looking for:
+Interested in contributing or beta testing? Use the [contact form](https://lab-foster.github.io/ProjectAtlas/contact.html) or reach out directly.
 
-- Frontend developers with React/TypeScript experience
-- UX designers who understand project management workflows
+**Looking for:**
+- Frontend developers (React/TypeScript experience helpful)
+- UX designers familiar with project management workflows
 - Home renovation enthusiasts who can provide domain expertise
-- Beta testers willing to try the platform on real projects
+- Beta testers willing to use the platform on real projects
 
 ---
 
-**License**
+## Author
 
-This project is currently in development and not yet open source. Planning to open source portions once the core architecture is stable.
+Built by **Andrew Foster** - a developer who got tired of juggling spreadsheets, notes apps, and generic kanban boards for home projects.
+
+**Contact:** andrew@projectatlas.dev  
+**GitHub:** github.com/lab-foster/projectAtlas
 
 ---
+
+## License
+
+Currently in development. Planning to open source portions once core architecture stabilizes.
+
+---
+
+*"After years of trying overkill enterprise tools and cutesy apps built by people who've clearly never spent a weekend installing subfloor, I decided to create something that treats home improvement like the complex, interconnected system it actually is."*
 
 Built with frustration and determination by Andrew Foster
