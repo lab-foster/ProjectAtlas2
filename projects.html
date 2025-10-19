@@ -32,6 +32,7 @@
     .in-progress{color:#0b5bd3;border-color:#cfe0ff;background:#eef5ff}
     .planning{color:#8a6c00;border-color:#f7e3a0;background:#fff7d1}
     .blocked{color:#b00020;border-color:#ffd1d6;background:#fff1f3}
+    .done{color:#2e7d32;border-color:#c8e6c9;background:#edf7ed}
 
     .epic-progress{background:var(--app-primary-lighter);padding:var(--space-lg);border-radius:var(--radius-md);border:1px solid var(--app-primary-light)}
     .progress-info{display:flex;justify-content:space-between;gap:var(--space-md);flex-wrap:wrap;color:var(--text-secondary);font-size:.875rem;margin-bottom:.5rem}
@@ -41,6 +42,7 @@
     .epic-tasks{display:flex;flex-direction:column;gap:.5rem;margin-top:var(--space-md)}
     .epic-tasks-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;padding-bottom:.5rem;border-bottom:1px solid var(--border-light)}
     .epic-tasks-header h4{margin:0;font-size:.95rem;color:var(--text-secondary);letter-spacing:.02em}
+    .task-empty{font-size:.875rem;color:var(--text-tertiary);padding:.5rem 0}
 
     .task-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:10px;transition:background .12s,border-color .12s;cursor:pointer;border:1px solid transparent}
     .task-item:hover{background:var(--app-primary-lighter);border-color:var(--app-primary-light)}
@@ -69,7 +71,7 @@
     .input{width:100%;border:1px solid var(--border-default);border-radius:10px;padding:10px 12px;background:var(--bg-secondary)}
     .input:focus{outline:2px solid var(--app-primary-light);border-color:var(--app-primary)}
 
-    /* --- Hide any legacy bottom drawers if a theme script injected them --- */
+    /* --- Nuke any legacy bottom drawers that other scripts inject --- */
     .task-details,.drawer.task-details,#taskDetails,.modal.task-details{display:none !important}
 
     @media (max-width:992px){.filter-actions{width:100%;justify-content:flex-end}}
@@ -123,7 +125,7 @@
       <h2>Project Management</h2>
       <div class="project-filters" role="group" aria-label="Project filters">
         <label for="statusFilter" class="sr-only">Filter by status</label>
-        <select class="filter-select" id="statusFilter" onchange="handleStatusFilter(this.value)">
+        <select class="filter-select" id="statusFilter">
           <option value="all">All Status</option>
           <option value="active">Active</option>
           <option value="planning">Planning</option>
@@ -132,7 +134,7 @@
         </select>
 
         <label for="priorityFilter" class="sr-only">Filter by priority</label>
-        <select class="filter-select" id="priorityFilter" onchange="handlePriorityFilter(this.value)">
+        <select class="filter-select" id="priorityFilter">
           <option value="all">All Priorities</option>
           <option value="high">High Priority</option>
           <option value="medium">Medium Priority</option>
@@ -185,21 +187,21 @@
         <div class="epic-tasks">
           <div class="epic-tasks-header"><h4>Tasks</h4><span class="text-sm text-tertiary">Click to open details</span></div>
 
-          <div class="task-item completed" data-task-id="t0" role="button" tabindex="0"
+          <div class="task-item completed" data-task-id="t0" data-priority="low" role="button" tabindex="0"
                onclick="viewTask('t0','Demo existing kitchen')" onkeypress="handleKeyPress(event,'viewTask','t0')">
             <span class="task-checkbox" aria-hidden="true">✓</span>
             <span class="task-name">Demo existing kitchen</span>
             <span class="task-status">Completed</span>
           </div>
 
-          <div class="task-item active" data-task-id="t4" role="button" tabindex="0"
+          <div class="task-item active" data-task-id="t4" data-priority="high" role="button" tabindex="0"
                onclick="viewTask('t4','Install backsplash')" onkeypress="handleKeyPress(event,'viewTask','t4')">
             <span class="task-checkbox" aria-hidden="true">◐</span>
             <span class="task-name">Install backsplash</span>
             <span class="task-status">In Progress</span>
           </div>
 
-          <div class="task-item pending" data-task-id="t6" role="button" tabindex="0"
+          <div class="task-item pending" data-task-id="t6" data-priority="high" role="button" tabindex="0"
                onclick="viewTask('t6','Countertop template')" onkeypress="handleKeyPress(event,'viewTask','t6')">
             <span class="task-checkbox" aria-hidden="true">○</span>
             <span class="task-name">Countertop template</span>
@@ -236,14 +238,14 @@
         <div class="epic-tasks">
           <div class="epic-tasks-header"><h4>Tasks</h4><span class="text-sm text-tertiary">Click to open details</span></div>
 
-          <div class="task-item completed" data-task-id="t2" role="button" tabindex="0"
+          <div class="task-item completed" data-task-id="t2" data-priority="high" role="button" tabindex="0"
                onclick="viewTask('t2','Submit basement permit')" onkeypress="handleKeyPress(event,'viewTask','t2')">
             <span class="task-checkbox" aria-hidden="true">✓</span>
             <span class="task-name">Submit basement permit</span>
             <span class="task-status">Planning</span>
           </div>
 
-          <div class="task-item pending" data-task-id="tX1" role="button" tabindex="0"
+          <div class="task-item pending" data-task-id="tX1" data-priority="medium" role="button" tabindex="0"
                onclick="viewTask('tX1','Get contractor quotes')" onkeypress="handleKeyPress(event,'viewTask','tX1')">
             <span class="task-checkbox" aria-hidden="true">○</span>
             <span class="task-name">Get contractor quotes</span>
@@ -280,14 +282,14 @@
         <div class="epic-tasks">
           <div class="epic-tasks-header"><h4>Tasks</h4><span class="text-sm text-tertiary">Click to open details</span></div>
 
-          <div class="task-item blocked" data-task-id="t9" role="button" tabindex="0"
+          <div class="task-item blocked" data-task-id="t9" data-priority="high" role="button" tabindex="0"
                onclick="viewTask('t9','Schedule plumbing inspection')" onkeypress="handleKeyPress(event,'viewTask','t9')">
             <span class="task-checkbox" aria-hidden="true">⚠</span>
             <span class="task-name">Schedule plumbing inspection</span>
             <span class="task-status">Blocked</span>
           </div>
 
-          <div class="task-item pending" data-task-id="t3" role="button" tabindex="0"
+          <div class="task-item pending" data-task-id="t3" data-priority="medium" role="button" tabindex="0"
                onclick="viewTask('t3','Order bathroom vanity')" onkeypress="handleKeyPress(event,'viewTask','t3')">
             <span class="task-checkbox" aria-hidden="true">○</span>
             <span class="task-name">Order bathroom vanity</span>
@@ -522,15 +524,17 @@
       tasks.push({id:'t'+Math.random().toString(36).slice(2,7), title, desc, status, assignee, priority, due, project:projectId});
       KanbanStore.write(tasks);
       closeModal(); toast('Task created.');
+      applyFilters(); // refresh any visible task lists
     }
 
     function viewTask(taskId){
       const tasks=KanbanStore.read();
       let t=tasks.find(x=>x.id===taskId);
       if(!t){
-        // Fallback: synthesize from DOM if needed
         const el=document.querySelector(`[data-task-id="${taskId}"] .task-name`);
-        t={id:taskId,title:(el?.textContent||'Untitled Task').trim(),desc:'',status:'Planning',project:'general',assignee:'Assignee A',priority:'Medium',due:''};
+        const parent=el?.closest('.project-epic');
+        const pid=parent?.getAttribute('data-project-id')||'general';
+        t={id:taskId,title:(el?.textContent||'Untitled Task').trim(),desc:'',status:'Planning',project:pid,assignee:'Assignee A',priority:'Medium',due:''};
         tasks.push(t); KanbanStore.write(tasks);
       }
 
@@ -584,14 +588,62 @@
       tasks[i].assignee=document.getElementById('td_assignee').value;
       tasks[i].priority=document.getElementById('td_priority').value;
       tasks[i].due=document.getElementById('td_due').value;
-      KanbanStore.write(tasks); toast('Task updated.'); closeModal();
+      KanbanStore.write(tasks); toast('Task updated.'); closeModal(); applyFilters();
     }
 
     /* ---------- Filters & Nav helpers ---------- */
-    function handleStatusFilter(v){ if(window.atlas?.filterByStatus) window.atlas.filterByStatus(v); }
-    function handlePriorityFilter(v){ if(window.atlas?.filterByPriority) window.atlas.filterByPriority(v); }
     function viewProject(id){ window.location.href=`kanban.html?project=${id}`; }
     function openOnBoard(projectId){ closeModal(); viewProject(projectId); }
+
+    // Map high-level status to our data-status values on articles
+    function mapStatus(val){
+      const m={ 'active':'in-progress', 'planning':'planning', 'on-hold':'blocked', 'completed':'done' };
+      return m[val]||null;
+    }
+
+    function applyFilters(){
+      const statusVal=document.getElementById('statusFilter').value;   // all | active | planning | on-hold | completed
+      const prioVal=document.getElementById('priorityFilter').value;   // all | high | medium | low
+      const wantedStatus = mapStatus(statusVal);
+
+      const tasks = KanbanStore.read(); // to resolve priorities for any unknown items
+
+      document.querySelectorAll('.project-epic').forEach(epic=>{
+        // Status filter (project-level)
+        const projectStatus = epic.getAttribute('data-status'); // in-progress | planning | blocked | done
+        const statusPass = !wantedStatus || projectStatus===wantedStatus;
+
+        // Priority filter (task-level: hide/show tasks; hide epic if none visible)
+        let anyVisible = false;
+        epic.querySelectorAll('.task-item').forEach(tEl=>{
+          if(prioVal==='all'){ tEl.style.display='flex'; anyVisible=true; return; }
+          let p = (tEl.getAttribute('data-priority')||'').toLowerCase();
+          if(!p){
+            // fall back to storage if missing
+            const t = tasks.find(x=>x.id===tEl.getAttribute('data-task-id'));
+            p = (t?.priority||'').toLowerCase();
+          }
+          const ok = p===prioVal;
+          tEl.style.display = ok ? 'flex' : 'none';
+          if(ok) anyVisible = true;
+        });
+
+        // Empty state message inside the epic
+        let empty = epic.querySelector('.task-empty');
+        if(!anyVisible && prioVal!=='all'){
+          if(!empty){
+            empty=document.createElement('div'); empty.className='task-empty'; empty.textContent='No tasks match current filters.';
+            epic.querySelector('.epic-tasks').appendChild(empty);
+          }
+        } else if(empty){ empty.remove(); }
+
+        // Final show/hide of the epic
+        epic.style.display = (statusPass && (anyVisible || prioVal==='all')) ? '' : 'none';
+      });
+    }
+
+    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+    document.getElementById('priorityFilter').addEventListener('change', applyFilters);
 
     /* ---------- Stats ---------- */
     (function hydrateStats(){
@@ -603,16 +655,16 @@
       document.getElementById('statActive').textContent=(projects?.length||3).toString();
     })();
 
-    /* ---------- Remove any legacy bottom “Task Details” elements ---------- */
-    function cleanupLegacyTaskDrawer(){
-      // Anything that looks like a task-details drawer but isn't ours
-      document.querySelectorAll('[role="dialog"]').forEach(el=>{
-        if(!el.closest('#atlasModalRoot')){ el.remove(); }
-      });
-      const suspects=['#taskDetails','.task-details','.drawer.task-details','.modal.task-details'];
-      suspects.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.remove()));
+    /* ---------- Kill any legacy bottom “Task Details” that appear later ---------- */
+    const legacySelectors = ['#taskDetails','.task-details','.drawer.task-details','.modal.task-details'];
+    function removeLegacyNow(){
+      legacySelectors.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.remove()));
     }
-    document.addEventListener('DOMContentLoaded', cleanupLegacyTaskDrawer);
+    // Initial sweep
+    document.addEventListener('DOMContentLoaded', ()=>{ removeLegacyNow(); applyFilters(); });
+    // Ongoing sweep (handles other scripts injecting after clicks)
+    const mo = new MutationObserver(()=>removeLegacyNow());
+    mo.observe(document.body, {childList:true,subtree:true});
   </script>
 
   <script src="atlas-interactive.js"></script>
