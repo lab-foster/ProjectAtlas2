@@ -18,7 +18,7 @@
     .board-title h2{margin-bottom:6px}
     .muted{color:var(--text-secondary)}
 
-    /* Toolbar (aligned with Calendar/Documents) */
+    /* Toolbar (inline with other pages) */
     .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--bg-elevated);border:1px solid var(--border-light);border-radius:14px;padding:10px 12px;margin-bottom:24px}
     .toolbar .search{position:relative;flex:1 1 420px}
     .toolbar .search input{width:100%;padding:9px 34px 9px 10px;border:1px solid var(--border-default);background:var(--bg-secondary);color:var(--text-primary);border-radius:10px}
@@ -30,49 +30,43 @@
     .btn:hover{border-color:var(--app-primary);background:var(--app-primary-lighter);color:var(--app-primary)}
 
     /* --- Jira-like board: long/narrow columns with horizontal scrolling --- */
-    .kanban{
-      display:flex;
-      gap:16px;
-      align-items:flex-start;
-      overflow-x:auto;
-      padding-bottom:8px;
-    }
+    .kanban{display:flex;gap:12px;align-items:flex-start;overflow-x:auto;padding-bottom:8px}
     .kanban::-webkit-scrollbar{height:10px}
     .kanban::-webkit-scrollbar-thumb{background:var(--border-default);border-radius:10px}
 
     .k-col{
-      flex:0 0 320px;               /* fixed narrow columns */
-      width:320px;
+      flex:0 0 240px;             /* NARROWER columns */
+      width:240px;
       background:var(--bg-secondary);
       border:1px solid var(--border-default);
       border-radius:16px;
       box-shadow:var(--shadow-sm);
       display:flex;flex-direction:column;min-height:120px
     }
-    .k-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px;border-bottom:1px solid var(--border-light);position:sticky;top:0;background:var(--bg-secondary);z-index:1}
+    .k-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border-bottom:1px solid var(--border-light);position:sticky;top:0;background:var(--bg-secondary);z-index:1}
     .k-title{font-weight:700}
-    .k-count{color:var(--text-secondary);font-size:.85rem}
-    .k-add{font-size:.85rem;color:var(--app-primary);cursor:pointer}
-    .k-list{display:flex;flex-direction:column;gap:12px;padding:12px;min-height:80px}
+    .k-count{color:var(--text-secondary);font-size:.82rem}
+    .k-add{font-size:.82rem;color:var(--app-primary);cursor:pointer}
+    .k-list{display:flex;flex-direction:column;gap:8px;padding:10px;min-height:80px}
 
-    /* Cards (compact polish) */
-    .k-card{background:var(--bg-secondary);border:1px solid var(--border-light);border-radius:14px;padding:12px;box-shadow:var(--shadow-xs);cursor:grab}
+    /* Compact cards: show ONLY title + project */
+    .k-card{background:var(--bg-secondary);border:1px solid var(--border-light);border-radius:12px;padding:10px;box-shadow:var(--shadow-xs);cursor:grab}
     .k-card:active{cursor:grabbing}
-    .k-card .title{font-weight:700;margin-bottom:4px}
-    .k-card .sub{color:var(--text-secondary);font-size:.92rem}
-    .k-card .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;color:var(--text-secondary);font-size:.78rem}
+    .k-card .title{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .k-card .meta{display:flex;gap:6px;margin-top:6px;color:var(--text-secondary);font-size:.78rem}
+
     .chip{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border:1px solid var(--border-light);border-radius:999px;white-space:nowrap}
     .dot{width:8px;height:8px;border-radius:999px;display:inline-block}
     .proj-kitchen{background:#1d73e8}.proj-bathroom{background:#ff9800}.proj-basement{background:#43a047}.proj-garden{background:#66bb6a}.proj-admin{background:#9c27b0}
 
-    .k-placeholder{border:2px dashed var(--border-default);border-radius:12px;height:58px}
+    .k-placeholder{border:2px dashed var(--border-default);border-radius:12px;height:46px}
 
-    /* Modal primitives (detail-rich like Jira card) */
+    /* Modal (detail panel) */
     .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .15s;z-index:1000}
     .modal-backdrop.show{opacity:1;pointer-events:auto}
     .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .15s;z-index:1001}
     .modal.open{opacity:1;pointer-events:auto}
-    .modal-panel{width:min(960px,96vw);max-height:92vh;background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:16px;box-shadow:var(--shadow-lg);display:grid;grid-template-columns:1.2fr .8fr;gap:0;overflow:hidden}
+    .modal-panel{width:min(960px,96vw);max-height:92vh;background:var(--bg-secondary);border:1px solid var(--border-default);border-radius:16px;box-shadow:var(--shadow-lg);display:grid;grid-template-columns:1.2fr .8fr;overflow:hidden}
     .modal-header{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border-light)}
     .modal-body{display:grid;grid-template-columns:1fr;gap:14px;padding:16px;overflow:auto}
     .modal-aside{border-left:1px solid var(--border-light);padding:16px;overflow:auto}
@@ -116,7 +110,7 @@
     <section class="board-header">
       <div class="board-title">
         <h2>Kanban Board</h2>
-        <div class="muted">Drag cards between columns. Click a card for a full detail panel.</div>
+        <div class="muted">Drag cards between columns. Click a card to see full details.</div>
       </div>
     </section>
 
@@ -165,7 +159,7 @@
     /* --------------------------
        Storage & Defaults
        -------------------------- */
-    const STORAGE_KEY = 'atlas-kanban-v4'; // bump to avoid stale data during dev
+    const STORAGE_KEY = 'atlas-kanban-v5'; // bump to avoid stale data
     const defaultState = {
       columns: [
         { id:'col-backlog',     name:'Backlog',      order:0 },
@@ -176,7 +170,7 @@
       ],
       tasks: [
         { id:'t1', title:'Sketch permit set', desc:'Upload PDF to city portal.', project:'admin',    assignee:'Assignee A', due:'2025-10-18', column:'col-backlog',    tags:['permit'],     priority:'high',    createdAt: Date.now() },
-        { id:'t2', title:'Order bathroom vanity', desc:'36" oak, matte hardware.', project:'bathroom', assignee:'Assignee B', due:'2025-10-15', column:'col-backlog',    tags:['purchase'],   priority:'medium',  createdAt: Date.now() },
+        { id:'t2', title:'Order bathroom vanity', desc:'36\" oak, matte hardware.', project:'bathroom', assignee:'Assignee B', due:'2025-10-15', column:'col-backlog',    tags:['purchase'],   priority:'medium',  createdAt: Date.now() },
         { id:'t3', title:'Countertop template', desc:'Schedule template after cabinet alignment.', project:'kitchen',  assignee:'Assignee C', due:'2025-10-10', column:'col-review',     tags:['contractor'], priority:'low',     createdAt: Date.now() },
         { id:'t4', title:'Research countertop materials', desc:'Compare quartz vs. granite; shortlist local fabricators.', project:'kitchen',  assignee:'Assignee A', due:'2025-10-20', column:'col-inprogress', tags:['research'],   priority:'medium',  createdAt: Date.now() },
         { id:'t5', title:'Install backsplash', desc:'Herringbone layout; use leveling clips.', project:'kitchen',  assignee:'Assignee D', due:'2025-10-20', column:'col-blocked',    tags:['tile'],       priority:'high',    createdAt: Date.now() },
@@ -257,18 +251,12 @@
       });
     }
 
+    /* Compact card markup (title + project only) */
     function renderCard(t){
-      const due = t.due ? `<span class="chip">📅 ${t.due}</span>` : '';
-      const pr  = t.priority ? `<span class="chip">⚑ ${t.priority}</span>` : '';
-      const asg = t.assignee ? `<span class="chip">👤 ${t.assignee}</span>` : '';
-      const tags = (t.tags||[]).slice(0,3).map(s=>`<span class="chip">#${s}</span>`).join('');
       return `
-        <div class="k-card" draggable="true" data-task-id="${t.id}" aria-label="${t.title}">
+        <div class="k-card" draggable="true" data-task-id="${t.id}" aria-label="${t.title}" title="${escapeHTML(t.desc||'')}">
           <div class="title">${t.title}</div>
-          ${t.desc ? `<div class="sub">${t.desc}</div>`:''}
-          <div class="meta">
-            ${projectDot(t.project)} ${due} ${asg} ${pr} ${tags}
-          </div>
+          <div class="meta">${projectDot(t.project)}</div>
         </div>
       `;
     }
@@ -365,7 +353,7 @@
     function escClose(e){ if(e.key==='Escape') closeModal(); }
 
     /* --------------------------
-       Task modal (detail-rich)
+       Task modal (full detail view)
        -------------------------- */
     function openTaskModal(existing){
       const isEdit = existing && existing.id;
@@ -493,7 +481,7 @@
     function escapeHTML(s){ return (s||'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
 
     /* --------------------------
-       Columns dialog (insert near target, not bottom)
+       Columns dialog (insert smartly before Done)
        -------------------------- */
     function openColumnsDialog(){
       const rows = state.columns.sort((a,b)=>a.order-b.order).map(c=>`
@@ -558,7 +546,6 @@
       });
 
       document.getElementById('addColSmart').onclick = ()=>{
-        // Insert before Done if found; otherwise append
         const doneIdx = state.columns.findIndex(c=>c.id==='col-done' || /done/i.test(c.name));
         const insertOrder = doneIdx>-1 ? state.columns[doneIdx].order - 0.1 : (state.columns.at(-1)?.order ?? 0) + 1;
         const newId='col-'+crypto.randomUUID().slice(0,6);
@@ -568,7 +555,7 @@
       };
 
       document.getElementById('saveCols').onclick = ()=>{
-        [...tbody.querySelectorAll('tr')].forEach((tr,i)=>{
+        [...tbody.querySelectorAll('tr')].forEach((tr)=>{
           const id=tr.dataset.id;
           const c = state.columns.find(x=>x.id===id);
           if(c){ c.name = tr.querySelector('[data-field="name"]').value.trim() || c.name; }
@@ -586,7 +573,6 @@
       const ai = cols[idx].order;
       cols[idx].order = cols[j].order;
       cols[j].order = ai;
-      // write back
       state.columns = cols;
       normalizeColumnOrder();
     }
