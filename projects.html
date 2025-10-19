@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="atlas-interactive.css"/>
 
   <style>
-    /* Page-local styles (non-destructive; complements styles.css / atlas-interactive.css) */
+    /* Page-local styles (complements styles.css / atlas-interactive.css) */
     .projects-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xl);padding-bottom:var(--space-md);border-bottom:1px solid var(--border-default);gap:var(--space-lg)}
     .project-filters{display:flex;gap:var(--space-md);flex-wrap:wrap;align-items:center;width:100%}
     .filter-select{padding:var(--space-sm) var(--space-md);border:1px solid var(--border-default);border-radius:var(--radius-md);background:var(--bg-secondary);color:var(--text-primary);font-size:.9375rem;cursor:pointer;transition:all var(--transition-fast)}
@@ -56,22 +56,23 @@
     .view-all-tasks{margin-top:var(--space-md);text-align:center;padding:var(--space-md);color:var(--app-primary);font-weight:500;font-size:.875rem;cursor:pointer;border-radius:var(--radius-md);transition:all var(--transition-fast)}
     .view-all-tasks:hover{background:var(--app-primary-lighter)}
 
-    /* Lightweight modal (used if atlas-interactive.js modal isn't available) */
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1200}
-    .modal.open{display:flex}
-    .modal-backdrop{position:fixed;inset:0;background:rgba(10,28,52,.35);opacity:0;pointer-events:none;transition:opacity .15s ease;z-index:1195}
-    .modal-backdrop.show{opacity:1;pointer-events:auto}
-    .modal-panel{width:min(720px,92vw);background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden}
-    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
-    .modal-title{margin:0;font-size:1.15rem}
-    .modal-body{padding:18px 20px;max-height:70vh;overflow:auto}
-    .modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:12px}
-    .modal-close{border:none;background:transparent;font-size:1.5rem;cursor:pointer;color:var(--ink-600)}
+    /* ===== Namespaced modal to avoid collisions ===== */
+    .atlas-backdrop{position:fixed;inset:0;background:rgba(10,28,52,.35);opacity:0;pointer-events:none;transition:opacity .15s ease;z-index:1195}
+    .atlas-backdrop.show{opacity:1;pointer-events:auto}
+    .atlas-modal-root{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1200}
+    .atlas-modal-root.open{display:flex}
+    .atlas-modal-panel{width:min(720px,92vw);background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden;border:1px solid var(--border)}
+    .atlas-modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+    .atlas-modal-title{margin:0;font-size:1.15rem}
+    .atlas-modal-body{padding:18px 20px;max-height:70vh;overflow:auto}
+    .atlas-modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:12px}
+    .atlas-modal-close{border:none;background:transparent;font-size:1.5rem;cursor:pointer;color:var(--ink-600)}
+    .atlas-modal-open{overflow:hidden}
+
     .form-grid{display:grid;gap:12px}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .input{width:100%;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font:inherit;background:#fff}
     .input:focus{outline:2px solid var(--focus);border-color:var(--focus)}
-    .atlas-modal-open{overflow:hidden}
 
     @media (max-width:992px){
       .filter-actions{width:100%;justify-content:flex-end}
@@ -87,19 +88,16 @@
   </style>
 </head>
 <body class="app-page">
-  <!-- Skip to Main Content -->
   <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-  <!-- Application Header -->
+  <!-- Header -->
   <header class="app-header">
     <div class="header-container">
-      <!-- Logo -->
       <div class="logo">
         <h1>Project <span class="atlas-blue">ATLAS</span></h1>
         <span class="tagline">Home Project Management</span>
       </div>
 
-      <!-- Mobile Menu Toggle -->
       <button class="mobile-menu-toggle"
               onclick="toggleMobileMenu()"
               aria-label="Toggle navigation menu"
@@ -108,7 +106,6 @@
         <span aria-hidden="true">☰</span>
       </button>
 
-      <!-- Main Navigation -->
       <nav class="main-nav" id="mainNav" aria-label="Main navigation">
         <ul>
           <li><a href="dashboard.html">Dashboard</a></li>
@@ -120,24 +117,18 @@
         </ul>
       </nav>
 
-      <!-- User Menu -->
       <div class="user-menu">
-        <!-- New Project moved into filters; user menu keeps only avatar -->
-        <button class="user-avatar"
-                onclick="showUserMenu()"
-                aria-label="User menu"
-                title="User Menu">AF</button>
+        <button class="user-avatar" aria-label="User menu" title="User Menu">AF</button>
       </div>
     </div>
   </header>
 
-  <!-- Main Content -->
+  <!-- Main -->
   <main class="dashboard-main" id="main-content">
-    <!-- Page Header -->
     <div class="projects-header">
       <h2>Project Management</h2>
 
-      <!-- Filters (+ New Project moved here) -->
+      <!-- Filters + New Project -->
       <div class="project-filters" role="group" aria-label="Project filters">
         <label for="statusFilter" class="sr-only">Filter by status</label>
         <select class="filter-select" id="statusFilter" aria-label="Filter by status" onchange="handleStatusFilter(this.value)">
@@ -164,29 +155,16 @@
       </div>
     </div>
 
-    <!-- Project Statistics -->
+    <!-- Stats -->
     <section class="projects-stats" aria-label="Project statistics">
-      <article class="stat-card">
-        <span class="stat-number" id="statActive">3</span>
-        <span class="stat-label">Active Projects</span>
-      </article>
-      <article class="stat-card">
-        <span class="stat-number" id="statTasks">0</span>
-        <span class="stat-label">Total Tasks</span>
-      </article>
-      <article class="stat-card">
-        <span class="stat-number" id="statAvg">0%</span>
-        <span class="stat-label">Average Progress</span>
-      </article>
-      <article class="stat-card">
-        <span class="stat-number" id="statBudget">$75K</span>
-        <span class="stat-label">Total Budget</span>
-      </article>
+      <article class="stat-card"><span class="stat-number" id="statActive">3</span><span class="stat-label">Active Projects</span></article>
+      <article class="stat-card"><span class="stat-number" id="statTasks">0</span><span class="stat-label">Total Tasks</span></article>
+      <article class="stat-card"><span class="stat-number" id="statAvg">0%</span><span class="stat-label">Average Progress</span></article>
+      <article class="stat-card"><span class="stat-number" id="statBudget">$75K</span><span class="stat-label">Total Budget</span></article>
     </section>
 
-    <!-- Projects List -->
+    <!-- Example epics (unchanged from previous message) -->
     <section class="projects-list" aria-label="Active projects" id="projectsList">
-      <!-- Kitchen Renovation Epic -->
       <article class="project-epic" data-project-id="kitchen" data-status="in-progress">
         <header class="epic-header">
           <div>
@@ -214,30 +192,24 @@
         </div>
 
         <div class="epic-tasks">
-          <div class="epic-tasks-header">
-            <h4>Tasks (examples)</h4>
-            <span class="text-sm text-tertiary">Click to open details</span>
-          </div>
+          <div class="epic-tasks-header"><h4>Tasks (examples)</h4><span class="text-sm text-tertiary">Click to open details</span></div>
 
           <div class="task-item completed" data-task-id="t0" role="button" tabindex="0"
-               onclick="viewTask('t0','Demo existing kitchen')"
-               onkeypress="handleKeyPress(event,'viewTask','t0')">
+               onclick="viewTask('t0','Demo existing kitchen')" onkeypress="handleKeyPress(event,'viewTask','t0')">
             <span class="task-checkbox" aria-hidden="true">✓</span>
             <span class="task-name">Demo existing kitchen</span>
             <span class="task-status">Completed</span>
           </div>
 
           <div class="task-item active" data-task-id="t4" role="button" tabindex="0"
-               onclick="viewTask('t4','Install backsplash')"
-               onkeypress="handleKeyPress(event,'viewTask','t4')">
+               onclick="viewTask('t4','Install backsplash')" onkeypress="handleKeyPress(event,'viewTask','t4')">
             <span class="task-checkbox" aria-hidden="true">◐</span>
             <span class="task-name">Install backsplash</span>
             <span class="task-status">In Progress</span>
           </div>
 
           <div class="task-item pending" data-task-id="t6" role="button" tabindex="0"
-               onclick="viewTask('t6','Countertop template')"
-               onkeypress="handleKeyPress(event,'viewTask','t6')">
+               onclick="viewTask('t6','Countertop template')" onkeypress="handleKeyPress(event,'viewTask','t6')">
             <span class="task-checkbox" aria-hidden="true">○</span>
             <span class="task-name">Countertop template</span>
             <span class="task-status">Done</span>
@@ -245,7 +217,6 @@
         </div>
       </article>
 
-      <!-- Basement Finishing Epic -->
       <article class="project-epic" data-project-id="basement" data-status="planning">
         <header class="epic-header">
           <div>
@@ -273,22 +244,17 @@
         </div>
 
         <div class="epic-tasks">
-          <div class="epic-tasks-header">
-            <h4>Tasks (examples)</h4>
-            <span class="text-sm text-tertiary">Click to open details</span>
-          </div>
+          <div class="epic-tasks-header"><h4>Tasks (examples)</h4><span class="text-sm text-tertiary">Click to open details</span></div>
 
           <div class="task-item completed" data-task-id="t2" role="button" tabindex="0"
-               onclick="viewTask('t2','Submit basement permit')"
-               onkeypress="handleKeyPress(event,'viewTask','t2')">
+               onclick="viewTask('t2','Submit basement permit')" onkeypress="handleKeyPress(event,'viewTask','t2')">
             <span class="task-checkbox" aria-hidden="true">✓</span>
             <span class="task-name">Submit basement permit</span>
             <span class="task-status">Planning</span>
           </div>
 
           <div class="task-item pending" data-task-id="tX1" role="button" tabindex="0"
-               onclick="viewTask('tX1','Get contractor quotes')"
-               onkeypress="handleKeyPress(event,'viewTask','tX1')">
+               onclick="viewTask('tX1','Get contractor quotes')" onkeypress="handleKeyPress(event,'viewTask','tX1')">
             <span class="task-checkbox" aria-hidden="true">○</span>
             <span class="task-name">Get contractor quotes</span>
             <span class="task-status">Pending</span>
@@ -296,7 +262,6 @@
         </div>
       </article>
 
-      <!-- Bathroom Update Epic -->
       <article class="project-epic" data-project-id="bathroom" data-status="blocked">
         <header class="epic-header">
           <div>
@@ -324,22 +289,17 @@
         </div>
 
         <div class="epic-tasks">
-          <div class="epic-tasks-header">
-            <h4>Tasks (examples)</h4>
-            <span class="text-sm text-tertiary">Click to open details</span>
-          </div>
+          <div class="epic-tasks-header"><h4>Tasks (examples)</h4><span class="text-sm text-tertiary">Click to open details</span></div>
 
           <div class="task-item blocked" data-task-id="t9" role="button" tabindex="0"
-               onclick="viewTask('t9','Schedule plumbing inspection')"
-               onkeypress="handleKeyPress(event,'viewTask','t9')">
+               onclick="viewTask('t9','Schedule plumbing inspection')" onkeypress="handleKeyPress(event,'viewTask','t9')">
             <span class="task-checkbox" aria-hidden="true">⚠</span>
             <span class="task-name">Schedule plumbing inspection</span>
             <span class="task-status">Blocked</span>
           </div>
 
           <div class="task-item pending" data-task-id="t3" role="button" tabindex="0"
-               onclick="viewTask('t3','Order bathroom vanity')"
-               onkeypress="handleKeyPress(event,'viewTask','t3')">
+               onclick="viewTask('t3','Order bathroom vanity')" onkeypress="handleKeyPress(event,'viewTask','t3')">
             <span class="task-checkbox" aria-hidden="true">○</span>
             <span class="task-name">Order bathroom vanity</span>
             <span class="task-status">Ready</span>
@@ -349,13 +309,12 @@
     </section>
   </main>
 
-  <!-- Reusable Backdrop & Modal Root -->
-  <div id="backdrop" class="modal-backdrop"></div>
-  <div id="modalRoot" class="modal" aria-hidden="true"></div>
+  <!-- Namespaced Backdrop & Modal Root (no collisions) -->
+  <div id="atlasBackdrop" class="atlas-backdrop"></div>
+  <div id="atlasModalRoot" class="atlas-modal-root" aria-hidden="true"></div>
 
-  <!-- Scripts -->
   <script>
-    /* ---------- Accessibility & Nav ---------- */
+    /* --------- Accessibility & Nav --------- */
     function toggleMobileMenu(){
       const nav=document.getElementById('mainNav');
       const toggle=document.querySelector('.mobile-menu-toggle');
@@ -368,9 +327,8 @@
         if(typeof window[fn]==='function'){ window[fn](id); }
       }
     }
-    function showUserMenu(){ /* placeholder hook for atlas-interactive.js */ }
 
-    /* ---------- Utilities ---------- */
+    /* --------- Utilities --------- */
     function slugify(s){return (s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');}
     function escapeHtml(s){return (s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
     function toast(msg){
@@ -384,14 +342,12 @@
       el.textContent=msg; el.style.opacity='1'; setTimeout(()=>el.style.opacity='0',1500);
     }
 
-    /* ---------- Storage (shared keys) ---------- */
-    const ProjectStore={
-      key:'atlas.projects',
+    /* --------- Storage (simple) --------- */
+    const ProjectStore={ key:'atlas.projects',
       read(){try{return JSON.parse(localStorage.getItem(this.key))||[];}catch{return[]}},
       write(v){localStorage.setItem(this.key,JSON.stringify(v));}
     };
-    const KanbanStore={
-      key:'atlas.kanban.tasks',
+    const KanbanStore={ key:'atlas.kanban.tasks',
       read(){try{return JSON.parse(localStorage.getItem(this.key))||[];}catch{return[]}},
       write(v){localStorage.setItem(this.key,JSON.stringify(v));},
       ensureSeed(){
@@ -399,28 +355,28 @@
         this.write([
           {id:"t1", title:"Research countertop materials", desc:"Quartz vs granite. Check local fabricators.", status:"Someday", project:"kitchen", assignee:"Assignee A", priority:"Low", due:"", deps:[]},
           {id:"t2", title:"Submit basement permit", desc:"City online portal", status:"Planning", project:"basement", assignee:"Assignee A", priority:"High", due:"2025-10-18", deps:[]},
-          {id:"t3", title:"Order bathroom vanity", desc:"36” oak, matte black hardware – Home Depot", status:"Ready", project:"bathroom", assignee:"Assignee B", priority:"Medium", due:"2025-10-15", deps:[]},
-          {id:"t4", title:"Install backsplash", desc:"Herringbone subway tile; use leveling clips.", status:"In Progress", project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-20", deps:["t6"]},
+          {id:"t3", title:"Order bathroom vanity", desc:"36” oak, matte black hardware – retailer", status:"Ready", project:"bathroom", assignee:"Assignee B", priority:"Medium", due:"2025-10-15", deps:[]},
+          {id:"t4", title:"Install backsplash", desc:"Herringbone subway tile; use leveling clips.", status:"In Progress", project:"kitchen", assignee:"Assignee D", priority:"High", due:"2025-10-20", deps:["t6"]},
           {id:"t5", title:"Seal grout", desc:"After 72 hours, two coats.", status:"Blocked", project:"kitchen", assignee:"Assignee A", priority:"Low", due:"", deps:["t4"]},
-          {id:"t6", title:"Countertop template", desc:"Schedule after cabinet alignment.", status:"Done", project:"kitchen", assignee:"Contractor", priority:"High", due:"2025-10-10", deps:[]},
+          {id:"t6", title:"Countertop template", desc:"Schedule after cabinet alignment.", status:"Done", project:"kitchen", assignee:"Assignee C", priority:"High", due:"2025-10-10", deps:[]},
           {id:"t9", title:"Schedule plumbing inspection", desc:"Book with city inspector", status:"Blocked", project:"bathroom", assignee:"Assignee A", priority:"High", due:"2025-10-13", deps:[]}
         ]);
       }
     };
     KanbanStore.ensureSeed();
 
-    /* ---------- Modal (fallback if window.atlas modal isn't present) ---------- */
+    /* --------- Namespaced Modal (no CSS collisions) --------- */
     function openModal(title,bodyHtml,footerHtml){
-      const backdrop=document.getElementById('backdrop');
-      const root=document.getElementById('modalRoot');
+      const backdrop=document.getElementById('atlasBackdrop');
+      const root=document.getElementById('atlasModalRoot');
       root.innerHTML=`
-        <div class="modal-panel" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
-          <div class="modal-header">
-            <h3 class="modal-title">${escapeHtml(title)}</h3>
-            <button class="modal-close" aria-label="Close" onclick="closeModal()">&times;</button>
+        <div class="atlas-modal-panel" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
+          <div class="atlas-modal-header">
+            <h3 class="atlas-modal-title">${escapeHtml(title)}</h3>
+            <button class="atlas-modal-close" aria-label="Close" onclick="closeModal()">&times;</button>
           </div>
-          <div class="modal-body">${bodyHtml}</div>
-          <div class="modal-footer">${footerHtml||'<button class="btn" onclick="closeModal()">Close</button>'}</div>
+          <div class="atlas-modal-body">${bodyHtml}</div>
+          <div class="atlas-modal-footer">${footerHtml||'<button class="btn" onclick="closeModal()">Close</button>'}</div>
         </div>`;
       backdrop.classList.add('show');
       root.classList.add('open');
@@ -429,14 +385,14 @@
       setTimeout(()=>{const f=root.querySelector('input,select,textarea,button'); if(f) f.focus();},0);
     }
     function closeModal(){
-      const backdrop=document.getElementById('backdrop');
-      const root=document.getElementById('modalRoot');
+      const backdrop=document.getElementById('atlasBackdrop');
+      const root=document.getElementById('atlasModalRoot');
       root.classList.remove('open'); root.setAttribute('aria-hidden','true');
       backdrop.classList.remove('show'); root.innerHTML=''; document.body.classList.remove('atlas-modal-open');
     }
     document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 
-    /* ---------- New Project (now launched from Filters) ---------- */
+    /* --------- New Project (in filters) --------- */
     function showNewProjectModal(){
       if(window.atlas?.showNewProjectModal){ window.atlas.showNewProjectModal(); return; }
       openModal('Create New Project', `
@@ -461,9 +417,7 @@
           <div class="form-row">
             <div>
               <label for="p_seed">Seed a starter task?</label>
-              <select id="p_seed" class="input">
-                <option value="yes" selected>Yes</option><option value="no">No</option>
-              </select>
+              <select id="p_seed" class="input"><option value="yes" selected>Yes</option><option value="no">No</option></select>
             </div>
             <div>
               <label for="p_assignee">Default Assignee</label>
@@ -512,11 +466,10 @@
 
       closeModal();
       toast('Project created.');
-      // Navigate straight to the board for immediate use
       viewProject(id);
     }
 
-    /* ---------- Edit Project ---------- */
+    /* --------- Edit Project --------- */
     function editProject(projectId){
       const projects=ProjectStore.read();
       const p=projects.find(x=>x.id===projectId);
@@ -553,7 +506,7 @@
       toast('Project updated.'); closeModal();
     }
 
-    /* ---------- Add Task (quick add) ---------- */
+    /* --------- Add Task --------- */
     function openAddTaskModal(projectId){
       if(window.atlas?.showAddTaskModal){ window.atlas.showAddTaskModal('Planning',projectId); return; }
       openModal('Add Task', `
@@ -606,7 +559,7 @@
       closeModal(); toast('Task created.');
     }
 
-    /* ---------- Task Details ---------- */
+    /* --------- Task Details (uses namespaced modal) --------- */
     function viewTask(taskId){
       const el=document.querySelector(`[data-task-id="${taskId}"] .task-name`);
       const fallbackTitle=el?el.textContent.trim():'';
@@ -619,17 +572,7 @@
       if(!t){
         const parentArticle=el?.closest('.project-epic');
         const projectId=parentArticle?.getAttribute('data-project-id')||'general';
-        t={
-          id:taskId||('t'+Math.random().toString(36).slice(2,7)),
-          title:fallbackTitle||'Untitled Task',
-          desc:'',
-          status:'Planning',
-          project:projectId,
-          assignee:'Assignee A',
-          priority:'Medium',
-          due:'',
-          deps:[]
-        };
+        t={id:taskId||('t'+Math.random().toString(36).slice(2,7)),title:fallbackTitle||'Untitled Task',desc:'',status:'Planning',project:projectId,assignee:'Assignee A',priority:'Medium',due:'',deps:[]};
         tasks.push(t); KanbanStore.write(tasks);
       }
 
@@ -688,15 +631,15 @@
       KanbanStore.write(tasks); toast('Task updated.'); closeModal();
     }
 
-    /* ---------- Navigation Helpers ---------- */
+    /* --------- Navigation helpers --------- */
     function viewProject(id){ window.location.href=`kanban.html?project=${id}`; }
     function openOnBoard(projectId){ closeModal(); viewProject(projectId); }
 
-    /* ---------- Filters (hookable for atlas-interactive) ---------- */
+    /* --------- Filters (hooks) --------- */
     function handleStatusFilter(v){ if(window.atlas?.filterByStatus) window.atlas.filterByStatus(v); }
     function handlePriorityFilter(v){ if(window.atlas?.filterByPriority) window.atlas.filterByPriority(v); }
 
-    /* ---------- Stats from storage ---------- */
+    /* --------- Stats --------- */
     (function hydrateStats(){
       const tasks=KanbanStore.read();
       const totalTasks=tasks.length;
@@ -709,7 +652,8 @@
     })();
   </script>
 
-  <!-- Main Interactive Script (kept; our code works with or without it) -->
+  <!-- Keep your main interactive script -->
   <script src="atlas-interactive.js"></script>
 </body>
 </html>
+
